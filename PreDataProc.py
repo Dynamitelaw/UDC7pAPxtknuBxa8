@@ -8,6 +8,18 @@ Adds 2 day slope, 5 day slope, and 30 day standard deviation.
 
 import numpy as np
 
+def optimalbuy(array)
+    '''
+    Makes an array marking the optimal buy and sell dates. 
+    1 for buy, -1 for sell, 0 OTW
+    '''
+    
+    state = 0
+    k = int(data.shape[0])
+    
+    for i in range(k,0,-1):
+        if array[i,1] < array[i-1,1] and array[i,1] < array[i-5,1]
+    
 
 def process(ticker):
 
