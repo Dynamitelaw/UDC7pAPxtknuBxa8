@@ -11,7 +11,7 @@ n_nodes_hl3 = 1500
 
 n_classes = 2
 batch_size = 50
-hm_epochs = 1000
+hm_epochs = 200
 
 x = tf.placeholder('float')
 y = tf.placeholder('float')
@@ -51,7 +51,7 @@ def neural_network_model(data):
 
 def train_neural_network(x):
 	prediction = neural_network_model(x)
-	#cost = tf.reduce_mean( tf.nn.softmax_cross_entropy_with_logits(prediction,y) )
+	cost = tf.reduce_mean( tf.nn.softmax_cross_entropy_with_logits(prediction,y) )
 	optimizer = tf.train.AdamOptimizer(learning_rate=0.001).minimize(cost)
 
 	with tf.Session() as sess:
@@ -73,7 +73,6 @@ def train_neural_network(x):
 			print('Epoch', epoch+1, 'completed out of',hm_epochs,'loss:',epoch_loss)
 		correct = tf.equal(tf.argmax(prediction, 1), tf.argmax(y, 1))
 		accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
-
 		print('Accuracy:',accuracy.eval({x:test_x, y:test_y}))
 
 	    

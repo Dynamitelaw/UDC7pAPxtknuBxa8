@@ -5,9 +5,9 @@ import numpy as np
 from create_sentiment_featuresets import create_feature_sets_and_labels
 train_x,train_y,test_x,test_y = create_feature_sets_and_labels('Data/PcsData/A\n.csv')
 #Number of neurons from each hidden layer
-n_nodes_hl1 = 500
-n_nodes_hl2 = 250
-n_nodes_hl3 = 50
+n_nodes_hl1 = 1500
+n_nodes_hl2 = 1500
+n_nodes_hl3 = 1500
 
 n_classes = 2
 batch_size = 50
@@ -51,10 +51,8 @@ def neural_network_model(data):
 
 def train_neural_network(x):
 	prediction = neural_network_model(x)
-	#cost = tf.reduce_mean( tf.nn.softmax_cross_entropy_with_logits(prediction,y) )
-	#cost=	tf.reduce_mean(-tf.reduce_sum(y * tf.log(y), reduction_indices=[1]))
-	cost = prediction-y
-	optimizer = tf.train.AdamOptimizer(learning_rate=0.000001).minimize(cost)
+	cost = tf.reduce_mean( tf.nn.softmax_cross_entropy_with_logits(prediction,y) )
+	optimizer = tf.train.AdamOptimizer(learning_rate=0.001).minimize(cost)
 
 	with tf.Session() as sess:
 		sess.run(tf.initialize_all_variables())
@@ -75,7 +73,6 @@ def train_neural_network(x):
 			print('Epoch', epoch+1, 'completed out of',hm_epochs,'loss:',epoch_loss)
 		correct = tf.equal(tf.argmax(prediction, 1), tf.argmax(y, 1))
 		accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
-
 		print('Accuracy:',accuracy.eval({x:test_x, y:test_y}))
 
 	    
