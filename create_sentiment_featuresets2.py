@@ -93,7 +93,7 @@ l = GenInputOutput('4BV.DU',['Open','High'])
 print(l[1])
 '''
 a = np.array([1,2,3,4,5,6]).reshape((2,3))
-print (a)
+#print (a)
 
 a = a[:,[0,2]]
 print (a.shape)'''
