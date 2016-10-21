@@ -6,7 +6,7 @@ Generates Network Input and Output data for every day for a specified stock.
 import numpy as np
 
 
-def GenInputOutput(ticker,fields = None):
+def GenerateIO(ticker,fields = None):
     '''
     Generates an array of network Level 1 inputs and desired outputs for specified stock for all days.
     Each element of output list is a 3 element list -> [date,array[day's input], float(desired output)].
@@ -40,7 +40,7 @@ def GenInputOutput(ticker,fields = None):
                 dates = np.vstack((dates,arow))
                 
         
-    k = int(data.shape[0])
+    k = int(data.shape[0])      #number of dates in file
     dates = dates[0:k-91]      #assigns dates to output array
     desire = data[:,9]      #obtains desired outputs
     
@@ -68,7 +68,7 @@ def GenInputOutput(ticker,fields = None):
 
         ndata = data[:,include]
     else:
-        ndata = data[:,0:10]
+        ndata = data[:,0:9]
      
    
     tout = []       #total io (input output) array for all days for this stock
@@ -89,11 +89,6 @@ def GenInputOutput(ticker,fields = None):
 
 #-----------------------------------------------------------------------------
 
-l = GenInputOutput('4BV.DU',['Open','High'])
-print(l[1])
-'''
-a = np.array([1,2,3,4,5,6]).reshape((2,3))
-#print (a)
+l = GenerateIO('4BV.DU')
+print(l[0])
 
-a = a[:,[0,2]]
-print (a.shape)'''
