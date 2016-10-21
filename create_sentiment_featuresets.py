@@ -30,20 +30,20 @@ def sample_handling(file_path):
 	print(len(feature_set))
 	return feature_set
 
-
+       #[ [ [input], [output] ]
 
 def create_feature_sets_and_labels(file_path,test_size = 0.1):
 		
 	features = sample_handling(file_path)
 	random.shuffle(features)
 	features = np.array(features)
-
 	testing_size = int(test_size*len(features))
-	train_x = list(features[:0][:-testing_size])
-	train_y = list(features[:,1][:-testing_size])
-	test_x = list(features[:,0][-testing_size:])
-	test_y = list(features[:,1][-testing_size:])
-
+	print(testing_size)
+	train_x = list(features[0:testing_size][:,0])
+	train_y = list(features[0:testing_size][:,1])
+	test_x = list(features[testing_size:][:,0])
+	test_y = list(features[testing_size:][:,1])
+	#print(train_x)
 	return train_x,train_y,test_x,test_y
 
 

@@ -16,5 +16,6 @@ while k<i[0]:
 	res = [feat,classf]
 	features_set.append(res)
 	k+=1
-pprint(feature_set[0])
+print(len(features_set))
+print(features_set[0:])
 
