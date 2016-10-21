@@ -5,7 +5,7 @@ Adds 2 day slope, 5 day slope, 30 day standard deviation, optimal buy and sell d
 '''
 
 import numpy as np
-
+import io
 
 def optimalbuy(array):
     '''
@@ -155,7 +155,7 @@ def process(ticker):
     Processes the data for a single stock. Outputs processed data into PcsData directory
     '''
     
-    filepath = './Data/StockData/' + ticker + '.csv'
+    filepath = 'Data/StockData/' + ticker + '.csv'
     file = open(filepath,'r')
     row = 0
     
@@ -212,7 +212,7 @@ def process(ticker):
     dates = dates[indx:k-31,:]       #truncates dates list
     newlen = int(data.shape[0])
     
-    savepath = './Data/PcsData/' + ticker + '.csv'
+    savepath = 'Data/PcsData/' + ticker + '.csv'
     fout = open(savepath,'w')
     header = 'Date, Open, High, Low, Close, Volume, Adj Close, 2 Day Slope, 5 Day Slope, Standard Dev, Optimal Dates, Desired Level 1 Out Buy, Desired Level 1 Out Sell, Profit Speed'
     fout.write(header + '\n')
@@ -226,28 +226,20 @@ def process(ticker):
   
     
 def main():
-    '''
-    Iterates process through all tickers on list
-    '''
-    
-    ticks = open('./Data/ListOfTickerSymbols.csv','r')
-    
-    length = len(ticks.readlines())
-    row = 0
-    for l in ticks:     #process all stocks on the ticker list
-        if row == 0:
-            row += 1
-        else:
-            row += 1
-            ticker = str(l).rstrip()
-            try:
-                process(ticker)
-                print ('Proccessed' + ticker + ': ' + str(int((100*row)/length)) + '% done')
-            except:
-                print ('Error Processing Stock' + ticker)
-    
-    
-    ticks.close()
+    	'''
+	Iterates process through all tickers on list
+    	'''
+
+    	
+	tickerFile = open('Data/ListOfTickerSymbols.csv','r') #opens ticker file
+
+	for line in tickerFile:		#iterates through file and downloads data
+		try:
+			process(line)
+			print('Proccessed '+line)
+		except Exception as e:
+			print(e)
+    	ticks.close()
 
 
 #-------------------------------------------------------------------------------------------
