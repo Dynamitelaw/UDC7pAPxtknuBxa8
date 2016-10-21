@@ -1,8 +1,8 @@
 import tensorflow as tf
 
 ##import data of some sort
-
-
+from create_sentiment_featuresets import create_feature_sets_and_labels
+train_x,train_y,test_x,test_y = create_feature_sets_and_labels('Data/PcsData/A\n.csv')
 #Number of neurons from each hidden layer
 n_nodes_hl1 = 500
 n_nodes_hl2 = 500
@@ -16,7 +16,7 @@ x = tf.placeholder('float', [None, 784])
 y = tf.placeholder('float')
 
 #Neural network model
-def f(data):
+def neural_network_model(data):
     hidden_1_layer = {'weights':tf.Variable(tf.random_normal([784, n_nodes_hl1])),
                       'biases':tf.Variable(tf.random_normal([n_nodes_hl1]))}
 
@@ -51,17 +51,24 @@ def train_neural_network(x):
     with tf.Session() as sess:
         sess.run(tf.initialize_all_variables())
 	for epoch in range(hm_epochs):
-            epoch_loss = 0
-            for _ in range(int(mnist.train.num_examples/batch_size)):
-                epoch_x, epoch_y = mnist.train.next_batch(batch_size)
-                _, c = sess.run([optimizer, cost], feed_dict={x: epoch_x, y: epoch_y})
-                epoch_loss += c
+			epoch_loss = 0
+			i=0
+			while i < len(train_x):
+				start = i
+				end = i+batch_size
+				batch_x = np.array(train_x[start:end])
+				batch_y = np.array(train_y[start:end])
 
-            print('Epoch', epoch, 'completed out of',hm_epochs,'loss:',epoch_loss)
+				_, c = sess.run([optimizer, cost], feed_dict={x: batch_x,
+				                                              y: batch_y})
+				epoch_loss += c
+				i+=batch_size
+				
+			print('Epoch', epoch+1, 'completed out of',hm_epochs,'loss:',epoch_loss)
 
     correct = tf.equal(tf.argmax(prediction, 1), tf.argmax(y, 1))
     accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
-    print('Accuracy:',accuracy.eval({x:mnist.test.images, y:mnist.test.labels}))
+    print('Accuracy:',accuracy.eval({x:test_x, y:test_y}))
 
 train_neural_network(x)
 

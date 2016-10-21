@@ -38,16 +38,27 @@ def create_lexicon(pos,neg):
 
 
 
-def sample_handling(data_file):
+def sample_handling(file_path):
 
 	featureset = []
 
-			########################
-			########################
-                        ##put inputs in features
-			#put output in classification
-			#########################
-			featureset.append([features,classification])
+
+	data = np.genfromtxt(file_path,delimiter=',')
+	data = np.delete(data,[0,10,13], axis=1)
+	data = np.delete(data,[0], axis=0)
+
+	i = data.shape
+	k=0
+	features_set = []
+	while k<i[0]:
+		#print(data[k])
+		day = data[k]
+		feat = np.delete(day,[9,10],axis=0)
+		classf = np.delete(day,[0,1,2,3,4,5,6,7,8],axis=0)
+		res = [feat,classf]
+		features_set.append(res)
+		k+=1
+	pprint(feature_set[0])
 
 	return featureset
 
@@ -59,7 +70,7 @@ def create_feature_sets_and_labels(file_path,test_size = 0.1):
 	except Exception as e:
 	    print(e)	
 	features = []
-	features += sample_handling(data_file)
+	features += sample_handling(file_path)
 	random.shuffle(features)
 	features = np.array(features)
 
@@ -73,8 +84,8 @@ def create_feature_sets_and_labels(file_path,test_size = 0.1):
 	return train_x,train_y,test_x,test_y
 
 
-if __name__ == '__main__':
+"""if __name__ == '__main__':
 	train_x,train_y,test_x,test_y = create_feature_sets_and_labels('/path/to/pos.txt','/path/to/neg.txt')
 	# if you want to pickle this data:
 	with open('/path/to/sentiment_set.pickle','wb') as f:
-		pickle.dump([train_x,train_y,test_x,test_y],f)
+		pickle.dump([train_x,train_y,test_x,test_y],f)"""
