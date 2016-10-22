@@ -245,4 +245,3 @@ def main():
 
 main()     
 
-#process('1HTA.SG')
