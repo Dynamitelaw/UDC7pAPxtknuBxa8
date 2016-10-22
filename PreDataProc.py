@@ -232,7 +232,7 @@ def main():
 	
 	tickerFile = open('Data/ListOfTickerSymbols.csv','r') #opens ticker file
 
-	for line in tickerFile:		#iterates through file and downloads data
+	for line in tickerFile:		#iterates through file and processes data for each ticker
 		try:
 			process(line)
 			print('Proccessed '+line)
