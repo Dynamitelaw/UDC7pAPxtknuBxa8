@@ -229,8 +229,7 @@ def main():
     	'''
 	Iterates process through all tickers on list
     	'''
-
-    	
+	
 	tickerFile = open('Data/ListOfTickerSymbols.csv','r') #opens ticker file
 
 	for line in tickerFile:		#iterates through file and downloads data
@@ -239,11 +238,11 @@ def main():
 			print('Proccessed '+line)
 		except Exception as e:
 			print(e)
-    	ticks.close()
+    	tickerFile.close()
 
 
 #-------------------------------------------------------------------------------------------
 
-main()      #main isn't working currently: there's some issue reading the ticker list, but no error is thrown
+main()     
 
 #process('1HTA.SG')
