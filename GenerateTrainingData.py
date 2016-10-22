@@ -233,10 +233,13 @@ def GenTrainData(fields = None, daterange = None):
         pickle.dump(data,open(savepath,'wb'))
 
 
-def RetrieveTrainData1(fields = None, daterange = None):
+def RetrieveTrainData(ratio, fields = None, daterange = None):
     '''
     Retrieves training data from pickle and outputs it as a list.
     If the pickle doesn't exist, it creates the pickle first, the returns the list.
+    Output data is formated as -> [train, test]
+    
+    Ratio is the ratio of training to testing data size.
     
     Fields is a list of strings specifying which data columns you want included. Defaults to all fields
     possible fields-> ['Open', 'High', 'Low', 'Close', 'Volume', 'Adj Close', '2 Day Slope', '5 Day Slope', 'Standard Dev']
@@ -317,9 +320,22 @@ def RetrieveTrainData1(fields = None, daterange = None):
         data = pickle.load(open(filepath,'rb'))
         
     
-    return data
+    k = len(data)
+    rand = np.random.random((k))
+    train = []
+    test = []
+
+    indx = 0
+    for r in rand:      #splits data into training and testing lists
+        if r < ratio:
+            test.append(data[indx])
+        else:
+            train.append(data[indx])
+        indx += 1
+            
+    outdata = [train, test]
+    return outdata
+    
         
                     
 #-----------------------------------------------------------------------------
-
-
