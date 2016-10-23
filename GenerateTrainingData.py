@@ -239,12 +239,12 @@ def RetrieveTrainData(ratio, fields = None, daterange = None):
     If the pickle doesn't exist, it creates the pickle first, the returns the list.
     Output data is formated as -> [train, test]
     
-    Ratio is the ratio of training to testing data size.
+    Ratio is the ratio of testing to training data size (0<ratio<1).
     
     Fields is a list of strings specifying which data columns you want included. Defaults to all fields
     possible fields-> ['Open', 'High', 'Low', 'Close', 'Volume', 'Adj Close', '2 Day Slope', '5 Day Slope', 'Standard Dev']
     
-    Daterange is an optional 2 element list, containing the min and max dates desired for the created pickle.
+    Daterange is an optional 2 element list, containing the min and max dates desired for the data.
     Dates must have following format:  'YYYY-MM-DD'
     Dates must be given in increasing order (ie. 2012 before 2015)
     '''
