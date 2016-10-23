@@ -12,7 +12,7 @@ import pickle
 def GenerateIO(ticker,fields = None):
     '''
     Generates an array of network Level 1 inputs and desired outputs for specified stock for all days.
-    Each element of output list is a 4 element list -> [ticker, date, array[day's input], float(desired output)].
+    Each element of output list is a 4 element list -> [ticker, date, array[day's input], array[desired buy, desired sell]].
     
     Fields is an optional list of strings specifying which data columns you want included. Defaults to all fields
         possible fields-> ['Open', 'High', 'Low', 'Close', 'Volume', 'Adj Close', '2 Day Slope', '5 Day Slope', 'Standard Dev']
@@ -45,7 +45,7 @@ def GenerateIO(ticker,fields = None):
         
     k = int(data.shape[0])      #number of dates in file
     dates = dates[0:k-91]      #assigns dates to output array
-    desire = data[:,9]      #obtains desired outputs
+    desire = data[:,[10,11]]      #obtains desired outputs
     
     if fields:      #truncates data array based on specified fields to include. Defaults to all
         include = []
@@ -81,7 +81,7 @@ def GenerateIO(ticker,fields = None):
         day.append(ticker)
         day.append(dates[i])
         day.append(di)
-        day.append(desire[i])
+        day.append(desire[i,:])
         
         tout.append(day)
         
@@ -336,6 +336,5 @@ def RetrieveTrainData(ratio, fields = None, daterange = None):
     outdata = [train, test]
     return outdata
     
-        
-                    
+                           
 #-----------------------------------------------------------------------------
