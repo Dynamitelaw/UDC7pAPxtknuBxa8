@@ -5,6 +5,7 @@ Writes data to pickle.
 Retrieves training data from pickle.
 '''
 
+
 import numpy as np
 import pickle
 
