@@ -1,9 +1,17 @@
 import tensorflow as tf
 import numpy as np
+import GenerateTrainingData as gtd
 
 ##import data of some sort
+'''
 from create_sentiment_featuresets import create_feature_sets_and_labels
 train_x,train_y,test_x,test_y = create_feature_sets_and_labels('Data/PcsData/A\n.csv')
+'''
+
+data = gtd.RetrieveTrainData(0.1)
+train = data[0]
+test = data[1]
+
 #Number of neurons from each hidden layer
 n_nodes_hl1 = 1500
 n_nodes_hl2 = 1500
@@ -13,7 +21,7 @@ n_classes = 2
 batch_size = 50
 hm_epochs = 200
 
-x = tf.placeholder('float')
+x = tf.placeholder('float')		#**isn't x an array, not a float?**
 y = tf.placeholder('float')
 
 hidden_1_layer = {'f_fum':n_nodes_hl1,
