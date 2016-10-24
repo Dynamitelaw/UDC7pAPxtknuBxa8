@@ -6,6 +6,11 @@ Adds 2 day slope, 5 day slope, 30 day standard deviation, optimal buy and sell d
 
 import numpy as np
 import io
+import os
+import multiprocessing
+import affinity
+
+affinity.set_process_affinity_mask(0,2**multiprocessing.cpu_count()-1)
 
 def optimalbuy(array):
     '''
@@ -238,7 +243,12 @@ def main():
 			print('Proccessed '+line)
 		except Exception as e:
 			print(e)
-    	tickerFile.close()
+			try:
+				os.remove('Data/StockData/'+line+'.csv')			
+				print('File Removed')
+			except Exception as e:
+				print('')	
+	tickerFile.close()
 
 
 #-------------------------------------------------------------------------------------------

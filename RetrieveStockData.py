@@ -1,3 +1,9 @@
+'''
+ilPesce
+Requests all stock data from Yahoo Finance
+API and stores them as CSV's
+'''
+
 import urllib
 import io
 

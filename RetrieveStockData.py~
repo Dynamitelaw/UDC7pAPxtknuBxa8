@@ -23,4 +23,4 @@ tickerFile = open('Data/ListOfTickerSymbols.csv','r') #opens ticker file
 
 for line in tickerFile:		#iterates through file and downloads data
 	pull_historical_data(line)
-	print(make_url(line,begin,end))
+	print(make_url(line))

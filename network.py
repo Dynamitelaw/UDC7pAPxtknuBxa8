@@ -1,29 +1,59 @@
+'''
+ilPesce
+Trains Level 1 Neural Network that 
+outputs buy certainty and sell certainty
+'''
+
+
+
 import tensorflow as tf
 import numpy as np
 import GenerateTrainingData as gtd
 
-##import data of some sort
+
 '''
 from create_sentiment_featuresets import create_feature_sets_and_labels
 train_x,train_y,test_x,test_y = create_feature_sets_and_labels('Data/PcsData/A\n.csv')
 '''
 
-data = gtd.RetrieveTrainData(0.1)
-train = data[0]
-test = data[1]
+#helper method for extracting relevant data
+def extractRelevantData(data):
+	inputs = []
+	outputs = []	
+	for i in range(len(data)):
+		inputs += data[i][2]
+		output += data[i][3]
+	output = [inputs, outputs]
+	return output
+
+#import data from processed data files
+data = gtd.RetrieveTrainData(0.1,['Open','2 Day Slope','5 Day Slope'],['2010-01-01','2010-01-01'])
+print(len(data[0]))
+train = extractRelevantData(data[0])
+test = extractRelevantData(data[1])
+
+train_x = train[0]
+print(len(train_x))
+train_y = train[1]
+test_x = test[0]
+test_y = test[1]
 
 #Number of neurons from each hidden layer
 n_nodes_hl1 = 1500
 n_nodes_hl2 = 1500
 n_nodes_hl3 = 1500
 
+#training parameters
 n_classes = 2
 batch_size = 50
 hm_epochs = 200
 
-x = tf.placeholder('float')		#**isn't x an array, not a float?**
+#Tensorflow placeholders for input and output data
+x = tf.placeholder('float')		
 y = tf.placeholder('float')
 
+
+#sets up hidden layers with weigth and bias matricies
 hidden_1_layer = {'f_fum':n_nodes_hl1,
                   'weight':tf.Variable(tf.random_normal([len(train_x[0]), n_nodes_hl1])),
                   'bias':tf.Variable(tf.random_normal([n_nodes_hl1]))}
@@ -41,7 +71,8 @@ output_layer = {'f_fum':None,
                 'bias':tf.Variable(tf.random_normal([n_classes])),}
 
 
-# Nothing changes
+#creates nerual network model by setting activation functions and layer
+#relationships
 def neural_network_model(data):
 
     l1 = tf.add(tf.matmul(data,hidden_1_layer['weight']), hidden_1_layer['bias'])
@@ -60,7 +91,7 @@ def neural_network_model(data):
 def train_neural_network(x):
 	prediction = neural_network_model(x)
 	cost = tf.reduce_mean( tf.nn.softmax_cross_entropy_with_logits(prediction,y) )
-	optimizer = tf.train.AdamOptimizer(learning_rate=0.001).minimize(cost)
+	optimizer = tf.train.AdamOptimizer(learning_rate=0.001).minimize(cost) #standard stochastic descent model for deep NN
 
 	with tf.Session() as sess:
 		sess.run(tf.initialize_all_variables())
@@ -82,6 +113,8 @@ def train_neural_network(x):
 		correct = tf.equal(tf.argmax(prediction, 1), tf.argmax(y, 1))
 		accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
 		print('Accuracy:',accuracy.eval({x:test_x, y:test_y}))
+
+
 
 	    
 train_neural_network(x)

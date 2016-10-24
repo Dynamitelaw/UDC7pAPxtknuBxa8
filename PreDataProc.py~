@@ -6,6 +6,11 @@ Adds 2 day slope, 5 day slope, 30 day standard deviation, optimal buy and sell d
 
 import numpy as np
 import io
+import os
+import multiprocessing
+import affinity
+#FFA
+affinity.set_process_affinity_mask(0,2**multiprocessing.cpu_count()-1)
 
 def optimalbuy(array):
     '''
@@ -229,49 +234,24 @@ def main():
     	'''
 	Iterates process through all tickers on list
     	'''
-
-    	ticks = open('Data/ListOfTickerSymbols.csv','r')
-    
-    	length = len(ticks.readlines())
-    	row = 0
-    	print(length)
-    	"""for l in ticks:     #process all stocks on the ticker list
-        if row == 0:
-            row += 1
-        else:
-            row += 1
-            ticker = str(l).rstrip()
-            try:
-                process(ticker)
-                print ('Proccessed' + ticker + ': ' + str(int((100*ro)/length)) + '% done')
-            except:
-                print ('Error Processing Stock' + ticker) 
-   	i = 0
-	ticks.readline()
-    	while i<length:
-		#print("loop")
-
-		ticker = ticks.readline()
-		print(ticker)
-		try:
-			process(ticker)
-			print('Proccessed'+ticker)
-		except Exception as e:
-			print(e)
-		i +=1"""
+	
 	tickerFile = open('Data/ListOfTickerSymbols.csv','r') #opens ticker file
 
-	for line in tickerFile:		#iterates through file and downloads data
+	for line in tickerFile:		#iterates through file and processes data for each ticker
 		try:
 			process(line)
 			print('Proccessed '+line)
 		except Exception as e:
 			print(e)
-    	ticks.close()
+			try:
+				os.remove('Data/StockData/'+line+'.csv')			
+				print('File Removed')
+			except Exception as e:
+				print('')	
+	tickerFile.close()
 
 
 #-------------------------------------------------------------------------------------------
 
-main()      #main isn't working currently: there's some issue reading the ticker list, but no error is thrown
+main()     
 
-#process('1HTA.SG')

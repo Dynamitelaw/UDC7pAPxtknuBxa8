@@ -5,7 +5,6 @@ Writes data to pickle.
 Retrieves training data from pickle.
 '''
 
-
 import numpy as np
 import pickle
 
@@ -19,7 +18,7 @@ def GenerateIO(ticker,fields = None):
         possible fields-> ['Open', 'High', 'Low', 'Close', 'Volume', 'Adj Close', '2 Day Slope', '5 Day Slope', 'Standard Dev']
     '''
     
-    filepath = 'Data/PcsData/' + ticker + '.csv'
+    filepath = 'Data/PcsData/' + ticker + '\n.csv'
     file = open(filepath,'r')
     row = 0
     
@@ -45,7 +44,7 @@ def GenerateIO(ticker,fields = None):
                 
         
     k = int(data.shape[0])      #number of dates in file
-    dates = dates[0:k-91]      #assigns dates to output array
+    dates = dates[0:k-31]      #assigns dates to output array
     desire = data[:,[10,11]]      #obtains desired outputs
     
     if fields:      #truncates data array based on specified fields to include. Defaults to all
@@ -76,8 +75,8 @@ def GenerateIO(ticker,fields = None):
      
    
     tout = []       #total io (input output) array for all days for this stock
-    for i in range(0,k-91,1):
-        di = ndata[i:i+90,:]
+    for i in range(0,k-31,1):
+        di = ndata[i:i+30,:]
         day = []        #total io array for that day
         day.append(ticker)
         day.append(dates[i])
@@ -184,7 +183,7 @@ def GenTrainData(fields = None, daterange = None):
                         sdata = GenerateIO(ticker)
                     else:
                         sdata = GenerateIO(ticker,fieldlist)        #generates IO for that stock
-                    
+
                     if daterange:       #truncates IO for that stock based on date range (if specified)
                         sidx = 0
                         delidx = []
@@ -209,8 +208,8 @@ def GenTrainData(fields = None, daterange = None):
                         delidx.sort(reverse = True)
                         for i in delidx:
                             del sdata[i]        #deletes unwanted dates
-        
-                        data.extend(sdata)      #adds stock's IO to master data list
+
+                    data.extend(sdata)      #adds stock's IO to master data list
            
                 except Exception as e:
                     #print ('Error generation IO for ' + ticker)
@@ -339,3 +338,5 @@ def RetrieveTrainData(ratio, fields = None, daterange = None):
     
                            
 #-----------------------------------------------------------------------------
+y = RetrieveTrainData(0.1)
+print (len(y[0]))

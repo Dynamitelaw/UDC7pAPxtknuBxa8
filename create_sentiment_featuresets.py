@@ -14,6 +14,7 @@ def sample_handling(file_path):
 	data = np.genfromtxt(file_path,delimiter=',')
 	data = np.delete(data,[0,10,13], axis=1)
 	data = np.delete(data,[0], axis=0)
+	
 
 	i = data.shape
 	k=0
