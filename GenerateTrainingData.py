@@ -5,7 +5,6 @@ Writes data to pickle.
 Retrieves training data from pickle.
 '''
 
-
 import numpy as np
 import pickle
 
@@ -184,7 +183,7 @@ def GenTrainData(fields = None, daterange = None):
                         sdata = GenerateIO(ticker)
                     else:
                         sdata = GenerateIO(ticker,fieldlist)        #generates IO for that stock
-                    
+
                     if daterange:       #truncates IO for that stock based on date range (if specified)
                         sidx = 0
                         delidx = []
@@ -209,8 +208,8 @@ def GenTrainData(fields = None, daterange = None):
                         delidx.sort(reverse = True)
                         for i in delidx:
                             del sdata[i]        #deletes unwanted dates
-        
-                        data.extend(sdata)      #adds stock's IO to master data list
+
+                    data.extend(sdata)      #adds stock's IO to master data list
            
                 except Exception as e:
                     #print ('Error generation IO for ' + ticker)
