@@ -338,3 +338,5 @@ def RetrieveTrainData(ratio, fields = None, daterange = None):
     
                            
 #-----------------------------------------------------------------------------
+y = RetrieveTrainData(0.1)
+print (len(y[0]))
