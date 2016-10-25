@@ -9,16 +9,20 @@ import numpy as np
 import pickle
 
 
-def GenerateIO(ticker,fields = None):
+def GenerateIO(ticker,fields = None, daterange = None):
     '''
     Generates an array of network Level 1 inputs and desired outputs for specified stock for all days.
     Each element of output list is a 4 element list -> [ticker, date, array[day's input], array[desired buy, desired sell]].
     
     Fields is an optional list of strings specifying which data columns you want included. Defaults to all fields
         possible fields-> ['Open', 'High', 'Low', 'Close', 'Volume', 'Adj Close', '2 Day Slope', '5 Day Slope', 'Standard Dev']
+        
+    Daterange is an optional 2 element list, containing the min and max dates desired for the data.
+    Dates must have following format:  'YYYY-MM-DD'
+    Dates must be given in increasing order (ie. 2012 before 2015)
     '''
     
-    filepath = 'Data/PcsData/' + ticker + '\n.csv'
+    filepath = 'Data/PcsData/' + ticker #+ '.csv'
     file = open(filepath,'r')
     row = 0
     
@@ -44,7 +48,7 @@ def GenerateIO(ticker,fields = None):
                 
         
     k = int(data.shape[0])      #number of dates in file
-    dates = dates[0:k-31]      #assigns dates to output array
+    dates = dates[0:k-91]      #assigns dates to output array
     desire = data[:,[10,11]]      #obtains desired outputs
     
     if fields:      #truncates data array based on specified fields to include. Defaults to all
@@ -75,19 +79,68 @@ def GenerateIO(ticker,fields = None):
      
    
     tout = []       #total io (input output) array for all days for this stock
-    for i in range(0,k-31,1):
-        di = ndata[i:i+30,:]
+    for i in range(0,k-91,1):
+        di = ndata[i:i+90,:]
         day = []        #total io array for that day
-        day.append(ticker)
+        #day.append(ticker)
         day.append(dates[i])
         day.append(di)
         day.append(desire[i,:])
         
         tout.append(day)
-        
      
-    return tout
-    file.close()
+    error = False
+    if daterange:       #if date range is specified
+        if (len(daterange[0]) != 10) or (len(daterange[1]) != 10) or (len(daterange) != 2):     #if daterange is invalid
+            print ('Error: Invalid Daterange')
+            error = True
+        else:
+            dates = []      #list containing range of dates
+            for d in daterange:
+                date = []
+                year = int(d[0:4])
+                month = int(d[5:7])
+                day = int(d[8:10])
+                date.append(year)
+                date.append(month)
+                date.append(day)
+                dates.append(date)
+                
+    if error == False:
+        if daterange:       #truncates IO for that stock based on date range (if specified)
+            sidx = 0
+            delidx = []
+            for d in tout:
+                delete = False
+                sdate = d[1][0][1:11]
+                syear = int(sdate[0:4])
+                smonth = int(sdate[5:7])
+                sday = int(sdate[8:10])
+                if (syear < dates[0][0]) or (syear > dates[1][0]):
+                    delete = True
+                if (syear == dates[0][0] and smonth < dates[0][1]) or (syear == dates[1][0] and smonth > dates[1][1]):
+                    delete = True
+                if (syear == dates[0][0] and smonth == dates[0][1] and sday < dates[0][2]) or (syear == dates[1][0] and smonth == dates[1][1] and sday > dates[1][2]):
+                    delete = True
+                
+                if delete == True:
+                    delidx.append(sidx)
+                
+                sidx += 1
+        
+            delidx.sort(reverse = True)
+            for i in delidx:
+                del tout[i]        #deletes unwanted dates
+    
+
+    din = []        #list of network L1 inputs
+    dout = []       #list of corresponding network L1 outputs       
+    for d in tout:
+        din.append(d[1])
+        dout.append(d[0])
+    
+    supremeout = [din,dout]
+    return supremeout
     
 
 def GenTrainData(fields = None, daterange = None):
@@ -338,9 +391,26 @@ def RetrieveTrainData(ratio, fields = None, daterange = None):
     
                            
 #-----------------------------------------------------------------------------
-y = RetrieveTrainData(0.1)
-<<<<<<< HEAD
-print (len(y[0]))
-=======
-print (len(y[0]))
->>>>>>> 2278e4a18792c6e616099529e2faa372398ec1c3
+
+'''
+tickerFile = open('Data/ListOfTickerSymbols.csv','r')
+row = 0
+stocks = 0
+byte = 0
+for l in tickerFile:		#iterates through tickers and creates training data 
+    if row == 0:        #skips first row of ticker file
+        row = 1
+    else:
+        ticker = l.rstrip()
+        try:                
+            sdata = GenerateIO(ticker)
+            stocks += 1
+            byte += sys.getsizeof(sdata)
+            print (ticker)
+        except:
+            pass
+            
+print (byte)
+print (stocks)
+print (byte/stocks)
+'''
