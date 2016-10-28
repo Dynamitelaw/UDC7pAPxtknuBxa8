@@ -7,7 +7,7 @@ Retrieves training data from pickle.
 
 import numpy as np
 import pickle
-
+import sys
 
 def GenerateIO(ticker,fields = None, daterange = None):
     '''
@@ -22,7 +22,7 @@ def GenerateIO(ticker,fields = None, daterange = None):
     Dates must be given in increasing order (ie. 2012 before 2015)
     '''
     
-    filepath = 'Data/PcsData/' + ticker #+ '.csv'
+    filepath = 'Data/PcsData/' + ticker #+ '\n.csv'
     file = open(filepath,'r')
     row = 0
     
@@ -137,9 +137,18 @@ def GenerateIO(ticker,fields = None, daterange = None):
     dout = []       #list of corresponding network L1 outputs       
     for d in tout:
         din.append(d[1])
-        dout.append(d[0])
-    
-    supremeout = [din,dout]
+        dout.append(d[2])
+    m = len(din)
+    n = len(din[0])
+    o = len(din[0][0])
+    cin = []
+    for i in range(0,m):
+	inputs = []
+	for j in range(0,n):
+		for k in range(0,o):
+			inputs.append(din[i][j][k])
+	cin.append(list(inputs))
+    supremeout = [cin,dout]
     return supremeout
     
 
@@ -391,26 +400,3 @@ def RetrieveTrainData(ratio, fields = None, daterange = None):
     
                            
 #-----------------------------------------------------------------------------
-
-'''
-tickerFile = open('Data/ListOfTickerSymbols.csv','r')
-row = 0
-stocks = 0
-byte = 0
-for l in tickerFile:		#iterates through tickers and creates training data 
-    if row == 0:        #skips first row of ticker file
-        row = 1
-    else:
-        ticker = l.rstrip()
-        try:                
-            sdata = GenerateIO(ticker)
-            stocks += 1
-            byte += sys.getsizeof(sdata)
-            print (ticker)
-        except:
-            pass
-            
-print (byte)
-print (stocks)
-print (byte/stocks)
-'''

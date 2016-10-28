@@ -10,6 +10,8 @@ import tensorflow as tf
 import numpy as np
 import os
 import GenerateTrainingData as gtd
+import time
+
 
 
 '''
@@ -50,16 +52,16 @@ n_nodes_hl3 = 1500
 #training parameters
 n_classes = 2
 #batch_size = 50
-hm_epochs = 200
+hm_epochs = 1
 
 #Tensorflow placeholders for input and output data
-x = tf.placeholder('float')		
+x = tf.placeholder('float',)		
 y = tf.placeholder('float')
 
 
 #sets up hidden layers with weigth and bias matricies
 hidden_1_layer = {'f_fum':n_nodes_hl1,
-                  'weight':tf.Variable(tf.random_normal([len(train_x[0]), n_nodes_hl1])),
+                  'weight':tf.Variable(tf.random_normal([810, n_nodes_hl1])),
                   'bias':tf.Variable(tf.random_normal([n_nodes_hl1]))}
 
 hidden_2_layer = {'f_fum':n_nodes_hl2,
@@ -78,7 +80,6 @@ output_layer = {'f_fum':None,
 #creates nerual network model by setting activation functions and layer
 #relationships
 def neural_network_model(data):
-
     l1 = tf.add(tf.matmul(data,hidden_1_layer['weight']), hidden_1_layer['bias'])
     l1 = tf.nn.relu(l1)
 
@@ -129,7 +130,7 @@ def train_neural_network(x, fields = None, daterange = None):
 
 	tickerlist = os.listdir('Data/PcsData/')       #obtains list of all processed stock files
 	k = len(tickerlist)
-	rand = np.random.random((k))
+	rand = np.random.                        random((k))
 	tickertrain = []       #list of training tickers
 	tickertest = []        #list of testing tickers
 
@@ -147,26 +148,39 @@ def train_neural_network(x, fields = None, daterange = None):
 	    
 		for epoch in range(hm_epochs):
 			epoch_loss = 0
+			startime=time.time()
 			for ticker in tickertrain:       #each batch is the IO for one of the training tickers
-				stocktrain = gtd.GenerateIO(ticker, fields, daterange)
-				batch_x = np.array(stocktrain[0])
-				batch_y = np.array(stocktrain[1])
-
-				_, c = sess.run([optimizer, cost], feed_dict={x: batch_x,y: batch_y})
-				epoch_loss += c
-				
+				try:					
+					stocktrain = gtd.GenerateIO(ticker, fields, daterange)
+					#print(ticker)
+					batch_x = stocktrain[0]
+					#print(len(batch_x[0]))
+					batch_y = stocktrain[1]
+                        		_, c = sess.run([optimizer, cost], feed_dict={x: batch_x,y: batch_y})
+                        		epoch_loss += c
+				except Exception as e:
+					print(e)
+                            		pass
 				
 			print('Epoch', epoch+1, 'completed out of',hm_epochs,'loss:',epoch_loss)
+			print('Seconds: '+str(time.time()-startime))
 		correct = tf.equal(tf.argmax(prediction, 1), tf.argmax(y, 1))
   
 		accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
 		AccuracySum = 0  
+		g = len(tickertest)
+		#print(g)
+		k=0
 		for ticker in tickertest:     #finds the accuracy for each stock of the testing ticker list
-			stocktest = gtd.GenerateIO(ticker, fields, daterange)
-			StockAccuracy = accuracy.eval({x:stocktest[0], y:stocktest[1]})
-			AccuracySum += StockAccuracy   
-   
-		print('Accuracy:',AccuracySum/(len(tickertest)))      #prints average accuracy
+			try:				
+				stocktest = gtd.GenerateIO(ticker, fields, daterange)
+				StockAccuracy = accuracy.eval({x:stocktest[0], y:stocktest[1]})
+				AccuracySum += StockAccuracy
+				k+=1   
+   			except Exception as e:
+				g -=1
+		print(g)		
+		print('Accuracy:',AccuracySum/k)      #prints average accuracy
 
 
 
