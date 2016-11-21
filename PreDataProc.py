@@ -12,6 +12,7 @@ import affinity
 
 affinity.set_process_affinity_mask(0,2**multiprocessing.cpu_count()-1)
 
+
 def optimalbuy(array):
     '''
     Makes an array marking the optimal buy and sell dates, as well as desired outputs for Network Level 1. 
@@ -211,7 +212,7 @@ def process(ticker):
         else:
             indx += 1
     
-    data = np.hstack((data,sprofit))        #10th column is the profit speed for that day
+    data = np.hstack((data,sprofit))        #1th column is the profit speed for that day
     
     data = data[indx:k-31,:]     #truncates unprocessed data at beggining of date range and the end week of date range
     dates = dates[indx:k-31,:]       #truncates dates list
@@ -239,7 +240,7 @@ def main():
 
 	for line in tickerFile:		#iterates through file and processes data for each ticker
 		try:
-			process(line)
+			process(line.rstrip())
 			print('Proccessed '+line)
 		except Exception as e:
 			print(e)
