@@ -13,12 +13,12 @@ import os
 import time
 
 
-hm_epochs = 20
-fields = ['Open', 'High', 'Low', 'Close', 'Volume', 'Adj Close', '2 Day Slope', '5 Day Slope', 'Standard Dev']
+hm_epochs = 1
+tfields = ['Open', 'Volume', '2 Day Slope', '5 Day Slope']
 tratio = 0.1		#ratio of testing to training
 
-
-# Neural Network Model Setup (look how easy it is)
+'''
+# Neural Network Model Setup (regression)
 inlayer = tflearn.layers.core.input_data(shape=[90,len(fields)])
 layer1 = tflearn.layers.core.fully_connected(inlayer,1500)
 layer2 = tflearn.layers.core.fully_connected(layer1,750)
@@ -28,6 +28,19 @@ layer5 = tflearn.layers.core.fully_connected(layer4,1)		#final layer needs to be
 linear = tflearn.single_unit(layer5)
 regression = tflearn.layers.estimator.regression(linear, optimizer='adam', loss='mean_square', learning_rate=0.003)
 m = tflearn.DNN(regression)
+'''
+
+# Neural Network Model Setup (categorical)
+net = tflearn.layers.core.input_data(shape=[90,len(tfields)])
+net = tflearn.layers.core.fully_connected(net,1500, activation = 'relu')
+net = tflearn.layers.core.fully_connected(net,1500, activation = 'relu')
+net = tflearn.layers.core.fully_connected(net,500, activation = 'relu')
+net = tflearn.layers.core.fully_connected(net,50, activation = 'relu')
+net = tflearn.layers.core.dropout(net,0.8)
+net = tflearn.layers.core.fully_connected(net,5, activation = 'softmax')		#final layer needs to be only one neuron wide for regression to work
+#net = tflearn.single_unit(net)
+net = tflearn.layers.estimator.regression(net, optimizer='adam', loss='categorical_crossentropy', learning_rate=0.003)
+m = tflearn.DNN(net)
 
 
 #Training the Model 
@@ -46,16 +59,16 @@ for r in rand:      #randomly splits tickers into training and testing lists
 		tickertrain.append(tickerlist[indx])
 	indx += 1
 
-#tickertrain = tickertrain[0:10]
+tickertrain = tickertrain[0:100]
 count = 0
-breaks = 0
+breaks = 0 
 for ticker in tickertrain:       #each batch is the IO for one of the training tickers
 	count += 1
 	try:
-		stocktrain = GenerateIO(ticker, 'b', fields, daterange = None)
+		stocktrain = GenerateIO(ticker, 'b', normalize = True, categorical = True, fields = tfields, daterange = None)
 		X = stocktrain[0]
 		Y = stocktrain[1]
-		m.fit(X, Y, n_epoch=hm_epochs, show_metric=False, run_id = 'linear test', snapshot_epoch=False)		#TFLearn training function
+		m.fit(X, Y, n_epoch=hm_epochs, show_metric=True, run_id = 'linear test', snapshot_epoch=False)		#TFLearn training function
 	except Exception as e:
 		print(e)
 		print ('Stock Number: ' + str(count))
@@ -81,23 +94,3 @@ print (str(breaks) + 'stocks failed')
 print ('__________________________________')
 
 #-----------------------------------------------------------------------------------------------
-
-
-#Testing the Network
-z = GenerateIO('A.csv', 'b')		#testing stock
-
-m.load('networkL1B.tflearn')		#loads saved model weights
-
-try:		#tests network output
-	predict = m.predict(z[0])
-	val = z[1]
-	l = len(val)
-	fout = open('netout.csv','w')
-	fout.write('Desired output, Network Output \n')
-	for i in range(l):
-		line = str(val[i]) + ',' + str(predict[i])
-		fout.write(line + '\n')
-	fout.close()
-except Exception as e:
-	print (e)
-
