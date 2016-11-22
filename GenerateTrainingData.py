@@ -10,12 +10,16 @@ import pickle
 import sys
 import os
 
-def GenerateIO(ticker,bs, normalize = False, fields = None, daterange = None):
+def GenerateIO(ticker,bs, normalize = False, categorical = False, fields = None, daterange = None):
     '''
     Generates an array of network Level 1 inputs and desired outputs for specified stock for all days.
     The output list has 2 elements; out = [[list of inputs],[list of desired outputs]]
 
-    bs tells the function whether you want the outputs to be desired buy values ('b'), or desired sell values ('s')
+    bs tells the function whether you want the outputs to be desired buy values ('b'), or desired sell values ('s'), both ('bs'), or their sum ('sum')
+
+    Setting normalize to True divides all input data points by that day's opening stock price.
+
+    Setting categorical to True sets the outputs to be logits denoting descrete categories of possible outputs *currently does not work for 'bs' or 'sum'*.
     
     Fields is an optional list of strings specifying which data columns you want included. Defaults to all fields
         possible fields-> ['Open', 'High', 'Low', 'Close', 'Volume', 'Adj Close', '2 Day Slope', '5 Day Slope', 'Standard Dev']
@@ -148,10 +152,41 @@ def GenerateIO(ticker,bs, normalize = False, fields = None, daterange = None):
         for d in tout:
             din.append(d[1])
             if bs == 'b':
-                dout.append(d[2][0])
+                if categorical == True:     #assignes outputs to descrete categories, if specified
+                    catout = np.zeros(5)
+                    if d[2][0] == 0:
+                        catout[0] = 1
+                    if d[2][0] == 0.1:
+                        catout[1] = 1
+                    if d[2][0] == 0.5:
+                        catout[2] = 1
+                    if d[2][0] == 0.8:
+                        catout[3] = 1
+                    if d[2][0] == 1:
+                        catout[4] = 1
+                    dout.append(catout)
+                else:
+                    dout.append(d[2][0])
             if bs == 's':
-                dout.append(d[2][1])
-
+                if categorical == True:
+                    catout = np.zeros(5)
+                    if d[2][0] == 0:
+                        catout[0] = 1
+                    if d[2][0] == -0.1:
+                        catout[1] = 1
+                    if d[2][0] == -0.5:
+                        catout[2] = 1
+                    if d[2][0] == -0.8:
+                        catout[3] = 1
+                    if d[2][0] == -1:
+                        catout[4] = 1
+                    dout.append(catout)
+                else:
+                    dout.append(d[2][1])
+            if bs == 'bs':
+                dout.append(d[2])
+            if bs == 'sum':
+                dout.append(d[2][0] + d[2][1])
         supremeout = [din,dout]
         
         try:
@@ -199,9 +234,5 @@ for ticker in tickerlist:
 print (str(l) + 'stocks attempted')
 print (str(BreakCount) + 'stocks failed')
 
-
-k = GenerateIO('A.csv','b')
-print k[0][0][0]
-z = GenerateIO('A.csv','b',normalize = True)
-print z[0][0][0]
 '''
+
