@@ -10,7 +10,7 @@ import pickle
 import sys
 import os
 
-def GenerateIO(ticker,bs, fields = None, daterange = None):
+def GenerateIO(ticker,bs, normalize = False, fields = None, daterange = None):
     '''
     Generates an array of network Level 1 inputs and desired outputs for specified stock for all days.
     The output list has 2 elements; out = [[list of inputs],[list of desired outputs]]
@@ -86,10 +86,15 @@ def GenerateIO(ticker,bs, fields = None, daterange = None):
         tout = []       #total io (input output) array for all days for this stock
         for i in range(0,k-91,1):
             di = ndata[i:i+90,:]
+            if normalize == True:       #normalizes input data if specified
+                dprice = di[0,0]
+                difin = di / dprice
+            else:
+                difin = di
             day = []        #total io array for that day
             #day.append(ticker)
             day.append(dates[i])
-            day.append(di)
+            day.append(difin)
             day.append(desire[i,:])
             
             tout.append(day)
@@ -174,7 +179,7 @@ def GenerateIO(ticker,bs, fields = None, daterange = None):
 #  file is closed after use. But I can't recreate
 #  the error in the script below
 ##########################################
-
+'''
 tickerlist = os.listdir('Data/PcsData/')  
 l = len(tickerlist)
 z = 0
@@ -185,7 +190,7 @@ for ticker in tickerlist:
     try:
         k = GenerateIO(ticker,'b')
         t = k[0][0]
-        print (str((z*100)/l)+'percent done')
+        print (str((z*100)/l)+'% done')
     except Exception as e:
         print (e)
         print('Process broke at stock '+str(z) + '(' + str(ticker) + ')')
@@ -195,4 +200,8 @@ print (str(l) + 'stocks attempted')
 print (str(BreakCount) + 'stocks failed')
 
 
-
+k = GenerateIO('A.csv','b')
+print k[0][0][0]
+z = GenerateIO('A.csv','b',normalize = True)
+print z[0][0][0]
+'''
