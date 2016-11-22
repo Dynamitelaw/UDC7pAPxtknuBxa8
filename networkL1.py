@@ -37,7 +37,7 @@ net = tflearn.layers.core.fully_connected(net,1500, activation = 'relu')
 net = tflearn.layers.core.fully_connected(net,500, activation = 'relu')
 net = tflearn.layers.core.fully_connected(net,50, activation = 'relu')
 net = tflearn.layers.core.dropout(net,0.8)
-net = tflearn.layers.core.fully_connected(net,5, activation = 'softmax')		#final layer needs to be only one neuron wide for regression to work
+net = tflearn.layers.core.fully_connected(net,5, activation = 'softmax')		
 #net = tflearn.single_unit(net)
 net = tflearn.layers.estimator.regression(net, optimizer='adam', loss='categorical_crossentropy', learning_rate=0.003)
 m = tflearn.DNN(net)
