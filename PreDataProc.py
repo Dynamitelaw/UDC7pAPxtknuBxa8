@@ -9,6 +9,9 @@ import io
 import os
 import multiprocessing
 import affinity
+import sys
+import time
+import pyttsx
 
 affinity.set_process_affinity_mask(0,2**multiprocessing.cpu_count()-1)
 
@@ -141,7 +144,7 @@ def ProfitSpeed(array):
                 while z == True:
                     d += 1
                     if (i+d)<k and array[i+d,9] == 0:
-                        Pspeedp1 = (array[sindx,0] - array[i+d,0]) / ((array[i+d,0]) * (i+d - sindx))
+                        Pspeedp1 = (array[i,0] - array[i+d,0]) / ((array[i+d,0]) * d)
                         ps[i+d] = Pspeedp1 
                     else:
                         z = False
@@ -154,7 +157,61 @@ def ProfitSpeed(array):
     
     return ps
   
-    
+ 
+def slopeMomentum(array):
+    '''
+    Generates 2 columns indicating 2 day and 5 day slop momentum
+    Must be used after slope calculation in the main process function
+    '''
+
+    k = int(array.shape[0])
+    slopeMom = np.zeros((k,4))
+
+    TwoSlopeCounter = 0
+    FiveSlopeCounter = 0
+    TwoDiscrete = 0
+    FiveDiscrete = 0
+
+    for i in range(k-1,0,-1):   #starts at the beginning date
+
+        if array[i,6] > 0:      #if 2 day slope is positive
+            if TwoSlopeCounter < 0:
+                TwoSlopeCounter = 0
+                TwoDiscrete = 0
+            TwoSlopeCounter += array[i,6]
+            TwoDiscrete += 1
+
+        if array[i,6] < 0:      #if 2 day slope is negative
+            if TwoSlopeCounter > 0:
+                TwoSlopeCounter = 0
+                TwoDiscrete = 0
+            TwoSlopeCounter += array[i,6]
+            TwoDiscrete += -1
+
+        if array[i,7] > 0:      #if 5 day slope is positive
+            if FiveSlopeCounter < 0:
+                FiveSlopeCounter = 0
+                FiveDiscrete = 0
+            FiveSlopeCounter += array[i,7]
+            FiveDiscrete += 1
+
+        if array[i,7] < 0:      #if 5 day slope is negative
+            if FiveSlopeCounter > 0:
+                FiveSlopeCounter = 0
+                FiveDiscrete = 0
+            FiveSlopeCounter += array[i,7]
+            FiveDiscrete += -1
+
+        slopeMom[i,0] = TwoSlopeCounter
+        slopeMom[i,1] = FiveSlopeCounter
+        slopeMom[i,2] = TwoDiscrete
+        slopeMom[i,3] = FiveDiscrete
+
+
+
+    return slopeMom
+
+
 def process(ticker):
 
     '''
@@ -201,7 +258,7 @@ def process(ticker):
     
                 
     optimal = optimalbuy(data)
-    data = np.hstack((data,optimal))        #9th column optimal buy and sell dates, 10th column desired Level 1 Outputs
+    data = np.hstack((data,optimal))        #9th column optimal buy and sell dates, 10 and 11 column desired Level 1 Outputs
     sprofit = ProfitSpeed(data)
     
     indx = 0
@@ -212,7 +269,17 @@ def process(ticker):
         else:
             indx += 1
     
-    data = np.hstack((data,sprofit))        #1th column is the profit speed for that day
+    data = np.hstack((data,sprofit))        #12th column is the profit speed for that day
+
+    #********************************
+    #10-2-2017: Tacked on data columns, added running sum of pos or negative slopes for
+    #both 2 and 5 days. Added to far end of processed data file to avoid fucking up 
+    #any location based dependencies
+    #********************************
+
+    slopeMomem = slopeMomentum(data)
+    data = np.hstack((data,slopeMomem))     #13 column is the 2 day slope momentum, 14 column is the 5 day slope momentum, 15 column is 2 Day Discrete Momomentum, 16 column is 5 Day Discrete Momentum
+
     
     data = data[indx:k-31,:]     #truncates unprocessed data at beggining of date range and the end week of date range
     dates = dates[indx:k-31,:]       #truncates dates list
@@ -220,7 +287,7 @@ def process(ticker):
     
     savepath = 'Data/PcsData/' + ticker + '.csv'
     fout = open(savepath,'w')
-    header = 'Date, Open, High, Low, Close, Volume, Adj Close, 2 Day Slope, 5 Day Slope, Standard Dev, Optimal Dates, Desired Level 1 Out Buy, Desired Level 1 Out Sell, Profit Speed'
+    header = 'Date, Open, High, Low, Close, Volume, Adj Close, 2 Day Slope, 5 Day Slope, Standard Dev, Optimal Dates, Desired Level 1 Out Buy, Desired Level 1 Out Sell, Profit Speed, 2 Day Momentum, 5 Day Moementum, 2D Discrete Moementum, 5D Discrete Moementum'
     fout.write(header + '\n')
     for i in range (0,newlen,1):     #writes processed data to new file
         line = [dates[i,0]]
@@ -232,27 +299,48 @@ def process(ticker):
   
     
 def main():
-    	'''
-	Iterates process through all tickers on list
-    	'''
-	
-	tickerFile = open('Data/ListOfTickerSymbols.csv','r') #opens ticker file
+    '''
+    Iterates process through all tickers on list
+    '''
+    
+    tickerFile = open('Data/ListOfTickerSymbols.csv','r') #opens ticker file
+    filesTried = 0
+    totalFiles = 6717
 
-	for line in tickerFile:		#iterates through file and processes data for each ticker
-		try:
-			process(line.rstrip())
-			print('Proccessed '+line)
-		except Exception as e:
-			print(e)
-			try:
-				os.remove('Data/StockData/'+line+'.csv')			
-				print('File Removed')
-			except Exception as e:
-				print('')	
-	tickerFile.close()
+    wheel = ["/","--","\ ","|"]
+    
+    print('Processing ' + str(totalFiles) + ' stock files\n')
 
+    for line in tickerFile:		#iterates through file and processes data for each ticker
+        filesTried += 1
+        try:
+            process(line.rstrip())
+            #print('Proccessed '+line)
+        except Exception as e:
+            #print(e)
+            try:
+                os.remove('Data/StockData/'+line+'.csv')			
+                #print('File Removed')
+            except Exception as e:
+                #print('')
+                pass
+
+        percentage = int((100*filesTried) / 6717)
+        sys.stdout.write('\r')
+        sys.stdout.write(str(percentage) + '% complete   ' + wheel[(filesTried*10)%4])
+        sys.stdout.flush()
+
+    tickerFile.close()
+ 
+    Phil = pyttsx.init()
+    Phil.say('Processing, complete')
+    Phil.runAndWait()
+    Phil = None
 
 #-------------------------------------------------------------------------------------------
 
-main()     
+main()    
+#process('DIS')
+
+
 
