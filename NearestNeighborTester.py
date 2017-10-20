@@ -229,6 +229,7 @@ def NNOptimizer(runTimeName = '', shortenProgress = False, PrinterCarriageNumber
         print('M = ' + str(metricTracker) + '| F = ' + str(fieldPermTracker) + '| P = ' + str(pointTracker) + '| T = ' + str(tickerTracker) + '\n')
 
         time.sleep(3)
+        startTime = time.time()
 
         for m in range(metricTracker,metricMax + 1,1):        #tries every metric
             metric = pmetrics[m]
@@ -246,31 +247,36 @@ def NNOptimizer(runTimeName = '', shortenProgress = False, PrinterCarriageNumber
                         cfields.append(pfields[i])
 
                 for point in range(pointTracker,pointMax + 1,pointStep):    #tries every point value
-                    percentComplete = int((1000.0/float(metricMax - metricMin + 1))*((m-metricMin) + (float(f - fieldPermMin)/(fieldPermMax - fieldPermMin + 1)) + (float(point - pointMin)/((pointMax - pointMin + 1)*(fieldPermMax - fieldPermMin + 1)))))/10.0
-                    if shortenProgress:
-                        header = '|' + runTimeName + ':' + str(percentComplete) + '%_' + metric
-                    else:
-                        header = str(percentComplete) + '%_' + metric + '|f(' + str(fieldPermTracker) + '/' + str(fieldPermMax) + ')-p(' + str(point) + '/' + str(pointMax) + '): '
                     
                     #obtains list of stock files
                     if overideDirectory:
                         tickerlist = os.listdir(overideDirectory)
                     else:
                         tickerlist = os.listdir('Data/PcsData/')
+                    length = len(tickerlist)
 
-                    for tickIndx in range(tickerTracker,len(tickerlist),1):    #tries every stock    
+                    for tickIndx in range(tickerTracker,length,1):    #tries every stock  
+                        percentFloat = (100.0/float(metricMax - metricMin + 1))*((m-metricMin) + (float(f - fieldPermMin)/(fieldPermMax - fieldPermMin + 1)) + (float(point - pointMin)/((pointMax - pointMin + 1)*(fieldPermMax - fieldPermMin + 1))))
+                        percentComplete = int(10.0*percentFloat)/10.0
+                        if shortenProgress:
+                            header = '|' + runTimeName + ':' + str(percentComplete) + '%_' + metric
+                        else:
+                            header = str(percentComplete) + '%_' + metric + '|f(' + str(fieldPermTracker) + '/' + str(fieldPermMax) + ')-p(' + str(point) + '/' + str(pointMax) + '): '
+                      
                         try:
                             corCoef = NearestNeighborTester(tickerlist[tickIndx],'ps',cfields,sampleLog = False, distanceMetric = metric, points = point, progressHeader = header, silencePrint = shortenProgress, overideDirectory = overideDirectory)
                             if ((corCoef != -2) and (not (math.isnan(corCoef)))):
                                 corSum += corCoef
                                 stocksTried += 1
-                            if shortenProgress:
-                                printLocation (text = header + '(' + tickerlist[tickIndx][:-4] + ')', x = PrinterCarriageNumber,y = 25)
+                            if shortenProgress:        #prints shortened progress bar
+                                printLocation (text = header + '(' + tickerlist[tickIndx][:-4] + ') ', x = PrinterCarriageNumber,y = 25)
+                                printLocation (text = '|M(' + str(m) + '/' + str(metricMax) + ')F(' + str(fieldPermTracker) + '/' + str(fieldPermMax) + ')P(' + str(point) + '/' + str(pointMax) + ')   ', x = PrinterCarriageNumber, y = 26)
+                                printLocation (text = '|T(' + str(tickIndx + 1) + '/' + str(length) +')    ', x = PrinterCarriageNumber, y = 27)
 
                         except Exception as e:
                             pass
 
-                        if (((tickIndx % 20) == 0) and (tickIndx != 0)):    #updates checkpoint every 20 stocks processed (~every 15 min)
+                        if (((tickIndx % 20) == 0) and (tickIndx != 0)):    #updates checkpoint every 20 stocks processed 
                             savepath = runTimeName + 'NNOptimizerCheckpoint.txt'
                             cout = open(savepath,'w')
                             cout.write(str(metricMin) + '\n' + str(m) + '\n' + str(metricMax) + '\n' + str(fieldPermMin) + '\n' + str(f) + '\n' + str(fieldPermMax) + '\n' + str(pointMin) + '\n' + str(point) + '\n' + str(pointMax) + '\n' + str(pointStep) + '\n' + str(maxCor) + '\n' + str(tickIndx) + '\n' + str(stocksTried) + '\n' + str(corSum))
@@ -288,9 +294,40 @@ def NNOptimizer(runTimeName = '', shortenProgress = False, PrinterCarriageNumber
 
                     #updates log
                     savepath = runTimeName + 'NNOptimizerMaxLog.csv'
-                    lout = open(savepath,'rw')
-                    lout.write(metric + ',' + str(cfields) + ',' + str(point) + ',' + str(corAvg) + '\n')
-                    lout.close()
+                    try:
+                        lfile = open(savepath,'r')
+                        row = 0
+                        
+                        data = np.genfromtxt(filepath,delimiter=',')    #generates data array from file
+                        #sfile.close() 
+                        data = np.delete(data,0,0)
+                        data = np.delete(data,0,1)
+                        
+                        metricsLog = []
+                        for line in lfile:       #obtains list of metrics
+                            if row == 0:
+                                row += 1
+                            else:
+                                r = line.split(',')
+                               
+                                metricsLog.append(r[0])
+                        
+                        lfile.close()
+
+                        lout = open(savepath,'w')
+                        for i in range(0,len(metricsLog),1):
+                            line = [metricsLog[i]]
+                            dline = data[i,:].tolist()
+                            line.extend(dline)
+                            lout.write(str(line).strip("[]") + '\n')
+
+                        lout.write(metric + ',' + str(f) + ',' + str(point) + ',' + str(corAvg) + '\n')
+                        lout.close()
+
+                    except Exception as e:
+                        lout = open(savepath,'w')
+                        lout.write(metric + ',' + str(f) + ',' + str(point) + ',' + str(corAvg) + '\n')
+                        lout.close()
 
                     stocksTried = 0
                     corSum = 0.0
@@ -303,18 +340,18 @@ def NNOptimizer(runTimeName = '', shortenProgress = False, PrinterCarriageNumber
 
 
 def main():
-	'''
-	Main function; creates a multiprocessing pool of NNOptimizer functions.
-	Sets up 3 proccess (4 CPU cores - 1 for OS/other overhead)
-	'''
+    '''
+    Main function; creates a multiprocessing pool of NNOptimizer functions.
+    Sets up 3 proccess (4 CPU cores - 1 for OS/other overhead)
+    '''
 
-	pool = mp.Pool(processes = 3)
-	
-	pool.apply_async(NNOptimizer, [], dict(runTimeName = 'Part1', shortenProgress = True, PrinterCarriageNumber = 0, startupSleepTime = 0, overideDirectory = 'Data/Part1/'))
-	pool.apply_async(NNOptimizer, [], dict(runTimeName = 'Part2', shortenProgress = True, PrinterCarriageNumber = 35, startupSleepTime = 1, overideDirectory = 'Data/Part2/'))
-	pool.apply(NNOptimizer, [], dict(runTimeName = 'Part3', shortenProgress = True, PrinterCarriageNumber = 70, startupSleepTime = 2, overideDirectory = 'Data/Part3/'))
-	
-	print('\n')
+    pool = mp.Pool(processes = 3)
+    
+    pool.apply_async(NNOptimizer, [], dict(runTimeName = 'Part1', shortenProgress = True, PrinterCarriageNumber = 0, startupSleepTime = 0, overideDirectory = 'Data/Part1/'))
+    pool.apply_async(NNOptimizer, [], dict(runTimeName = 'Part2', shortenProgress = True, PrinterCarriageNumber = 35, startupSleepTime = 1, overideDirectory = 'Data/Part2/'))
+    pool.apply(NNOptimizer, [], dict(runTimeName = 'Part3', shortenProgress = True, PrinterCarriageNumber = 70, startupSleepTime = 2, overideDirectory = 'Data/Part3/'))
+    
+    print('\n')
 
 
 #----------------------------------------------------------------------------------------------------------------------------
