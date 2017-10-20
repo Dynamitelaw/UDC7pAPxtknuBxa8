@@ -11,9 +11,12 @@ import NearestNeighborBackend as knb
 from scipy import stats
 import warnings
 import time
+import math
+import multiprocessing as mp
+from usefulThings import printLocation
 
 
-def NearestNeighborTester(ticker,bs,fields, daterange = None, points = 5, distanceMetric = 'seuclidean', sampleLog = False, ignoreWarnings = True, progressHeader = '', dayBackValue = 0):
+def NearestNeighborTester(ticker,bs,fields, daterange = None, points = 5, distanceMetric = 'seuclidean', sampleLog = False, ignoreWarnings = True, progressHeader = '', dayBackValue = 0, overideDirectory = False, silencePrint = False):
     '''
     Tests the NearestNeighbor Algorithm on a single stock. Outputs the correlation coefficient. Returns -2 if input stock is lacking suffiecient historical data.
 
@@ -39,11 +42,15 @@ def NearestNeighborTester(ticker,bs,fields, daterange = None, points = 5, distan
     progressHeader allows you to insert a header in front of the local prograss bar. Must be a single string.
 
     dayBackValue lets you base the prediction on a certian historical day's data. Needs to be set to 1 for realistic use of the Volume field
+
+    overideDirectory is an optional string to specify which directory to source the data from
+
+    silencePrint prevents this function from printing Progress bar
     '''
 
     try:
         #Generates data set of stock
-        dataSet = knb.GenerateNearestData(ticker,bs, fields, daterange, OutputMultiple = False, includeOptimalDates = True)
+        dataSet = knb.GenerateNearestData(ticker,bs, fields, daterange, OutputMultiple = False, includeOptimalDates = True, overideDirectory = overideDirectory)
         dataPoints = dataSet[0]
         outputs = dataSet[1]
         optimals = dataSet[2]
@@ -53,10 +60,13 @@ def NearestNeighborTester(ticker,bs,fields, daterange = None, points = 5, distan
             wheel = ["/","--","\ ","|"]
             predictionSet = np.zeros(k)    #NN predictions
             for i in range(0,k-250,1):
-                #Progress Bar
-                sys.stdout.write('\r')
-                sys.stdout.write(progressHeader + 'Procressing ' + ticker + ' ' + str((100*i)/(k-250)) + '%  ' + wheel[(i/15)%4])
-                sys.stdout.flush()
+                if (not silencePrint):
+                    #Progress Bar
+                    sys.stdout.write('\r')
+                    sys.stdout.write(progressHeader + 'Procressing ' + ticker + ' ' + str((100*i)/(k-250)) + '%  ' + wheel[(i/15)%4])
+                    sys.stdout.flush()
+                else:
+                    pass
 
                 sourcePoint = np.array([dataPoints[i+dayBackValue]])   #prediction based of curent day's data by default
                 
@@ -92,12 +102,15 @@ def NearestNeighborTester(ticker,bs,fields, daterange = None, points = 5, distan
 
                 fout.close()
 
-            #Clear Progress bar
-            sys.stdout.flush()
-            sys.stdout.write('\r')
-            sys.stdout.write('                                                                     ')
-            sys.stdout.flush()
-            sys.stdout.write('\r')
+            if (not silencePrint):
+                #Clear Progress bar
+                sys.stdout.flush()
+                sys.stdout.write('\r')
+                sys.stdout.write('                                                                     ')
+                sys.stdout.flush()
+                sys.stdout.write('\r')
+            else:
+                pass
 
             return correlation
         else:
@@ -107,26 +120,40 @@ def NearestNeighborTester(ticker,bs,fields, daterange = None, points = 5, distan
         pass
 
 
-def NNOptimizer():
+def NNOptimizer(runTimeName = '', shortenProgress = False, PrinterCarriageNumber = 0, startupSleepTime = 0, overideDirectory = False):
     '''
     Finds the best NearestPredict settings that lead to the highest correlation.
     Returns best settings as a list, of format [distanceMetric, [fields], points, average correlation coefficient].
     Prints best settings to a txt file.
     Keeps track of where in the procressing it left off, allowing you to split up the Procressing among different sessions.
     NNOptimizerSettings.txt alows you to define the optimization ranges, in order to run multiple concurrent instances.
+
+    runTimeName is the label of this particular optimizer thread
+
+    shortenProgress allows you to print a shorter Progress bar
+
+    PrinterCarriageNumber allows you to set the starting location of the Progress bar
+
+    startupSleepTime allows you to delay the start of the process by a certain amount of time (in seconds)
+
+    overideDirectory allows you to overide the directory from which this process obtains it's data.
+    Needed to avoid collision slowdowns amongs processes.
     '''
+
+    time.sleep(startupSleepTime)
 
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
 
-        print('Initializing optimizer...\n')
+        print('----------------------------------------------')
+        print('Initializing optimizer ' + runTimeName + '...\n')
 
         pfields = ['Open', 'Volume', '2 Day Slope', '5 Day Slope', 'Standard Dev', '2 Day Momentum', '5 Day Momentum', '2D Discrete Moementum', '5D Discrete Moementum']
         pmetrics = ['braycurtis','canberra','chebyshev','cityblock','correlation','cosine','dice','euclidean','hamming','jaccard','kulsinski','mahalanobis','matching','minkowski','rogerstanimoto','russellrao','seuclidean','sokalmichener','sokalsneath','sqeuclidean','wminkowski','yule']
 
 
         try:    #tries to load checkpoint
-            path = 'NNOptimizerCheckpoint.txt'
+            path = runTimeName + 'NNOptimizerCheckpoint.txt'
             cfile = open(path,'r')
 
             checkpoint = []
@@ -154,7 +181,7 @@ def NNOptimizer():
 
         except Exception as e:    #loads settings from file
             try:
-                path = 'NNOptimizerSettings.txt'
+                path = runTimeName + 'NNOptimizerSettings.txt'
                 sfile = open(path,'r')
                 
                 settings = []
@@ -180,14 +207,14 @@ def NNOptimizer():
 
                 print('No checkpoint found. Beginning  from... \n')
             except Exception as e:
-                print ('Error: "NNOptimizerSettings.txt" failed to load \nGenerated default settings file and guide file')
+                print ('Error: "' + runTimeName + 'NNOptimizerSettings.txt" failed to load \nGenerated default settings file and guide file')
 
-                path = 'NNOptimizerSettings.txt'
+                path = runTimeName + 'NNOptimizerSettings.txt'
                 sfile = open(path,'w')
                 sfile.write(str(0) + '\n' + str(21) + '\n' + str(1) + '\n' + str(511) + '\n' + str(1) + '\n' + str(220) + '\n' + str(1))
                 sfile.close()
 
-                path = 'NNOSettingsGuide.txt'
+                path = runTimeName + 'NNOSettingsGuide.txt'
                 sfile = open(path,'w')
                 header = "Possible Distance Metrics = ['braycurtis','canberra','chebyshev','cityblock','correlation','cosine','dice','euclidean',\n    'hamming','jaccard','kulsinski','mahalanobis','matching','minkowski','rogerstanimoto','russellrao',\n    'seuclidean','sokalmichener','sokalsneath','sqeuclidean','wminkowski','yule']"
                 header = header + "\nPossible Fields = ['Open', 'Volume', '2 Day Slope', '5 Day Slope', 'Standard Dev', '2 Day Momentum', '5 Day Momentum', '2D Discrete Moementum', '5D Discrete Moementum']"
@@ -200,6 +227,8 @@ def NNOptimizer():
 
 
         print('M = ' + str(metricTracker) + '| F = ' + str(fieldPermTracker) + '| P = ' + str(pointTracker) + '| T = ' + str(tickerTracker) + '\n')
+
+        time.sleep(3)
 
         for m in range(metricTracker,metricMax + 1,1):        #tries every metric
             metric = pmetrics[m]
@@ -218,36 +247,47 @@ def NNOptimizer():
 
                 for point in range(pointTracker,pointMax + 1,pointStep):    #tries every point value
                     percentComplete = int((1000.0/float(metricMax - metricMin + 1))*((m-metricMin) + (float(f - fieldPermMin)/(fieldPermMax - fieldPermMin + 1)) + (float(point - pointMin)/((pointMax - pointMin + 1)*(fieldPermMax - fieldPermMin + 1)))))/10.0
-                    header = str(percentComplete) + '%_' + metric + '|f(' + str(fieldPermTracker) + '/' + str(fieldPermMax) + ')-p(' + str(point) + '/' + str(pointMax) + '): '
+                    if shortenProgress:
+                        header = '|' + runTimeName + ':' + str(percentComplete) + '%_' + metric
+                    else:
+                        header = str(percentComplete) + '%_' + metric + '|f(' + str(fieldPermTracker) + '/' + str(fieldPermMax) + ')-p(' + str(point) + '/' + str(pointMax) + '): '
                     
-                    tickerlist = os.listdir('Data/PcsData/')
+                    #obtains list of stock files
+                    if overideDirectory:
+                        tickerlist = os.listdir(overideDirectory)
+                    else:
+                        tickerlist = os.listdir('Data/PcsData/')
+
                     for tickIndx in range(tickerTracker,len(tickerlist),1):    #tries every stock    
                         try:
-                            corCoef = NearestNeighborTester(tickerlist[tickIndx],'ps',cfields,sampleLog = False, distanceMetric = metric, points = point, progressHeader = header)
-                            if (corCoef != -2):
+                            corCoef = NearestNeighborTester(tickerlist[tickIndx],'ps',cfields,sampleLog = False, distanceMetric = metric, points = point, progressHeader = header, silencePrint = shortenProgress, overideDirectory = overideDirectory)
+                            if ((corCoef != -2) and (not (math.isnan(corCoef)))):
                                 corSum += corCoef
                                 stocksTried += 1
+                            if shortenProgress:
+                                printLocation (text = header + '(' + tickerlist[tickIndx][:-4] + ')', x = PrinterCarriageNumber,y = 25)
 
                         except Exception as e:
                             pass
 
-                        if (((tickIndx % 45) == 0) and (tickIndx != 0)):    #updates checkpoint every 45 stocks processed (~every 15 min)
-                            savepath = 'NNOptimizerCheckpoint.txt'
+                        if (((tickIndx % 20) == 0) and (tickIndx != 0)):    #updates checkpoint every 20 stocks processed (~every 15 min)
+                            savepath = runTimeName + 'NNOptimizerCheckpoint.txt'
                             cout = open(savepath,'w')
                             cout.write(str(metricMin) + '\n' + str(m) + '\n' + str(metricMax) + '\n' + str(fieldPermMin) + '\n' + str(f) + '\n' + str(fieldPermMax) + '\n' + str(pointMin) + '\n' + str(point) + '\n' + str(pointMax) + '\n' + str(pointStep) + '\n' + str(maxCor) + '\n' + str(tickIndx) + '\n' + str(stocksTried) + '\n' + str(corSum))
-                            cout.close() 
+                            cout.close()
+                            printLocation (text = header + '(*SVD)', x = PrinterCarriageNumber,y = 25)
 
                     corAvg = corSum / stocksTried
 
                     if (abs(corAvg) > maxCor):    #saves argument settings if average coefficient is better than past max
                         maxCor = abs(corAvg)
-                        savepath = 'NNOptimizerMax.txt'
+                        savepath = runTimeName + 'NNOptimizerMax.txt'
                         fout = open(savepath,'w')
                         fout.write(metric + '\n' + str(cfields) + '\n' + str(point) + '\n' + str(corAvg))
                         fout.close() 
 
                     #updates log
-                    savepath = 'NNOptimizerMaxLog.csv'
+                    savepath = runTimeName + 'NNOptimizerMaxLog.csv'
                     lout = open(savepath,'rw')
                     lout.write(metric + ',' + str(cfields) + ',' + str(point) + ',' + str(corAvg) + '\n')
                     lout.close()
@@ -262,13 +302,22 @@ def NNOptimizer():
             fieldPermTracker = fieldPermMin
 
 
+def main():
+	'''
+	Main function; creates a multiprocessing pool of NNOptimizer functions.
+	Sets up 3 proccess (4 CPU cores - 1 for OS/other overhead)
+	'''
+
+	pool = mp.Pool(processes = 3)
+	
+	pool.apply_async(NNOptimizer, [], dict(runTimeName = 'Part1', shortenProgress = True, PrinterCarriageNumber = 0, startupSleepTime = 0, overideDirectory = 'Data/Part1/'))
+	pool.apply_async(NNOptimizer, [], dict(runTimeName = 'Part2', shortenProgress = True, PrinterCarriageNumber = 35, startupSleepTime = 1, overideDirectory = 'Data/Part2/'))
+	pool.apply(NNOptimizer, [], dict(runTimeName = 'Part3', shortenProgress = True, PrinterCarriageNumber = 70, startupSleepTime = 2, overideDirectory = 'Data/Part3/'))
+	
+	print('\n')
+
 
 #----------------------------------------------------------------------------------------------------------------------------
 
-NNOptimizer()
-#print('Hello World')
-print('Optimization Complete!')
-print('Close out of program? (y/n)')
-answer = raw_input()
-print('K,bye!')
-time.sleep(1)
+
+main()

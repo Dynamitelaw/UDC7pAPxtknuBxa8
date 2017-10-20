@@ -9,7 +9,7 @@ from scipy import spatial
 import sys
 
 
-def GenerateNearestData(ticker,bs, fields = None, daterange = None, OutputMultiple = False, includeOptimalDates = False):
+def GenerateNearestData(ticker,bs, fields = None, daterange = None, OutputMultiple = False, includeOptimalDates = False, overideDirectory = False):
     '''
     Generates an array of network data points for calculating distance and desired outputs for specified stock for all days.
     The output list has 2 elements; out = [array of reference data points, array of desired outputs]
@@ -27,9 +27,13 @@ def GenerateNearestData(ticker,bs, fields = None, daterange = None, OutputMultip
 
     Setting includeOptimalDates to True adds a 3rd element to the output list: a column of trinary optimal dates.
     Useful for accurate historical testing.
+
+    overideDirectory is an optional string to specify which directory to source the data from
     '''
-    
-    filepath = 'Data/PcsData/' + ticker 
+    if overideDirectory:
+        filepath = overideDirectory + ticker
+    else:
+        filepath = 'Data/PcsData/' + ticker 
     
     try:
         sfile = open(filepath,'r')
