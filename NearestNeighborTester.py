@@ -256,7 +256,7 @@ def NNOptimizer(runTimeName = '', shortenProgress = False, PrinterCarriageNumber
                     length = len(tickerlist)
 
                     for tickIndx in range(tickerTracker,length,1):    #tries every stock  
-                        percentFloat = (100.0/float(metricMax - metricMin + 1))*((m-metricMin) + (float(f - fieldPermMin)/(fieldPermMax - fieldPermMin + 1)) + (float(point - pointMin)/((pointMax - pointMin + 1)*(fieldPermMax - fieldPermMin + 1))))
+                        percentFloat = (100.0/float(metricMax - metricMin + 1))*((m-metricMin) + (float(f - fieldPermMin)/(fieldPermMax - fieldPermMin + 1)) + (float(point - pointMin)/((pointMax - pointMin + 1)*(fieldPermMax - fieldPermMin + 1))) + ((float(tickIndx)*pointStep)/(length*((pointMax - pointMin + 1)*(fieldPermMax - fieldPermMin + 1)))))
                         percentComplete = int(10.0*percentFloat)/10.0
                         if shortenProgress:
                             header = '|' + runTimeName + ':' + str(percentComplete) + '%_' + metric
