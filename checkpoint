@@ -1,0 +1,2 @@
+model_checkpoint_path: "networkL1B.tflearn"
+all_model_checkpoint_paths: "networkL1B.tflearn"

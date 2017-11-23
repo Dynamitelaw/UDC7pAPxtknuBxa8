@@ -1,1 +1,7 @@
 yahoo-finance
+pickle
+numpy
+tensorflow
+tflearn
+time
+os
