@@ -11,6 +11,7 @@ import multiprocessing
 from multiprocessing import Pool
 import utils
 import time
+import random
 
 
 class database:
@@ -26,6 +27,11 @@ class database:
         '''
         self.dataframeDict = {}
         self.processedDataPath = "Data\PcsData"
+        
+        self.tickerList = []
+        fileList = os.listdir(self.processedDataPath)
+        for fileName in fileList:
+            self.tickerList.append(fileName.rstrip(".csv"))
 
 
     def loadEntireDatabase(self):
@@ -75,6 +81,22 @@ class database:
         Saves the passed dataframe to a csv file
         '''
         dataFrame.to_csv(self.processedDataPath+"\\"+ticker+".csv")
+
+    
+    def getTickerList(self, randomize=False, numberOfShuffles=1):
+        '''
+        Returns a list of tickers present in the database.
+        Setting randomize to True will shuffled the locations of tickers in the list
+        Number of shuffles can also be specified
+        '''
+        if (randomize):
+            returnList = self.tickerList[:]
+            for i in range(0,numberOfShuffles,1):
+                random.shuffle(returnList)
+            
+            return returnList
+
+        return self.tickerList
 
 
 
