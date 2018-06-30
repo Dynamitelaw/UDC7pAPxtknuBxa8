@@ -8,12 +8,12 @@ import numpy as np
 import io
 import os
 import multiprocessing
-import affinity
+from multiprocessing import Process
 import sys
 import time
-import pyttsx
+import pandas as pd
+from usefulThings import splitList
 
-affinity.set_process_affinity_mask(0,2**multiprocessing.cpu_count()-1)
 
 
 def optimalbuy(array):
@@ -282,20 +282,46 @@ def process(ticker):
 
     
     data = data[indx:k-31,:]     #truncates unprocessed data at beggining of date range and the end week of date range
-    dates = dates[indx:k-31,:]       #truncates dates list
+    dates = dates[indx:k-31,:]       #truncates dates list   
+    dates = dates.tolist()
+    for i in range(0, len(dates), 1):
+        dates[i] = dates[i][0]
+    
     newlen = int(data.shape[0])
-    
+    header = ["Open", "High", "Low", "Close", "Volume", "Adj Close", "2 Day Slope", "5 Day Slope", "Standard Dev", "Optimal Dates", "Desired Level 1 Out Buy", "Desired Level 1 Out Sell", "Profit Speed", "2 Day Momentum", "5 Day Moementum", "2D Discrete Moementum", "5D Discrete Moementum"]
+
+    dataFrame = pd.DataFrame(data=data, index = dates, columns = header)
     savepath = 'Data/PcsData/' + ticker + '.csv'
-    fout = open(savepath,'w')
-    header = 'Date, Open, High, Low, Close, Volume, Adj Close, 2 Day Slope, 5 Day Slope, Standard Dev, Optimal Dates, Desired Level 1 Out Buy, Desired Level 1 Out Sell, Profit Speed, 2 Day Momentum, 5 Day Moementum, 2D Discrete Moementum, 5D Discrete Moementum'
-    fout.write(header + '\n')
-    for i in range (0,newlen,1):     #writes processed data to new file
-        line = [dates[i,0]]
-        dline = data[i,:].tolist()
-        line.extend(dline)
-        fout.write(str(line).strip("[]") + '\n')
+    dataFrame.to_csv(savepath)
+
+
+def processListOfTickers(listOfTickers):
+    '''
+    Processes a list of tickers
+    '''
+    lengthOfTickerList = len(listOfTickers)
+
+    for i in range(0,lengthOfTickerList,1):
+        ticker = listOfTickers[i]
+
+        try:
+            process(ticker)
+        except Exception as e:
+            try:
+                os.remove('Data/StockData/'+ticker+'.csv')			
+            except Exception as e:
+                pass
+
+        #Approximate Progress bar
+        percentComplete = int((i*100)/lengthOfTickerList)
+        sys.stdout.write("\r")
+        if (percentComplete < 10):
+            sys.stdout.write("~ 0{}% Complete".format(percentComplete))
+        else:
+            sys.stdout.write("~ {}% Complete".format(percentComplete))
+        sys.stdout.write("\r")
+        sys.stdout.flush()
     
-    fout.close()
   
     
 def main():
@@ -304,43 +330,25 @@ def main():
     '''
     
     tickerFile = open('Data/ListOfTickerSymbols.csv','r') #opens ticker file
-    filesTried = 0
-    totalFiles = 6717
-
-    wheel = ["/","--","\ ","|"]
     
-    print('Processing ' + str(totalFiles) + ' stock files\n')
-
-    for line in tickerFile:		#iterates through file and processes data for each ticker
-        filesTried += 1
-        try:
-            process(line.rstrip())
-            #print('Proccessed '+line)
-        except Exception as e:
-            #print(e)
-            try:
-                os.remove('Data/StockData/'+line+'.csv')			
-                #print('File Removed')
-            except Exception as e:
-                #print('')
-                pass
-
-        percentage = int((100*filesTried) / 6717)
-        sys.stdout.write('\r')
-        sys.stdout.write(str(percentage) + '% complete   ' + wheel[(filesTried*10)%4])
-        sys.stdout.flush()
+    listOfTickers = []
+    for line in tickerFile:	
+        listOfTickers.append(line.rstrip())
 
     tickerFile.close()
  
-    Phil = pyttsx.init()
-    Phil.say('Processing, complete')
-    Phil.runAndWait()
-    Phil = None
+    processCount = multiprocessing.cpu_count() - 1
+
+    listOfTickerChunks = splitList(listOfTickers, processCount)
+
+    for tickerChunk in listOfTickerChunks:
+        proc = Process(target=processListOfTickers, args=(tickerChunk,))
+        proc.start()
 
 #-------------------------------------------------------------------------------------------
 
-main()    
-#process('DIS')
+if __name__ == '__main__':
+    main()   
 
 
 

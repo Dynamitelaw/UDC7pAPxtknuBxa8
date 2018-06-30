@@ -24,5 +24,30 @@ def printLocation(text="$VER: Locate_Demo.py_Version_0.00.10_(C)2007-2012_B.Walk
     HORIZ=str(x)
     VERT=str(y)
     # Plot the user_string at the starting at position HORIZ, VERT...
-    print "\033["+VERT+";"+HORIZ+"f"+text ,
+    #print ("\033["+VERT+";"+HORIZ+"f"+text ,)
+    sys.stdout.write("\x1b7\x1b[%d;%df%s\x1b8" % (x, y, text))
     sys.stdout.flush()
+
+
+def splitList(inputList, numberOfChunks):
+    '''
+    Splits the inputList into the specified number of chunks (roughly equal size)
+    '''
+    seperatingIndexes = []
+    lenghtOfInputList = len(inputList)
+    chunkSize = int(lenghtOfInputList/numberOfChunks)
+
+    for i in range(0, numberOfChunks, 1):
+        if (i==0):
+            seperatingIndexes.append([0,chunkSize])
+        elif (i == (numberOfChunks-1)):
+            seperatingIndexes.append([seperatingIndexes[i-1][1], lenghtOfInputList])
+        else:
+            seperatingIndexes.append([seperatingIndexes[i-1][1], ((i+1)*chunkSize)])
+
+    outputList = []
+    for indexes in seperatingIndexes:
+        outputList.append(inputList[indexes[0]:indexes[1]])
+
+    return outputList
+
