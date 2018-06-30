@@ -59,3 +59,12 @@ def emitAsciiBell():
     '''
     print("\a\r")
     time.sleep(1)
+
+
+def sanitizeString(stringToSanitize):
+    disallowedCharacters = ["/", ".", "\\", "$"]
+    
+    for char in disallowedCharacters:
+        stringToSanitize = stringToSanitize.replace(char, "")
+
+    return stringToSanitize        

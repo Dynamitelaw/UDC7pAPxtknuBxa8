@@ -44,7 +44,7 @@ class database:
         processCount = multiprocessing.cpu_count() - 1
         processPool = Pool(processCount)
 
-        results = list(processPool.map(self.loadDataframeFromFile, fileList))
+        results = list(processPool.map(self.__loadDataframeFromFile, fileList))
         processPool.close()
         processPool.join()
 
