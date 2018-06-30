@@ -4,7 +4,7 @@ import sys
 import utils
 from utils import printLocation
 import time
-from ctypes import *
+#from ctypes import *
 from PandaDatabase import database
 
 def test(number):
