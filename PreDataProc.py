@@ -286,9 +286,8 @@ def process(ticker):
     dates = dates[indx:k-31,:]       #truncates dates list   
     dates = dates.tolist()
     for i in range(0, len(dates), 1):
-        dates[i] = dates[i][0]
+        dates[i] = int(dates[i][0].replace("-",""))
     
-    newlen = int(data.shape[0])
     header = ["Open", "High", "Low", "Close", "Volume", "Adj Close", "2 Day Slope", "5 Day Slope", "Standard Dev", "Optimal Dates", "Desired Level 1 Out Buy", "Desired Level 1 Out Sell", "Profit Speed", "2 Day Momentum", "5 Day Moementum", "2D Discrete Moementum", "5D Discrete Moementum"]
 
     dataFrame = pd.DataFrame(data=data, index = dates, columns = header)

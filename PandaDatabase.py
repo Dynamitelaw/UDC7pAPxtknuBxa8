@@ -16,6 +16,8 @@ import time
 class database:
     '''
     Class used for storing and retrieving data from PcsData
+    *Note: Dates are used as row idexes, but are stored as integers
+        rather than strings (more efficient), in the following format: YYYYMMDD
     '''
 
     def __init__(self):
@@ -44,7 +46,7 @@ class database:
             self.dataframeDict[keyFramePair[0]] = keyFramePair[1]
 
 
-    def loadDataframeFromFile(self, fileName):
+    def __loadDataframeFromFile(self, fileName):
         '''
         PRIVATE METHOD : DO NOT CALL
         Returns a list [ticker, dataframe]
@@ -63,7 +65,7 @@ class database:
             return self.dataframeDict[ticker]
         except:
             try:
-                return self.loadDataframeFromFile(ticker+".csv")[1]
+                return self.__loadDataframeFromFile(ticker+".csv")[1]
             except:
                 return False
 

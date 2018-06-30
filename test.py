@@ -47,18 +47,6 @@ def locate(user_string="$VER: Locate_Demo.py_Version_0.00.10_(C)2007-2012_B.Walk
 	# Plot the user_string at the starting at position HORIZ, VERT...
 	print("\033["+VERT+";"+HORIZ+"f"+user_string)
 
-class COORD(Structure):
-    pass
- 
-COORD._fields_ = [("X", c_short), ("Y", c_short)]
-
-def print_at(r, c, s):
-    h = windll.kernel32.GetStdHandle(-11)
-    windll.kernel32.SetConsoleCursorPosition(h, COORD(c, r))
- 
-    c = s.encode("windows-1252")
-    windll.kernel32.WriteConsoleA(h, c_char_p(c), len(c), None, None)
- 
 
 
 if __name__ == '__main__':
@@ -68,8 +56,10 @@ if __name__ == '__main__':
     #print(d.getDataframe("JoseRubianes"))
     #print_at(6, 3, "Hello")
 
-    frame = d.getDataframe("ELDO")
+    frame = d.getDataframe("EKSO")
+    f = frame.loc[frame.index < 20140307, ["Open","2 Day Slope"]]
     print(frame)
-    frame.at["2000-08-03", "Open"] = 42
-    d.saveDataframe("ELDO", frame)
+    print(f)
+    #frame.at["2000-08-03", "Open"] = 42
+    #d.saveDataframe("ELDO", frame)
     
