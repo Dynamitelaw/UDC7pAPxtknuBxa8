@@ -68,7 +68,7 @@ class tradingAccount():
             raise ValueError("Invalid denomination passed")
 
     
-    def getOwnedStocks():
+    def getOwnedStocks(self):
         '''
         Returns a dictionary of stocks owned by this account
         '''
