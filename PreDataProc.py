@@ -12,7 +12,7 @@ from multiprocessing import Process
 import sys
 import time
 import pandas as pd
-from usefulThings import splitList
+import utils
 
 
 
@@ -215,7 +215,8 @@ def slopeMomentum(array):
 def process(ticker):
 
     '''
-    Processes the data for a single stock. Outputs processed data into PcsData directory
+    Processes the data for a single stock. Creates a pandas dataframe.
+    Saves dataframe to CSV file
     '''
     
     filepath = 'Data/StockData/' + ticker + '.csv'
@@ -297,7 +298,7 @@ def process(ticker):
 
 def processListOfTickers(listOfTickers):
     '''
-    Processes a list of tickers
+    Creates pandas dataframe CSVs for every ticker in listOfTickers
     '''
     lengthOfTickerList = len(listOfTickers)
 
@@ -307,13 +308,14 @@ def processListOfTickers(listOfTickers):
         try:
             process(ticker)
         except Exception as e:
+            #print(e)
             try:
                 os.remove('Data/StockData/'+ticker+'.csv')			
             except Exception as e:
                 pass
 
         #Approximate Progress bar
-        percentComplete = int((i*100)/lengthOfTickerList)
+        percentComplete = int((i*100)/(lengthOfTickerList-1))
         sys.stdout.write("\r")
         if (percentComplete < 10):
             sys.stdout.write("~ 0{}% Complete".format(percentComplete))
@@ -322,13 +324,12 @@ def processListOfTickers(listOfTickers):
         sys.stdout.write("\r")
         sys.stdout.flush()
     
-  
     
-def main():
+def processAllTickers():
     '''
-    Iterates process through all tickers on list
+    Creates pandas dataframe CSVs for every ticker included in ListOfTicjerSymbols.csv
     '''
-    
+
     tickerFile = open('Data/ListOfTickerSymbols.csv','r') #opens ticker file
     
     listOfTickers = []
@@ -339,16 +340,22 @@ def main():
  
     processCount = multiprocessing.cpu_count() - 1
 
-    listOfTickerChunks = splitList(listOfTickers, processCount)
+    listOfTickerChunks = utils.splitList(listOfTickers, processCount)
 
+    threads = []
     for tickerChunk in listOfTickerChunks:
         proc = Process(target=processListOfTickers, args=(tickerChunk,))
         proc.start()
+        threads.append(proc)
+    for thread in threads:
+        thread.join()
+
+    utils.emitAsciiBell()
 
 #-------------------------------------------------------------------------------------------
 
 if __name__ == '__main__':
-    main()   
+    processAllTickers()  
 
 
 
