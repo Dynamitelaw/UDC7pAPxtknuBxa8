@@ -11,7 +11,6 @@ import numpy as np
 from GenerateTrainingData import GenerateIO 
 import os
 import time
-import pyttsx
 
 
 hm_epochs = 3

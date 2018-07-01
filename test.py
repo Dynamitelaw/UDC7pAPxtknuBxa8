@@ -4,8 +4,9 @@ import sys
 import utils
 from utils import printLocation
 import time
-#from ctypes import *
+import numpy as np
 from PandaDatabase import database
+from TradingAccount import tradingAccount
 
 def test(number):
     x = number + 1
@@ -48,18 +49,19 @@ def locate(user_string="$VER: Locate_Demo.py_Version_0.00.10_(C)2007-2012_B.Walk
 	print("\033["+VERT+";"+HORIZ+"f"+user_string)
 
 
-
 if __name__ == '__main__':
     d = database()
-    #input("Block")
-    #print(d.getDataframe("ELDO"))
-    #print(d.getDataframe("JoseRubianes"))
-    #print_at(6, 3, "Hello")
 
-    frame = d.getDataframe("EKSO")
-    f = frame.loc[frame.index < 20140307, ["Open","2 Day Slope"]]
-    print(frame)
-    print(f)
-    #frame.at["2000-08-03", "Open"] = 42
-    #d.saveDataframe("ELDO", frame)
+    import StockSelectionInterface 
+    tickerList = d.getTickerList(randomize=True)[:200]
+    selector = StockSelectionInterface.stockSelector("TestSelector", d)
+    results = selector.selectStocksToSell(tickerList, date=20150506)
+    print("---------------------------------------")
+    print(results)
+
+
+    #k = d.getDataframe("TSLA", dateRange=[20150502,20150507], dataFields=["Profit Speed"]).at[20150506,"Profit Speed"]
+
+    #print(k)
+
     

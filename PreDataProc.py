@@ -9,10 +9,12 @@ import io
 import os
 import multiprocessing
 from multiprocessing import Process
+from multiprocessing import Pool
 import sys
 import time
 import pandas as pd
 import utils
+import tqdm
 
 
 
@@ -135,7 +137,10 @@ def ProfitSpeed(array):
                     z = False
                     
             if sindx > 0 or sindx == 0:
-                Pspeed = (array[sindx,0] - array[i,0]) / ((array[i,0]) * (i - sindx))       #profit/(time*price at buy in)
+                if (((array[i,0]) * (i - sindx)) == 0):
+                    raise ValueError("Divide by zero in profit speed")
+                
+                Pspeed = (array[sindx,0] - array[i,0]) / ((array[i,0]) * (i - sindx))       #profit/(time*price at buy in) 
                 ps[i] = Pspeed 
 
                 #finds profit speed before optimal buy date
@@ -144,7 +149,10 @@ def ProfitSpeed(array):
                 while z == True:
                     d += 1
                     if (i+d)<k and array[i+d,9] == 0:
-                        Pspeedp1 = (array[i,0] - array[i+d,0]) / ((array[i+d,0]) * d)
+                        if (((array[i+d,0]) * d) == 0):
+                            raise ValueError("Divide by zero in profit speed")
+                            
+                        Pspeedp1 = (array[i,0] - array[i+d,0]) / ((array[i+d,0]) * d)  #~  RuntimeWarning: divide by zero encountered in double_scalars
                         ps[i+d] = Pspeedp1 
                     else:
                         z = False
@@ -212,116 +220,102 @@ def slopeMomentum(array):
     return slopeMom
 
 
-def process(ticker):
+def process(ticker, dataframe=False):
 
     '''
     Processes the data for a single stock. Creates a pandas dataframe.
-    Saves dataframe to CSV file
+    If the parameter dataframe is passed, it will use the passed dataframe rather than a file in StockData (NOT YET IMPLIMENTED).
+    Saves dataframe to CSV file.
     '''
-    
-    filepath = 'Data/StockData/' + ticker + '.csv'
-    file = open(filepath,'r')
-    row = 0
-    
-    data = np.genfromtxt(filepath,delimiter=',')    #generates data array from file
-    data = np.delete(data,0,0)
-    data = np.delete(data,0,1)
-    
-    k = int(data.shape[0])
-    zeros = np.zeros((k,3))
-    data = np.hstack((data,zeros))
-    
-    for i in range(0,k-1,1):        #6th column is the 2 day slope 
-        data[i,6] = data[i,0] - data[i+1,0]
+    try:
+        filepath = 'Data/StockData/' + ticker + '.csv'
+        try:
+            file = open(filepath,'r')
+        except:
+            return
 
-    for i in range(0,k-4,1):        #7th column is the 5 day slope
-        data[i,7] = data[i,0] - data[i+4,0]
-    
-    for i in range(0,k-30,1):       #8th column is the month's standard deviation
-        data[i,8] = np.std(data[i:i+30,0])
-
+        row = 0
         
-    for line in file:       #obtains vertical array of dates
-        if row == 0:
-            row += 1
-        else:
-            r = line.split(',')
-           
-            for i in range(1,7,1):
-                r[i] = float(r[i].rstrip())
+        data = np.genfromtxt(filepath,delimiter=',')    #generates data array from file
+
+        if (data.shape[1] == 6):
+            #Data is missing the AdjClose column (not included in current API data).
+            #Since it's not really used, we'll replace the column with zeros
+            height = data.shape[0]
+            zeros = np.zeros(height)
+            zeros = zeros.reshape(height, 1)
+            data = np.hstack((data, zeros))
+
+        data = np.delete(data,0,0)
+        data = np.delete(data,0,1)
+        
+        k = int(data.shape[0])
+        zeros = np.zeros((k,3))
+        data = np.hstack((data,zeros))
+        
+        for i in range(0,k-1,1):        #6th column is the 2 day slope 
+            data[i,6] = data[i,0] - data[i+1,0]
+
+        for i in range(0,k-4,1):        #7th column is the 5 day slope
+            data[i,7] = data[i,0] - data[i+4,0]
+        
+        for i in range(0,k-30,1):       #8th column is the month's standard deviation
+            data[i,8] = np.std(data[i:i+30,0])
+
             
-            if row == 1:
-                dates = np.array(r[0])
+        for line in file:       #obtains vertical array of dates
+            if row == 0:
                 row += 1
             else:
-                arow = np.array(r[0])  
-                dates = np.vstack((dates,arow))
-    
+                r = line.split(',')
                 
-    optimal = optimalbuy(data)
-    data = np.hstack((data,optimal))        #9th column optimal buy and sell dates, 10 and 11 column desired Level 1 Outputs
-    sprofit = ProfitSpeed(data)
-    
-    indx = 0
-    while True:     #finds index of most recent sell date
-        if sprofit[indx,0] >0:
-            indx = indx - 1
-            break
-        else:
-            indx += 1
-    
-    data = np.hstack((data,sprofit))        #12th column is the profit speed for that day
+                if row == 1:
+                    dates = np.array(r[0])
+                    row += 1
+                else:
+                    arow = np.array(r[0])  
+                    dates = np.vstack((dates,arow))
+        
+                    
+        optimal = optimalbuy(data)
+        data = np.hstack((data,optimal))        #9th column optimal buy and sell dates, 10 and 11 column desired Level 1 Outputs
+        sprofit = ProfitSpeed(data)
+        
+        indx = 0
+        while True:     #finds index of most recent sell date
+            if sprofit[indx,0] >0:
+                indx = indx - 1
+                break
+            else:
+                indx += 1
+        
+        data = np.hstack((data,sprofit))        #12th column is the profit speed for that day
 
-    #********************************
-    #10-2-2017: Tacked on data columns, added running sum of pos or negative slopes for
-    #both 2 and 5 days. Added to far end of processed data file to avoid fucking up 
-    #any location based dependencies
-    #********************************
+        #********************************
+        #10-2-2017: Tacked on data columns, added running sum of pos or negative slopes for
+        #both 2 and 5 days. Added to far end of processed data file to avoid fucking up 
+        #any location based dependencies
+        #********************************
 
-    slopeMomem = slopeMomentum(data)
-    data = np.hstack((data,slopeMomem))     #13 column is the 2 day slope momentum, 14 column is the 5 day slope momentum, 15 column is 2 Day Discrete Momomentum, 16 column is 5 Day Discrete Momentum
+        slopeMomem = slopeMomentum(data)
+        data = np.hstack((data,slopeMomem))     #13 column is the 2 day slope momentum, 14 column is the 5 day slope momentum, 15 column is 2 Day Discrete Momomentum, 16 column is 5 Day Discrete Momentum
 
-    
-    data = data[indx:k-31,:]     #truncates unprocessed data at beggining of date range and the end week of date range
-    dates = dates[indx:k-31,:]       #truncates dates list   
-    dates = dates.tolist()
-    for i in range(0, len(dates), 1):
-        dates[i] = int(dates[i][0].replace("-",""))
-    
-    header = ["Open", "High", "Low", "Close", "Volume", "Adj Close", "2 Day Slope", "5 Day Slope", "Standard Dev", "Optimal Dates", "Desired Level 1 Out Buy", "Desired Level 1 Out Sell", "Profit Speed", "2 Day Momentum", "5 Day Moementum", "2D Discrete Moementum", "5D Discrete Moementum"]
+        
+        data = data[indx:k-31,:]     #truncates unprocessed data at beggining of date range and the end week of date range
+        dates = dates[indx:k-31,:]       #truncates dates list   
+        dates = dates.tolist()
+        for i in range(0, len(dates), 1):
+            dates[i] = int(dates[i][0].replace("-",""))
+        
+        header = ["Open", "High", "Low", "Close", "Volume", "Adj Close", "2 Day Slope", "5 Day Slope", "Standard Dev", "Optimal Dates", "Desired Level 1 Out Buy", "Desired Level 1 Out Sell", "Profit Speed", "2 Day Momentum", "5 Day Moementum", "2D Discrete Moementum", "5D Discrete Moementum"]
 
-    dataFrame = pd.DataFrame(data=data, index = dates, columns = header)
-    savepath = 'Data/PcsData/' + ticker + '.csv'
-    dataFrame.to_csv(savepath)
+        dataFrame = pd.DataFrame(data=data, index = dates, columns = header)
+        savepath = 'Data/PcsData/' + ticker + '.csv'
+        dataFrame.to_csv(savepath)
 
-
-def processListOfTickers(listOfTickers):
-    '''
-    Creates pandas dataframe CSVs for every ticker in listOfTickers
-    '''
-    lengthOfTickerList = len(listOfTickers)
-
-    for i in range(0,lengthOfTickerList,1):
-        ticker = listOfTickers[i]
-
-        try:
-            process(ticker)
-        except Exception as e:
-            #print(e)
-            try:
-                os.remove('Data/StockData/'+ticker+'.csv')			
-            except Exception as e:
-                pass
-
-        #Approximate Progress bar
-        percentComplete = int((i*100)/(lengthOfTickerList-1))
-        sys.stdout.write("\r")
-        if (percentComplete < 10):
-            sys.stdout.write("~ 0{}% Complete".format(percentComplete))
-        else:
-            sys.stdout.write("~ {}% Complete".format(percentComplete))
-        sys.stdout.write("\r")
-        sys.stdout.flush()
+    except Exception as e:
+        #print(ticker)
+        pass
     
     
 def processAllTickers():
@@ -339,15 +333,10 @@ def processAllTickers():
  
     processCount = multiprocessing.cpu_count() - 1
 
-    listOfTickerChunks = utils.splitList(listOfTickers, processCount)
+    pool = Pool(processCount)
 
-    threads = []
-    for tickerChunk in listOfTickerChunks:
-        proc = Process(target=processListOfTickers, args=(tickerChunk,))
-        proc.start()
-        threads.append(proc)
-    for thread in threads:
-        thread.join()
+    for _ in tqdm.tqdm(pool.imap_unordered(process, listOfTickers), total=len(listOfTickers)):
+        pass
 
     utils.emitAsciiBell()
 
@@ -355,6 +344,7 @@ def processAllTickers():
 
 if __name__ == '__main__':
     processAllTickers()  
+    
 
 
 
