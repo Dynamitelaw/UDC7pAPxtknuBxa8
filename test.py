@@ -4,6 +4,7 @@ import sys
 import utils
 from utils import printLocation
 import time
+import numpy as np
 from PandaDatabase import database
 from TradingAccount import tradingAccount
 
@@ -51,23 +52,16 @@ def locate(user_string="$VER: Locate_Demo.py_Version_0.00.10_(C)2007-2012_B.Walk
 if __name__ == '__main__':
     d = database()
 
-    frame = d.getDataframe("EKSO")
-    f = frame.loc[frame.index < 20140307, ["Open","2 Day Slope"]]
+    import StockSelectionInterface 
+    tickerList = d.getTickerList(randomize=True)[:200]
+    selector = StockSelectionInterface.stockSelector("TestSelector", d)
+    results = selector.selectStocksToSell(tickerList, date=20150506)
+    print("---------------------------------------")
+    print(results)
 
-    tickerList = d.getTickerList(randomize=False)[3:8]
-    orderList = []
-    for ticker in tickerList:
-        orderList.append([ticker, 2])
 
-    account = tradingAccount()
-    account.setCommision(10)
-    account.depositFunds(10000)
+    #k = d.getDataframe("TSLA", dateRange=[20150502,20150507], dataFields=["Profit Speed"]).at[20150506,"Profit Speed"]
 
-    account.placeBuyOrders(orderList, 20150305)
-    account.placeSellOrders(tickerList, 20150306)
-    #account.saveHistory()
-    #print(f)
-    print(account.tradingHistory)
-    #print(account.name)
+    #print(k)
 
     

@@ -62,16 +62,57 @@ class database:
         return [ticker, dataframe]
 
     
-    def getDataframe(self, ticker):
+    def getDataframe(self, ticker, dateRange=False, dataFields=False):
         '''
         Returns the dataframe corresponding to the passed ticker.
-        Returns False if dataframe is not present
+        Returns False if dataframe is not present or values requested are not valid.
+
+        Daterange must be a 2 element list, in the following format: [[<start date>], [<end date>]], date format = int YYYYMMDD.
+        dateFields must be a list of strings corresponding to the columns of the dataframe you want returned.
         '''
         try:
-            return self.dataframeDict[ticker]
+            dataframe = self.dataframeDict[ticker]
+
+            if (dateRange):
+                if (dataFields):
+                    dataframeReturn = dataframe.loc[dateRange[0]:dateRange[1],dataFields]
+                else:
+                    dataframeReturn = dataframe.loc[dateRange[0]:dateRange[1]]
+            elif (dataFields):
+                if (dateRange):
+                    dataframeReturn = dataframe.loc[dateRange[0]:dateRange[1],dataFields]
+                else:
+                    dataframeReturn = dataframe[dataFields]
+            else:
+                dataframeReturn = dataframe
+
+            if (len(dataframeReturn) == 0):
+                #Data is not available
+                return False
+            else:
+                return dataframeReturn
         except:
+            #Dataframe has not yet been loaded into memory. Get from file
+
             try:
-                return self.__loadDataframeFromFile(ticker+".csv")[1]
+                if (dateRange):
+                    if (dataFields):
+                        dataframe = self.__loadDataframeFromFile(ticker+".csv")[1].loc[dateRange[0]:dateRange[1],dataFields]
+                    else:
+                        dataframe = self.__loadDataframeFromFile(ticker+".csv")[1].loc[dateRange[0]:dateRange[1]]
+                elif (dataFields):
+                    if (dateRange):
+                        dataframe = self.__loadDataframeFromFile(ticker+".csv")[1].loc[dateRange[0]:dateRange[1],dataFields]
+                    else:
+                        dataframe = self.__loadDataframeFromFile(ticker+".csv")[1][dataFields]
+                else:
+                    dataframe = self.__loadDataframeFromFile(ticker+".csv")[1]
+
+                if (len(dataframe) == 0):
+                    #Data is not available
+                    return False
+                else:
+                    return dataframe
             except:
                 return False
 

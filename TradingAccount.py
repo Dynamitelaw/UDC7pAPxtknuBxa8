@@ -1,8 +1,8 @@
 '''
 Dynamitelaw
 
-Defines the trading account object, which keeps track of balance,
-owned stocks, and handles buy and sell orders.
+Defines the tradingAccount class, which keeps track of balance,
+trading history, owned stocks, and handles buy and sell orders.
 '''
 
 import pandas as pd
@@ -15,15 +15,19 @@ import RetrieveStockData as rsd
 
 
 class tradingAccount():
-    def __init__(self, name="TESTACCOUNT"):
+    def __init__(self, databaseInterface, name="TESTACCOUNT"):
         '''
-        Trading Account constructor.
+        Trading Account constructor. Must be passed a database object.
         '''
         self.stocksOwned = {}
         self.balance = 0  #balance is an integer (in cents), NOT dollars
         self.stockAssets = 0  #assets is an integer (in cents), NOT dollars
         self.commision = 0 #balance is an integer (in cents), NOT dollars
-        self.database = database()
+        
+        if ( type(databaseInterface).__name__ !='database'):
+            raise ValueError("Invalid parameter. databaseInterface must be of type \"<class 'PandaDatabase.database'>\". Recieved {}".format(type(databaseInterface)))
+        
+        self.database = databaseInterface
         
         self.name = utils.sanitizeString(name)
         cwd = os.getcwd()
