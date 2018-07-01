@@ -13,16 +13,17 @@ from multiprocessing import Pool
 import numpy as np
 from random import randint
 import random
+from StockSelectionInterface import stockSelector
 
 
-class selector():
+class TestSelector(stockSelector):
     def __init__(self, databaseInterface, genericParameters=[]):
         '''
         SimpleSlopeSelctor constructor. No genericParameters are required
         '''
+        super().__init__(self)
         if ( type(databaseInterface).__name__ !='database'):
             raise ValueError("Invalid parameter. databaseInterface must be of type \"<class 'PandaDatabase.database'>\". Recieved {}".format(type(databaseInterface)))
-        
         self.database = databaseInterface
 
     

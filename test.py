@@ -6,6 +6,7 @@ from utils import printLocation
 import time
 import numpy as np
 from PandaDatabase import database
+from TestSelector import TestSelector
 from TradingAccount import tradingAccount
 
 def test(number):
@@ -54,7 +55,7 @@ if __name__ == '__main__':
 
     import StockSelectionInterface 
     tickerList = d.getTickerList(randomize=True)[:200]
-    selector = StockSelectionInterface.stockSelector("TestSelector", d)
+    selector = TestSelector(d)
     results = selector.selectStocksToSell(tickerList, date=20150506)
     print("---------------------------------------")
     print(results)

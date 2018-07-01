@@ -9,7 +9,7 @@ from StockSelectionInterface import stockSelector
 import sys
 
 
-def runSimulation(dateRange, startingBalance, depositAmount=False, depositFrequency=False, comission=10, selector="TestSelector", sampleSize=False, simulationName="SIM", customTickerList=False, genericParams=[]):
+def runSimulation(dateRange, startingBalance, selector, depositAmount=False, depositFrequency=False, comission=10, sampleSize=False, simulationName="SIM", customTickerList=False, genericParams=[]):
     '''
     Runs a single simulation. Saves results to a csv file.
 
@@ -31,8 +31,6 @@ def runSimulation(dateRange, startingBalance, depositAmount=False, depositFreque
     account = tradingAccount(stockData)
     account.depositFunds(startingBalance)
     account.setCommision(comission)
-
-    selector = stockSelector(selector, stockData, genericParams=genericParams)
 
     startDate = dateRange[0]
     endDate = dateRange[1]
