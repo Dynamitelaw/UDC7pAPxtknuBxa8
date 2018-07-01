@@ -32,7 +32,7 @@ def printLocation(text="$VER: Locate_Demo.py_Version_0.00.10_(C)2007-2012_B.Walk
 
 def splitList(inputList, numberOfChunks):
     '''
-    Splits the inputList into the specified number of chunks (roughly equal size)
+    Splits the inputList into the specified number of chunks (roughly equal size).
     '''
     seperatingIndexes = []
     lenghtOfInputList = len(inputList)
@@ -55,7 +55,7 @@ def splitList(inputList, numberOfChunks):
 
 def emitAsciiBell():
     '''
-    Prints the ASCII bell character, telling the system to emit it's standard bell sound
+    Prints the ASCII bell character, telling the system to emit it's standard bell sound.
     '''
     print("\a\r")
     time.sleep(1)
@@ -68,3 +68,24 @@ def sanitizeString(stringToSanitize):
         stringToSanitize = stringToSanitize.replace(char, "")
 
     return stringToSanitize        
+
+
+def convertDate(dateInteger, outputFormat="List"):
+    '''
+    Insert comment here
+    '''
+    day = str(dateInteger)[-2:]
+    month = str(dateInteger)[-4:-2]
+    year = str(dateInteger)[:-4]
+    if (outputFormat=="List"):
+        return int(year), int(month), int(day)
+
+
+def extractTicker(dict):
+    '''
+    Returns the value associated with the key "symbol" in the passed dictionary.
+    Sounds pointless, but this function vastly improves the efficiency
+    of extracting ticker symbols.
+    '''
+    return dict.get('symbol')
+        

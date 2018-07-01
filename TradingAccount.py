@@ -1,5 +1,8 @@
 '''
 Dynamitelaw
+
+Defines the trading account object, which keeps track of balance,
+owned stocks, and handles buy and sell orders.
 '''
 
 import pandas as pd
@@ -8,6 +11,7 @@ from PandaDatabase import database
 import datetime
 import time
 import os
+import RetrieveStockData as rsd
 
 
 class tradingAccount():
@@ -82,18 +86,22 @@ class tradingAccount():
         self.commision = int(commision*100)
 
 
-    def updateAssets(self, date):
+    def updateAssets(self, date=False):
         '''
-        Updates the net value of all currently owned stock assets
+        Updates the net value of all currently owned stock assets.
+        If date is not included, the current real-time price is used.
         '''
         self.stockAssets = 0
 
         for ticker in self.stocksOwned:
             quantityOwned = self.stocksOwned.get(ticker)
-            tickerData = self.database.getDataframe(ticker)
-            openPrice = tickerData.at[date, "Open"]
+            if (date):
+                tickerData = self.database.getDataframe(ticker)
+                value = tickerData.at[date, "Open"]
+            else:
+                value = rsd.getCurrentPrice(ticker)
             
-            self.stockAssets += int(openPrice*quantityOwned*100)
+            self.stockAssets += int(value*quantityOwned*100)
 
 
     def placeBuyOrders(self, listOfOrders, date, simulation=True):
@@ -125,7 +133,11 @@ class tradingAccount():
                 self.balance -= tradeCost  #*100 since balance is in cents
                 self.stocksOwned[ticker] = quantity
 
-                self.updateAssets(date)
+                if (simulation):
+                    self.updateAssets(date)
+                else:
+                    self.updateAssets()
+
                 totalAssets = float(self.balance + self.stockAssets)/100
                 
                 timeStamp = time.time()
@@ -166,7 +178,11 @@ class tradingAccount():
                 self.balance += tradeIncome  #*100 since balance is in cents
                 del self.stocksOwned[ticker]
 
-                self.updateAssets(date)
+                if (simulation):
+                    self.updateAssets(date)
+                else:
+                    self.updateAssets()
+                    
                 totalAssets = float(self.balance + self.stockAssets)/100
                 
                 timeStamp = time.time()

@@ -292,3 +292,298 @@ def RetrieveTrainData(ratio, fields = None, daterange = None):
     outdata = [train, test]
     return outdata
     
+'''
+ilPesce
+Requests all stock data from Yahoo Finance
+API and stores them as CSV's
+'''
+
+import urllib
+import io
+
+###########################support methods############################
+base_url = "http://ichart.finance.yahoo.com/table.csv?s="
+def make_url(ticker_symbol):  #creates url for downloading from yahoo
+    return base_url + ticker_symbol
+
+output_path = "Data/StockData" #directory containing stock data
+def make_filename(ticker_symbol):
+    return output_path + "/" + ticker_symbol + ".csv"
+
+def pull_historical_data(ticker_symbol):    #downloads the stock data
+    try:
+        urllib.urlretrieve(make_url(ticker_symbol), make_filename(ticker_symbol))
+    except urllib.ContentTooShortError as e:
+        outfile = open(make_filename(ticker_symbol, directory), "w")
+        outfile.write(e.content)
+        outfile.close()
+#######################################################################
+
+tickerFile = open('Data/ListOfTickerSymbols.csv','r') #opens ticker file
+
+for line in tickerFile:		#iterates through file and downloads data
+	pull_historical_data(line)
+	print(make_url(line))
+
+
+"""
+Retrieved from https://github.com/himoacs/iex_data
+Dynamitelaw: This is here in case the other API breaks or is no longer availible
+Since its a python file rather than a library, it doesn't require a pip-install
+
+
+
+This api will provide a python wrapper over IEX's native api for retrieving its data.
+
+This api will allow you to:
+- get latest quote and trade data
+- get trade data only
+
+"""
+
+import pandas as pd
+from urllib.request import Request, urlopen
+import json
+from pandas.io.json import json_normalize
+
+
+class API(object):
+
+    """
+    This API class allows users to get different type of data from IEX via its methods.
+    API class can be used for:
+    - requesting valid securities
+    - getting latest quote and trade data
+    - getting latest trade data
+
+    Examples:
+        m = API()
+        print(m.get_latest_trade_data(['AAPL', 'IBM']))
+        print(m.get_latest_quote_and_trade_data(['AAPL', 'IBM']))
+        print(m.return_valid_securities(['AAPL', 'IBM']))
+    """
+
+    def __init__(self):
+        self._end_point_prefix = r'https://api.iextrading.com/1.0/'
+
+    def return_valid_securities(self, securities):
+
+        """
+        Return a list of valid securities
+        :param securities: list of securities
+        :return: list of valid securities
+        """
+
+        suffix = r'ref-data/symbols'
+        valid_securities = self._url_to_dataframe(self._end_point_prefix+suffix)['symbol']
+
+        return [x for x in securities if x in set(valid_securities)]
+
+    def _url_to_dataframe(self, url, nest=None):
+
+        """
+        Takes a url and returns the response in a pandas dataframe
+        :param url: str url
+        :param nest: column with nested data
+        :return: pandas dataframe containing data from url
+        """
+
+        request = Request(url)
+        response = urlopen(request)
+        elevations = response.read()
+        data = json.loads(elevations)
+
+        if nest:
+            data = json_normalize(data[nest])
+        else:
+            data = json_normalize(data)
+
+        return pd.DataFrame(data)
+
+    def get_latest_quote_and_trade(self, securities):
+
+        """
+        Gets latest quote and trade data
+        :param securities: list of securities
+        :return: pandas dataframe containing data for valid securities
+        """
+
+        securities = self.return_valid_securities(securities)
+
+        if securities:
+            suffix = r'tops?symbols='
+            symbols = ','.join(securities)
+            df = self._url_to_dataframe(self._end_point_prefix + suffix + symbols)
+            df['lastSaleTime'] = pd.to_datetime(df['lastSaleTime'], unit='ms')
+            df['lastUpdated'] = pd.to_datetime(df['lastUpdated'], unit='ms')
+            df.set_index(['symbol'], inplace=True)
+            return df
+        else:
+            print('These stock(s) are invalid!')
+
+    def get_latest_trade(self, securities):
+
+        """
+        Gets latest trade data
+        :param securities: list of securities
+        :return: pandas dataframe containing data for valid securities
+        """
+
+        securities = self.return_valid_securities(securities)
+
+        if securities:
+            suffix = r'tops/last?symbols='
+            symbols = ','.join(securities)
+            df = self._url_to_dataframe(self._end_point_prefix + suffix + symbols)
+            df['time'] = pd.to_datetime(df['time'], unit='ms')
+            df.set_index(['symbol'], inplace=True)
+            return df
+        else:
+            print('These stock(s) are invalid!')
+
+    def get_latest_news(self, securities, count=1):
+
+        """
+        Get latest news for securities. By default, gets one news item per security.
+
+        :param securities: list of securities
+        :param count: how many news items to return
+        :return: dataframe
+        """
+
+        securities = self.return_valid_securities(securities)
+
+        final_df = pd.DataFrame({})
+
+        # Get news for each security and then append the results together
+        if securities:
+            for symbol in securities:
+                suffix = r'stock/{symbol}/news/last/{count}'.format(symbol=symbol,
+                                                                    count=count)
+                df = self._url_to_dataframe(self._end_point_prefix + suffix)
+                df['time'] = pd.to_datetime(df['datetime'])
+                del df['datetime']
+                df['symbol'] = symbol
+                df = df[['symbol', 'time', 'headline', 'summary', 'source', 'url', 'related']]
+                final_df = final_df.append(df, ignore_index=True)
+            return final_df
+        else:
+            print('These stock(s) are invalid!')
+
+    def get_financials(self, securities):
+
+        """
+        Get latest financials of securities. By default, gets one news item per security.
+        :param securities: list of symbols
+        :return: dataframe
+        """
+
+        securities = self.return_valid_securities(securities)
+
+        final_df = pd.DataFrame({})
+
+        # Get financials of each security and then append the results together
+        if securities:
+            for symbol in securities:
+                suffix = r'stock/{symbol}/financials'.format(symbol=symbol)
+                df = self._url_to_dataframe(self._end_point_prefix + suffix, 'financials')
+                df['symbol'] = symbol
+                final_df = final_df.append(df, ignore_index=True)
+            return final_df
+        else:
+            print('These stock(s) are invalid!')
+
+    def get_earnings(self, securities):
+
+        """
+        Get latest earnings for securities.
+        :param securities: list of symbols
+        :return: dataframe
+        """
+
+        securities = self.return_valid_securities(securities)
+
+        final_df = pd.DataFrame({})
+
+        # Get earnings data for each security and then append the results together
+        if securities:
+            for symbol in securities:
+                suffix = r'stock/{symbol}/earnings'.format(symbol=symbol)
+                df = self._url_to_dataframe(self._end_point_prefix + suffix, 'earnings')
+                df['symbol'] = symbol
+                final_df = final_df.append(df, ignore_index=True)
+            return final_df
+        else:
+            print('These stock(s) are invalid!')
+
+    def get_trade_bars_data(self, securities, bucket='1m'):
+
+        """
+        Get bucketed trade/volume data. Supported buckets are: 1m, 3m, 6m, 1y, ytd, 2y, 5y
+
+        :param securities: list of securities
+        :param bucket:
+        :return: dataframe
+        """
+
+        securities = self.return_valid_securities(securities)
+
+        final_df = pd.DataFrame({})
+
+        # Get earnings data for each security and then append the results together
+        if securities:
+            for symbol in securities:
+                suffix = r'stock/{symbol}/chart/{bucket}'.format(symbol=symbol,
+                                                                   bucket=bucket)
+                df = self._url_to_dataframe(self._end_point_prefix + suffix)
+                df['symbol'] = symbol
+                final_df = final_df.append(df, ignore_index=True)
+            return final_df
+        else:
+            print('These stock(s) are invalid!')
+
+
+def processListOfTickers(listOfTickers):
+    '''
+    Creates pandas dataframe CSVs for every ticker in listOfTickers
+    '''
+    lengthOfTickerList = len(listOfTickers)
+
+    for i in range(0,lengthOfTickerList,1):
+        ticker = listOfTickers[i]
+
+        try:
+            process(ticker)
+        except Exception as e:
+            #print(e)
+            try:
+                os.remove('Data/StockData/'+ticker+'.csv')			
+            except Exception as e:
+                pass
+
+        #Approximate Progress bar
+        percentComplete = int((i*100)/(lengthOfTickerList-1))
+        sys.stdout.write("\r")
+        if (percentComplete < 10):
+            sys.stdout.write("~ 0{}% Complete".format(percentComplete))
+        else:
+            sys.stdout.write("~ {}% Complete".format(percentComplete))
+        sys.stdout.write("\r")
+        sys.stdout.flush()
+
+
+'''
+Dynamitelaw
+For some reason, the downloaded stock files have an extra character at the end of the name,
+so this removes them.
+'''
+
+import os
+
+os.chdir('/home/dynamitelaw/Documents/dw/UDC7pAPxtknuBxa8-firstTfModel/Data')
+
+k = os.listdir('StockData')
+os.chdir('/home/dynamitelaw/Documents/dw/UDC7pAPxtknuBxa8-firstTfModel/Data/StockData')
+
+for file in k:
+	os.rename(file,file[0:-5]+file[-4:])

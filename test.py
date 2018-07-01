@@ -4,8 +4,8 @@ import sys
 import utils
 from utils import printLocation
 import time
-#from ctypes import *
 from PandaDatabase import database
+from TradingAccount import tradingAccount
 
 def test(number):
     x = number + 1
@@ -48,18 +48,26 @@ def locate(user_string="$VER: Locate_Demo.py_Version_0.00.10_(C)2007-2012_B.Walk
 	print("\033["+VERT+";"+HORIZ+"f"+user_string)
 
 
-
 if __name__ == '__main__':
     d = database()
-    #input("Block")
-    #print(d.getDataframe("ELDO"))
-    #print(d.getDataframe("JoseRubianes"))
-    #print_at(6, 3, "Hello")
 
     frame = d.getDataframe("EKSO")
     f = frame.loc[frame.index < 20140307, ["Open","2 Day Slope"]]
-    print(frame)
-    print(f)
-    #frame.at["2000-08-03", "Open"] = 42
-    #d.saveDataframe("ELDO", frame)
+
+    tickerList = d.getTickerList(randomize=False)[3:8]
+    orderList = []
+    for ticker in tickerList:
+        orderList.append([ticker, 2])
+
+    account = tradingAccount()
+    account.setCommision(10)
+    account.depositFunds(10000)
+
+    account.placeBuyOrders(orderList, 20150305)
+    account.placeSellOrders(tickerList, 20150306)
+    #account.saveHistory()
+    #print(f)
+    print(account.tradingHistory)
+    #print(account.name)
+
     

@@ -1,12 +1,9 @@
 '''
 Dynamitelaw
 Generates Network Input and Output data for the market based on inputed fields.
-Writes data to pickle.
-Retrieves training data from pickle.
 '''
 
 import numpy as np
-import pickle
 import sys
 import os
 import random
