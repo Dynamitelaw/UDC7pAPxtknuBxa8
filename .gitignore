@@ -3,6 +3,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+#Ignore StockData
+Data/PcsData/
+Data/StockData/
+
 # C extensions
 *.so
 
