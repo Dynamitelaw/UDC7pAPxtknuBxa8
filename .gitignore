@@ -6,6 +6,8 @@ __pycache__/
 #Ignore StockData
 Data/PcsData/
 Data/StockData/
+Data/AccountData/
+Data/SimulationData/
 
 # C extensions
 *.so
