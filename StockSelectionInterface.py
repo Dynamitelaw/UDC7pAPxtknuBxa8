@@ -2,7 +2,7 @@
 Dynamitelaw
 
 Standard interface for selecting stocks to buy and sell.
-All selectors MUST be compatible with the methods included in this class.d
+All selectors MUST be compatible with the methods included in this class.
 '''
 
 
@@ -44,3 +44,10 @@ class stockSelector():
         Returns a list of stocks to sell.
         ''' 
         return self.selector.selectStocksToSell(listOfOwnedStocks, date=date, genricParameters=genricParameters)
+
+
+    def numberOfStocksToBuy(self, funds):
+        '''
+        Returns how many stocks you should buy based on your availible funds.
+        '''
+        return (int(funds/2500.0))
