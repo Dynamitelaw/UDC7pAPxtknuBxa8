@@ -310,6 +310,8 @@ def process(ticker, dataframe=False):
         header = ["Open", "High", "Low", "Close", "Volume", "Adj Close", "2 Day Slope", "5 Day Slope", "Standard Dev", "Optimal Dates", "Desired Level 1 Out Buy", "Desired Level 1 Out Sell", "Profit Speed", "2 Day Momentum", "5 Day Moementum", "2D Discrete Moementum", "5D Discrete Moementum"]
 
         dataFrame = pd.DataFrame(data=data, index = dates, columns = header)
+        if not os.path.isdir("Data/PcsData"):
+            os.mkdir("Data/PcsData")
         savepath = 'Data/PcsData/' + ticker + '.csv'
         dataFrame.to_csv(savepath)
 

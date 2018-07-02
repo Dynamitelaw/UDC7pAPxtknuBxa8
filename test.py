@@ -6,6 +6,7 @@ from utils import printLocation
 import time
 import numpy as np
 from PandaDatabase import database
+from TestSelector import TestSelector
 from TradingAccount import tradingAccount
 
 def test(number):
@@ -55,6 +56,7 @@ if __name__ == '__main__':
     #d.getDataframe("TSLA")
     #d.getDataframe("FBC")
 
+<<<<<<< HEAD
     for i in range(10,21,1):
         time.sleep(1)
         percentage = int((float(i-10)*100)/10)
@@ -69,6 +71,14 @@ if __name__ == '__main__':
     #results = selector.selectStocksToSell(tickerList, date=20150506)
     #print("---------------------------------------")
     #print(results)
+=======
+    import StockSelectionInterface 
+    tickerList = d.getTickerList(randomize=True)[:200]
+    selector = TestSelector(d)
+    results = selector.selectStocksToSell(tickerList, date=20150506)
+    print("---------------------------------------")
+    print(results)
+>>>>>>> a37b13d385cc6822c0620a077685d0bdde241911
 
 
     #k = d.getDataframe("TSLA", dateRange=[20150502,20150507], dataFields=["Profit Speed"]).at[20150506,"Profit Speed"]

@@ -103,16 +103,16 @@ class database:
             try:
                 if (dateRange):
                     if (dataFields):
-                        dataframe = self.__loadDataframeFromFile(ticker+".csv")[1].loc[dateRange[0]:dateRange[1],dataFields]
+                        dataframe = self.loadDataframeFromFile(ticker+".csv")[1].loc[dateRange[0]:dateRange[1],dataFields]
                     else:
-                        dataframe = self.__loadDataframeFromFile(ticker+".csv")[1].loc[dateRange[0]:dateRange[1]]
+                        dataframe = self.loadDataframeFromFile(ticker+".csv")[1].loc[dateRange[0]:dateRange[1]]
                 elif (dataFields):
                     if (dateRange):
-                        dataframe = self.__loadDataframeFromFile(ticker+".csv")[1].loc[dateRange[0]:dateRange[1],dataFields]
+                        dataframe = self.loadDataframeFromFile(ticker+".csv")[1].loc[dateRange[0]:dateRange[1],dataFields]
                     else:
-                        dataframe = self.__loadDataframeFromFile(ticker+".csv")[1][dataFields]
+                        dataframe = self.loadDataframeFromFile(ticker+".csv")[1][dataFields]
                 else:
-                    dataframe = self.__loadDataframeFromFile(ticker+".csv")[1]
+                    dataframe = self.loadDataframeFromFile(ticker+".csv")[1]
 
                 if (len(dataframe) == 0):
                     #Data is not available

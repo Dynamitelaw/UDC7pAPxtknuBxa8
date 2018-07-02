@@ -13,6 +13,7 @@
             },
             "presentation": {
                 "reveal": "always",
+<<<<<<< HEAD
                 "panel": "new",
                 "focus": true
             }
@@ -29,6 +30,10 @@
                 "reveal": "always",
                 "panel": "new",
                 "focus": true
+=======
+                "focus": true,
+                "panel": "new"
+>>>>>>> a37b13d385cc6822c0620a077685d0bdde241911
             }
         }
     ]

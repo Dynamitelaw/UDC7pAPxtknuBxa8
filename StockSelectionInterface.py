@@ -4,23 +4,19 @@ Dynamitelaw
 Standard interface for selecting stocks to buy and sell.
 All selectors MUST be compatible with the methods included in this class.
 '''
+from abc import ABC,abstractmethod
 
 
-class stockSelector():
+class stockSelector(ABC):
     def __init__ (self, selectorName, databaseInterface, genericParams=[]):
         '''
-        slecetorName must be a string denoting which selector type to use.
+        selecetorName must be a string denoting which selector type to use.
         genericParams is a list where you pass the arguments needed by the constructor
         of your specified selector.
         '''
-        if (selectorName == "TestSelector"):
-            from TestSelector import selector
-            self.selector = selector(databaseInterface, genericParams)
+        self.minimumPurchase = 2500 
 
-        else:
-            raise ValueError("No valid selector name passed.")
-
-    
+    @abstractmethod
     def selectStocksToBuy(self, maxNumberOfStocks, date=False, customTickerList=False, genricParameters=[]):
         '''
         Selects which stocks to buy, and the proportion of funds to be allocated to each.
@@ -32,9 +28,8 @@ class stockSelector():
         Returns a list of in the following format: [ [Ticker1, RatioOfFundAllocation1], [Ticker2, RatioOfFundAllocation2], ... ] .
         All ratios will add up to 1.
         ''' 
-        return self.selector.selectStocksToBuy(maxNumberOfStocks, date=date, customTickerList=customTickerList, genricParameters=genricParameters)
 
-    
+    @abstractmethod
     def selectStocksToSell(self, listOfOwnedStocks, date=False, genricParameters=[]):
         '''
         Selects which stocks to sell.
@@ -43,11 +38,9 @@ class stockSelector():
 
         Returns a list of stocks to sell.
         ''' 
-        return self.selector.selectStocksToSell(listOfOwnedStocks, date=date, genricParameters=genricParameters)
-
 
     def numberOfStocksToBuy(self, funds):
         '''
         Returns how many stocks you should buy based on your availible funds.
         '''
-        return (int(funds/2500.0))
+        return (int(funds/self.minimumPurchase))
