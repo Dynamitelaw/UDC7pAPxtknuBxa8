@@ -15,7 +15,7 @@ def runSimulation(dateRange, startingBalance, depositAmount=False, depositFreque
 
     -Daterange must be a 2 element list, in the following format: [[<start date>], [<end date>]], date format = int YYYYMMDD.
     -depositFrequency is how often (in days) to deposit funds into your trading account.
-    -slector is a string denoting which stock selection method to use.
+    -selector is a string denoting which stock selection method to use.
     -Passing a customTickerList will run the simulation using only the tickers included in the list
     '''
     #Instaniate objects
