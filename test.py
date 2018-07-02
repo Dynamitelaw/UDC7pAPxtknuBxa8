@@ -11,43 +11,25 @@ from TradingAccount import tradingAccount
 import os
 
 
-def fixDates(filename):
-    filepath = "Data\PcsData\\" + filename
 
-    infile = open(filepath,'r')
-    outfile = open("Data\PcsData\\"+ filename + ".tmp", 'w')
 
-    top = True
-    for line in infile:
-        if (top):
-            outfile.write(line)
-            top = False
-        else:
-            lineList = line.split(",")
-            dateInteger = lineList[0]
-            dateString = utils.convertDate(dateInteger, outputFormat="String")
-            outfile.write(dateString+",")
-            for i in range(1, len(lineList)-1, 1):
-                outfile.write(lineList[i]+",")
-            outfile.write(lineList[-1])
 
-    infile.close()
-    outfile.close()
-
-    os.remove(filepath)
-    os.rename("Data\PcsData\\"+ filename + ".tmp",filepath)
-    
-
-def fixAllDates():
-    filesToFix = os.listdir("Data\PcsData")
-    
-    
-    p = Pool(4)
-    p.map(fixDates, filesToFix)
 
 
 if __name__ == '__main__':
-    fixAllDates()
+    startDate = "2013-01-01"
+    endDate = "2013-01-03"
+    date =  "2013-01-02"
+
+
+    completed = utils.getDayDifference(date, endDate)
+    totalToDo = utils.getDayDifference(startDate, endDate)
+    percentage = int(float(completed*1000)/totalToDo)/10.0
+    sys.stdout.write("\r")
+    sys.stdout.write(str(percentage)+"%")
+    sys.stdout.flush()
+    
+    #fixAllDates()
     #fixDates("APHB.csv")
     '''
     d = database()

@@ -7,13 +7,14 @@ from TradingAccount import tradingAccount
 from PandaDatabase import database
 from TestSelector import TestSelector
 import sys
+import datetime
 
 
 def runSimulation(dateRange, startingBalance, selector, depositAmount=False, depositFrequency=False, comission=10, sampleSize=False, simulationName="SIM", customTickerList=False, genericParams=[]):
     '''
     Runs a single simulation. Saves results to a csv file.
 
-    -Daterange must be a 2 element list, in the following format: [[<start date>], [<end date>]], date format = int YYYYMMDD.
+    -Daterange must be a 2 element list, in the following format: [[<start date>], [<end date>]], date format = string "YYYY-MM-DD".
     -depositFrequency is how often (in days) to deposit funds into your trading account.
     -selector is a string denoting which stock selection method to use.
     -Passing a customTickerList will run the simulation using only the tickers included in the list
@@ -36,16 +37,16 @@ def runSimulation(dateRange, startingBalance, selector, depositAmount=False, dep
     endDate = dateRange[1]
 
     #Progress bar header
-    headerStartDate = utils.convertDate(startDate, outputFormat="String")
-    headerEndDate = utils.convertDate(endDate, outputFormat="String")
-
     print ("Runing Simulation...")
     print ("Selector: " + selector.name)
-    print ("Daterange: "+headerStartDate+" to "+headerEndDate)
+    print ("Daterange: "+startDate+" to "+endDate)
     print ("")
+    sys.stdout.write("\r")
+    sys.stdout.write("0.0%")
+    sys.stdout.flush()
 
     #Begin simulation
-    for date in range(startDate, endDate+1, 1):
+    for date in utils.daterange(startDate, endDate):
         if (utils.isWeekday(date)):
             #Selects which stocks to sell
             ownedStocks = account.getOwnedStocks()
@@ -74,7 +75,9 @@ def runSimulation(dateRange, startingBalance, selector, depositAmount=False, dep
             account.placeBuyOrders(buyOrders, date)
 
             #Progress bar
-            percentage = float(int((float(date-startDate)*1000)/(endDate-startDate)))/10
+            completed = utils.getDayDifference(startDate, date)
+            totalToDo = utils.getDayDifference(startDate, endDate)
+            percentage = int(float(completed*1000)/totalToDo)/10.0
             sys.stdout.write("\r")
             sys.stdout.write(str(percentage)+"%")
             sys.stdout.flush()
@@ -84,11 +87,11 @@ def runSimulation(dateRange, startingBalance, selector, depositAmount=False, dep
 
 
 if __name__ == '__main__':
-    dateRange = [20150101,20150601]
+    dateRange = ["2015-01-01","2015-03-01"]
     startingBalance = 100000
     data = database()
     selector = TestSelector(data)
 
-    runSimulation(dateRange, startingBalance, selector, sampleSize=200)
+    runSimulation(dateRange, startingBalance, selector, sampleSize=50)
 
 

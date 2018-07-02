@@ -17,8 +17,7 @@ import random
 class database:
     '''
     Class used for storing and retrieving data from PcsData
-    *Note: Dates are used as row idexes, but are stored as integers
-        rather than strings (more efficient), in the following format: YYYYMMDD
+    *Note: Dates are used as row idexes
     '''
 
     def __init__(self):
@@ -64,16 +63,16 @@ class database:
         Returns a list [ticker, dataframe]
         '''
         ticker = fileName.rstrip(".csv")
-        dataframe = pd.read_csv(self.processedDataPath+"\\"+fileName, index_col=0)
+        dataframe = pd.read_csv(self.processedDataPath+"\\"+fileName, index_col=0, dtype={"Open":float, "High":float, "Low":float, "Close":float, "Volume":int, "Adj Close":float, "2 Day Slope":float, "5 Day Slope":float, "Standard Dev":float, "Optimal Dates":int, "Desired Level 1 Out Buy":float, "Desired Level 1 Out Sell":float, "Profit Speed":float, "2 Day Momentum":float, "5 Day Moementum":float, "2D Discrete Moementum":int, "5D Discrete Moementum":int})
         return [ticker, dataframe]
 
     
-    def getDataframe(self, ticker, dateRange=False, dataFields=False,sorting=0):
+    def getDataframe(self, ticker, dateRange=False, dataFields=False, sorting=0):
         '''
         Returns the dataframe corresponding to the passed ticker.
         Returns False if dataframe is not present or values requested are not valid.
 
-        Daterange must be a 2 element list, in the following format: [[<start date>], [<end date>]], date format = int YYYYMMDD.
+        Daterange must be a 2 element list, in the following format: [[<start date>], [<end date>]], date format = string "YYYY-MM-DD".
         dateFields must be a list of strings corresponding to the columns of the dataframe you want returned.
         By default the dataframe is descending i.e. df.iloc[0] = 2018-01-01 df.iloc[1] = 2018-01-02 
         '''

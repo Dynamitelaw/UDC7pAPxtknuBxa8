@@ -229,6 +229,10 @@ def process(ticker, dataframe=False):
     '''
     try:
         filepath = 'Data/StockData/' + ticker + '.csv'
+        dataframe = pd.DataFrame.from_csv(filepath)
+        dataframe.index.name="date"
+        dataframe.sort_values("date",ascending=0).to_csv(filepath)
+
         try:
             file = open(filepath,'r')
         except:
@@ -346,8 +350,8 @@ def processAllTickers():
 #-------------------------------------------------------------------------------------------
 
 if __name__ == '__main__':
-    #processAllTickers()  
-    process("APLE")
+    processAllTickers()  
+    #process("APLE")
     
 
 
