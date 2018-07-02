@@ -12,7 +12,7 @@ from matplotlib import pyplot as plt
 import os
 import random
 
-def createSVMmodel(dir="Data/SVM/1PercentGrowth1DaysAway/",training_percent=.3):
+def createSVMmodel(dir="Data/SVM/1PercentGrowth1DaysAway/",training_percent=.3,c=1,kernel="rbf",gamma=.1):
     '''Creates and trains a SVM model from data in the dir directory. Takes training_percent
     as an argument denoting how much of the data is to be used for training the model. 
     training_percent should be a float less than 1 i.e. for 30% training_percent=.3.
@@ -26,7 +26,7 @@ def createSVMmodel(dir="Data/SVM/1PercentGrowth1DaysAway/",training_percent=.3):
 
     tickers = []
     for root,dirs,files in os.walk(dir):
-            for f in files[0:200]:
+            for f in files[0:100]:
                 tickers.append(f)
     path = os.path.join(dir,tickers[0])
     data_df = pd.DataFrame.from_csv(path)
@@ -50,7 +50,7 @@ def createSVMmodel(dir="Data/SVM/1PercentGrowth1DaysAway/",training_percent=.3):
     testingDataY = y[train_index:]
     testing_p_res = p_res[train_index:]
 
-    clf = svm.SVC(kernel="linear", C=1.0)
+    clf = svm.SVC(kernel=kernel, C=c,gamma=gamma)
     clf.fit(trainingDataX,trainingDataY)
     correct_count = 0
 
@@ -72,5 +72,5 @@ def createSVMmodel(dir="Data/SVM/1PercentGrowth1DaysAway/",training_percent=.3):
     return clf , correct_count/len(results)
 
 if __name__=="__main__":
-    model,accuracy = createSVMmodel()
+    model,accuracy = createSVMmodel(c=60,gamma=.16)
     print(accuracy)

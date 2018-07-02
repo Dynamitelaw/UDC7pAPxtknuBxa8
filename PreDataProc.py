@@ -321,7 +321,7 @@ def process(ticker, dataframe=False):
         dataFrame.to_csv(savepath)
 
     except Exception as e:
-        print(e)
+        #print(e)
         pass
     
     
