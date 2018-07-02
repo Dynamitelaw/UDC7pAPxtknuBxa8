@@ -21,7 +21,7 @@ class TestSelector(stockSelector):
         '''
         SimpleSlopeSelctor constructor. No genericParameters are required
         '''
-        super().__init__(self)
+        super().__init__(self, databaseInterface)
         if ( type(databaseInterface).__name__ !='database'):
             raise ValueError("Invalid parameter. databaseInterface must be of type \"<class 'PandaDatabase.database'>\". Recieved {}".format(type(databaseInterface)))
         self.database = databaseInterface
