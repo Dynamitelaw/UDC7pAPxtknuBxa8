@@ -68,13 +68,14 @@ class database:
         return [ticker, dataframe]
 
     
-    def getDataframe(self, ticker, dateRange=False, dataFields=False):
+    def getDataframe(self, ticker, dateRange=False, dataFields=False,sorting=0):
         '''
         Returns the dataframe corresponding to the passed ticker.
         Returns False if dataframe is not present or values requested are not valid.
 
         Daterange must be a 2 element list, in the following format: [[<start date>], [<end date>]], date format = int YYYYMMDD.
         dateFields must be a list of strings corresponding to the columns of the dataframe you want returned.
+        By default the dataframe is descending i.e. df.iloc[0] = 2018-01-01 df.iloc[1] = 2018-01-02 
         '''
         try:
             dataframe = self.dataframeDict[ticker]
@@ -118,6 +119,7 @@ class database:
                     #Data is not available
                     return False
                 else:
+                    dataframe.sort_values('date',ascending=sorting)
                     return dataframe
             except:
                 return False
