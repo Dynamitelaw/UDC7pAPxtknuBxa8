@@ -10,7 +10,7 @@ import sys
 import datetime
 
 
-def runSimulation(dateRange, startingBalance, selector, depositAmount=False, depositFrequency=False, comission=10, sampleSize=False, simulationName="SIM", customTickerList=False, genericParams=[]):
+def runSimulation(dateRange, startingBalance, selector, depositAmount=False, depositFrequency=False, comission=10, sampleSize=False, simulationName="SIM", customTickerList=False, preloadToMemory=False, genericParams=[]):
     '''
     Runs a single simulation. Saves results to a csv file.
 
@@ -28,6 +28,9 @@ def runSimulation(dateRange, startingBalance, selector, depositAmount=False, dep
         tickerList = stockData.getTickerList(randomize=True, numberOfShuffles=2)[:sampleSize]
     else:
         tickerList = stockData.getTickerList()
+
+    if (preloadToMemory):
+        stockData.loadDatabaseToMemory(tickerList)
     
     account = tradingAccount(stockData)
     account.depositFunds(startingBalance)
@@ -92,6 +95,6 @@ if __name__ == '__main__':
     data = database()
     selector = TestSelector(data)
 
-    runSimulation(dateRange, startingBalance, selector, sampleSize=50)
+    runSimulation(dateRange, startingBalance, selector, sampleSize=50, preloadToMemory=True)
 
 

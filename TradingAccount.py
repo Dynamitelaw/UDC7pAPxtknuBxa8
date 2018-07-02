@@ -212,6 +212,8 @@ class tradingAccount():
             filepath = self.savepath + "\\" + self.name + "_" + str(time.time()) + ".csv"
 
         self.tradingHistory.to_csv(filepath)
+
+    
             
 
         

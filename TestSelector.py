@@ -51,7 +51,7 @@ class TestSelector(stockSelector):
             for ticker in tickerList:
                 argList.append([ticker, date])
 
-            processCount = int(float(multiprocessing.cpu_count())*1.5)
+            processCount = multiprocessing.cpu_count()-1
             processPool = Pool(processCount)
             results = processPool.map(self.getProfitSpeed, argList)
 
@@ -112,7 +112,7 @@ class TestSelector(stockSelector):
             for ticker in tickerList:
                 argList.append([ticker, date])
 
-            processCount = int(float(multiprocessing.cpu_count())*1.5)
+            processCount = multiprocessing.cpu_count()-1
             processPool = Pool(processCount)
             results = processPool.map(self.getProfitSpeed, argList)
 
@@ -160,8 +160,10 @@ class TestSelector(stockSelector):
                 pass
             else:
                 profitSpeed = dataframe.at[date,"Profit Speed"]
+                del tempDatabaseInterface
                 return [profitSpeed, ticker]
         except:
+            del tempDatabaseInterface
             pass
 
         
