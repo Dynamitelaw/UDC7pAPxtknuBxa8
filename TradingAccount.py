@@ -113,7 +113,7 @@ class tradingAccount():
         places Sell Order for every order in listOfOrders.
         Each element in listOfOrders is a list in the following format:
             [<str ticker>, <int quantity>]
-        Date is the current date, in integer format YYYYMMDD.
+        Date is the current date, in string format "YYYY-MM-DD".
         Setting simulation to False will actually execute the buy orders (not yet implimented)
         '''
         if (not simulation):
@@ -160,7 +160,7 @@ class tradingAccount():
         '''
         places a sell order for every ticker in list of tickers.
         Will sell ALL stocks owned of that ticker
-        Date is the current date, in integer format YYYYMMDD.
+        Date is the current date, in string format "YYYY-MM-DD".
         Setting simulation to False will actually execute the sell orders (not yet implimented)
         '''
         if (not simulation):

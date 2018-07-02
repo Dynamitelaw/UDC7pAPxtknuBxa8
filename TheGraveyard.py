@@ -587,3 +587,39 @@ os.chdir('/home/dynamitelaw/Documents/dw/UDC7pAPxtknuBxa8-firstTfModel/Data/Stoc
 
 for file in k:
 	os.rename(file,file[0:-5]+file[-4:])
+
+
+
+def fixDates(filename):
+    filepath = "Data\PcsData\\" + filename
+
+    infile = open(filepath,'r')
+    outfile = open("Data\PcsData\\"+ filename + ".tmp", 'w')
+
+    top = True
+    for line in infile:
+        if (top):
+            outfile.write(line)
+            top = False
+        else:
+            lineList = line.split(",")
+            dateInteger = lineList[0]
+            dateString = utils.convertDate(dateInteger, outputFormat="String")
+            outfile.write(dateString+",")
+            for i in range(1, len(lineList)-1, 1):
+                outfile.write(lineList[i]+",")
+            outfile.write(lineList[-1])
+
+    infile.close()
+    outfile.close()
+
+    os.remove(filepath)
+    os.rename("Data\PcsData\\"+ filename + ".tmp",filepath)
+    
+
+def fixAllDates():
+    filesToFix = os.listdir("Data\PcsData")
+    
+    
+    p = Pool(4)
+    p.map(fixDates, filesToFix)

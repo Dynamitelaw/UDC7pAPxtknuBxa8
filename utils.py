@@ -10,6 +10,7 @@ DO NOT DELETE ANYTHING!
 import sys
 import time
 import datetime
+from datetime import timedelta, date
 
 def printLocation(text="$VER: Locate_Demo.py_Version_0.00.10_(C)2007-2012_B.Walker_G0LCU.", x=0, y=0):
     '''
@@ -97,9 +98,9 @@ def extractTicker(dict):
 def isWeekday(date):
     '''
     Returns a bool: True if weekday, False if weekend.
-    Date must be passed as an int in the following format: YYYYMMDD
+    Date must be passed as an string in the following format: "YYYY-MM-DD"
     '''
-    year, month, day = convertDate(date)
+    year, month, day = dateSplitter(date)
 
     tempdate = datetime.date(year, month, day) 
     day = tempdate.strftime("%A")
@@ -107,3 +108,39 @@ def isWeekday(date):
         return False
     else:
         return True
+
+
+def daterange(start_date, end_date):
+    '''
+    Provides an iterable over specified date range.
+    Dates are strings in the format "YYYY-MM-DD"
+    '''
+    startDateList = start_date.split("-")
+    endDateList = end_date.split("-")
+    startDate = date(int(startDateList[0]), int(startDateList[1]), int(startDateList[2]))
+    endDate = date(int(endDateList[0]), int(endDateList[1]), int(endDateList[2]))
+
+    for n in range(int ((endDate - startDate).days)):
+        yield (startDate + timedelta(n)).strftime("%Y-%m-%d")
+
+
+def dateSplitter(date):
+    '''
+    Returns a tuple of ints (year, month, day)
+    '''
+    dateList = date.split("-")
+    year = int(dateList[0])
+    month = int(dateList[1])
+    day = int(dateList[2])
+
+    return year, month, day
+
+def getDayDifference(startDate, endDate):
+    '''
+    Returns a date object. Date must be a string "YYYY-MM-DD"
+    '''
+    startYear, startMonth, startDay = dateSplitter(startDate)
+    endYear, endMonth, endDay = dateSplitter(endDate)
+    
+    dayDifference = int( (date(endYear, endMonth, endDay) - date(startYear, startMonth, startDay)).days)
+    return dayDifference
