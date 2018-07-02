@@ -304,8 +304,9 @@ def process(ticker, dataframe=False):
         data = data[indx:k-31,:]     #truncates unprocessed data at beggining of date range and the end week of date range
         dates = dates[indx:k-31,:]       #truncates dates list   
         dates = dates.tolist()
+        
         for i in range(0, len(dates), 1):
-            dates[i] = int(dates[i][0].replace("-",""))
+            dates[i] = dates[i][0]
         
         header = ["Open", "High", "Low", "Close", "Volume", "Adj Close", "2 Day Slope", "5 Day Slope", "Standard Dev", "Optimal Dates", "Desired Level 1 Out Buy", "Desired Level 1 Out Sell", "Profit Speed", "2 Day Momentum", "5 Day Moementum", "2D Discrete Moementum", "5D Discrete Moementum"]
 
@@ -316,7 +317,7 @@ def process(ticker, dataframe=False):
         dataFrame.to_csv(savepath)
 
     except Exception as e:
-        #print(ticker)
+        print(e)
         pass
     
     
@@ -345,7 +346,8 @@ def processAllTickers():
 #-------------------------------------------------------------------------------------------
 
 if __name__ == '__main__':
-    processAllTickers()  
+    #processAllTickers()  
+    process("APLE")
     
 
 
