@@ -25,6 +25,7 @@ class TestSelector(stockSelector):
         if ( type(databaseInterface).__name__ !='database'):
             raise ValueError("Invalid parameter. databaseInterface must be of type \"<class 'PandaDatabase.database'>\". Recieved {}".format(type(databaseInterface)))
         self.database = databaseInterface
+        self.name = "TestSelector"
 
     
     def selectStocksToBuy(self, maxNumberOfStocks, date=False, customTickerList=False, genricParameters=[]):
@@ -68,6 +69,11 @@ class TestSelector(stockSelector):
             indexesOfChosenStocks = []
             for i in range(0, maxNumberOfStocks, 1):
                 while (True):
+                    if (lengthOfResults<=maxNumberOfStocks):
+                        for j in range(0,lengthOfResults,1):
+                            indexesOfChosenStocks.append(j)
+                        break
+                        
                     indexToUse = randint(int(randomnessFactor*(lengthOfResults-1)), lengthOfResults-1)
                     if (indexToUse in indexesOfChosenStocks):
                         pass

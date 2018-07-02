@@ -5,7 +5,7 @@ Dynamitelaw
 import utils
 from TradingAccount import tradingAccount
 from PandaDatabase import database
-from StockSelectionInterface import stockSelector
+from TestSelector import TestSelector
 import sys
 
 
@@ -40,7 +40,7 @@ def runSimulation(dateRange, startingBalance, selector, depositAmount=False, dep
     headerEndDate = utils.convertDate(endDate, outputFormat="String")
 
     print ("Runing Simulation...")
-    print ("Selector: " + selector)
+    print ("Selector: " + selector.name)
     print ("Daterange: "+headerStartDate+" to "+headerEndDate)
     print ("")
 
@@ -53,7 +53,7 @@ def runSimulation(dateRange, startingBalance, selector, depositAmount=False, dep
             for ticker in ownedStocks:
                 ownedTickers.append(ticker)
 
-            stocksToSell = selector.selectStocksToSell(ownedTickers)
+            stocksToSell = selector.selectStocksToSell(ownedTickers, date)
             #Sells stocks
             account.placeSellOrders(stocksToSell, date)
 
@@ -74,8 +74,21 @@ def runSimulation(dateRange, startingBalance, selector, depositAmount=False, dep
             account.placeBuyOrders(buyOrders, date)
 
             #Progress bar
+            percentage = float(int((float(date-startDate)*1000)/(endDate-startDate)))/10
+            sys.stdout.write("\r")
+            sys.stdout.write(str(percentage)+"%")
+            sys.stdout.flush()
             
-
+    #Save results        
     account.saveHistory()
+
+
+if __name__ == '__main__':
+    dateRange = [20150101,20150601]
+    startingBalance = 100000
+    data = database()
+    selector = TestSelector(data)
+
+    runSimulation(dateRange, startingBalance, selector, sampleSize=200)
 
 
