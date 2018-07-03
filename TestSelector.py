@@ -7,7 +7,7 @@ Decisions have a degree of randomness for more accurate testing.
 '''
 
 import pandas as pd
-from PandaDatabase import database
+import PandaDatabase as database
 import multiprocessing
 from multiprocessing import Pool
 import numpy as np
@@ -17,14 +17,12 @@ from StockSelectionInterface import stockSelector
 
 
 class TestSelector(stockSelector):
-    def __init__(self, databaseInterface, genericParameters=[]):
+    def __init__(self, genericParameters=[]):
         '''
         SimpleSlopeSelctor constructor. No genericParameters are required
         '''
-        super().__init__(self, databaseInterface)
-        if ( type(databaseInterface).__name__ !='database'):
-            raise ValueError("Invalid parameter. databaseInterface must be of type \"<class 'PandaDatabase.database'>\". Recieved {}".format(type(databaseInterface)))
-        self.database = databaseInterface
+        super().__init__(self)
+        
         self.name = "TestSelector"
 
     
@@ -46,14 +44,16 @@ class TestSelector(stockSelector):
             if (customTickerList):
                 tickerList = customTickerList
             else:
-                tickerList = self.database.getTickerList()
+                tickerList = database.getTickerList()
             argList = []
             for ticker in tickerList:
                 argList.append([ticker, date])
 
             processCount = multiprocessing.cpu_count()-1
             processPool = Pool(processCount)
-            results = processPool.map(self.getProfitSpeed, argList)
+            results = list(processPool.map(self.getProfitSpeed, argList))
+            processPool.close()
+            processPool.join()
 
             for i in range(len(results)-1, -1, -1):
                 if (results[i]):
@@ -62,24 +62,29 @@ class TestSelector(stockSelector):
                     del results[i]
 
             results = sorted(results)
+            #print(results)
             
             randomnessFactor = 0.8  #Used to randomize selection so that the selector isn't perfect. 0 is perfect, 1 is completely random
 
             lengthOfResults = len(results)
+            #print(lengthOfResults)
+            
             indexesOfChosenStocks = []
             for i in range(0, maxNumberOfStocks, 1):
-                while (True):
-                    if (lengthOfResults<=maxNumberOfStocks):
-                        for j in range(0,lengthOfResults,1):
-                            indexesOfChosenStocks.append(j)
-                        break
-                        
-                    indexToUse = randint(int(randomnessFactor*(lengthOfResults-1)), lengthOfResults-1)
-                    if (indexToUse in indexesOfChosenStocks):
-                        pass
-                    else:
-                        indexesOfChosenStocks.append(indexToUse)
-                        break
+                if (lengthOfResults-len(indexesOfChosenStocks)>0):
+                    #There are still stocks left to chose from
+                    while (True):                        
+                        indexToUse = randint(int(randomnessFactor*(lengthOfResults-1)), lengthOfResults-1)
+                        if (indexToUse in indexesOfChosenStocks):
+                            pass
+                        else:
+                            indexesOfChosenStocks.append(indexToUse)
+                            break
+                else:
+                    #There are no more stocks left to select
+                    break
+
+            #print(indexesOfChosenStocks)
 
             stocksToConsider = []
             for index in indexesOfChosenStocks:
@@ -115,6 +120,8 @@ class TestSelector(stockSelector):
             processCount = multiprocessing.cpu_count()-1
             processPool = Pool(processCount)
             results = processPool.map(self.getProfitSpeed, argList)
+            processPool.close()
+            processPool.join()
 
             for i in range(len(results)-1, -1, -1):
                 if (results[i]):
@@ -150,20 +157,24 @@ class TestSelector(stockSelector):
         '''
         ticker = args[0]
         date = args[1]
-        tempDatabaseInterface = database() #instantiate a local database interface in order to support multithreading
 
         try:
-            dataframe = tempDatabaseInterface.getDataframe(ticker, dateRange=[date,date], dataFields=["Profit Speed"])# .at[date,"Profit Speed"]
-            
-            if (pd.isnull(dataframe).at[date,"Profit Speed"] == True):
+            dataframe = database.getDataframe(ticker, dateRange=[date,date], dataFields=["Profit Speed"])# .at[date,"Profit Speed"]
+            #print(dataframe)
+
+            try:
+                isMissing = pd.isnull(dataframe).loc[date,"Profit Speed"]
+            except Exception as e:
+                isMissing = True
+            if (isMissing):
                 #Profit speed data is missing. Return nothing
+                del dataframe
                 pass
             else:
-                profitSpeed = dataframe.at[date,"Profit Speed"]
-                del tempDatabaseInterface
+                profitSpeed = dataframe.loc[date,"Profit Speed"]
+                del dataframe
                 return [profitSpeed, ticker]
         except:
-            del tempDatabaseInterface
             pass
 
         

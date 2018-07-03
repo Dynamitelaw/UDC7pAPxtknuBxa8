@@ -5,10 +5,11 @@ import utils
 from utils import printLocation
 import time
 import numpy as np
-from PandaDatabase import database
+import PandaDatabase as database
 from TestSelector import TestSelector
 from TradingAccount import tradingAccount
 import os
+import pandas as pd
 
 
 
@@ -17,17 +18,16 @@ import os
 
 
 if __name__ == '__main__':
-    startDate = "2013-01-01"
-    endDate = "2013-01-03"
-    date =  "2013-01-02"
+    startDate = "2015-07-02"
+    endDate = "2015-05-07"
+    date =  "2015-06-23"
 
+    k = database.getDataframe("TSLA", dateRange=[startDate,endDate], dataFields=["Profit Speed"])#.at[20150506,"Profit Speed"]
+    print(k)
+    isMissing = pd.isnull(k).loc[date,"Profit Speed"]
+    print(isMissing)
 
-    completed = utils.getDayDifference(date, endDate)
-    totalToDo = utils.getDayDifference(startDate, endDate)
-    percentage = int(float(completed*1000)/totalToDo)/10.0
-    sys.stdout.write("\r")
-    sys.stdout.write(str(percentage)+"%")
-    sys.stdout.flush()
+    
     
     #fixAllDates()
     #fixDates("APHB.csv")

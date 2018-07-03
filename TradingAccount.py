@@ -7,7 +7,7 @@ trading history, owned stocks, and handles buy and sell orders.
 
 import pandas as pd
 import utils
-from PandaDatabase import database
+import PandaDatabase as database
 import datetime
 import time
 import os
@@ -15,7 +15,7 @@ import RetrieveStockData as rsd
 
 
 class tradingAccount():
-    def __init__(self, databaseInterface, name="TESTACCOUNT"):
+    def __init__(self, name="TESTACCOUNT"):
         '''
         Trading Account constructor. Must be passed a database object.
         '''
@@ -23,12 +23,7 @@ class tradingAccount():
         self.balance = 0  #balance is an integer (in cents), NOT dollars
         self.stockAssets = 0  #assets is an integer (in cents), NOT dollars
         self.commision = 0 #balance is an integer (in cents), NOT dollars
-        
-        if ( type(databaseInterface).__name__ !='database'):
-            raise ValueError("Invalid parameter. databaseInterface must be of type \"<class 'PandaDatabase.database'>\". Recieved {}".format(type(databaseInterface)))
-        
-        self.database = databaseInterface
-        
+                
         self.name = utils.sanitizeString(name)
         cwd = os.getcwd()
         self.savepath = cwd + "\\Data\AcountData\\" + self.name
@@ -98,10 +93,14 @@ class tradingAccount():
         self.stockAssets = 0
 
         for ticker in self.stocksOwned:
-            quantityOwned = self.stocksOwned.get(ticker)
+            quantityOwned = self.stocksOwned.get(ticker)[0]
             if (date):
-                tickerData = self.database.getDataframe(ticker)
-                value = tickerData.at[date, "Open"]
+                tickerData = database.getDataframe(ticker)
+                try:
+                    value = tickerData.loc[date, "Open"]
+                except:
+                    #Using old value if current value cannot be found
+                    value = self.stocksOwned.get(ticker)[1]
             else:
                 value = rsd.getCurrentPrice(ticker)
             
@@ -126,8 +125,8 @@ class tradingAccount():
             ticker = order[0]
             quantity = order[1]
 
-            tickerData = self.database.getDataframe(ticker)
-            openPrice = tickerData.at[date, "Open"]
+            tickerData = database.getDataframe(ticker)
+            openPrice = tickerData.loc[date, "Open"]
             
             self.balance -= self.commision
             tradeCost = int(openPrice*quantity*100)
@@ -135,7 +134,7 @@ class tradingAccount():
             if ((self.balance - tradeCost) >= 0):
                 #There is enough money for the trade
                 self.balance -= tradeCost  #*100 since balance is in cents
-                self.stocksOwned[ticker] = quantity
+                self.stocksOwned[ticker] = quantity, openPrice
 
                 if (simulation):
                     self.updateAssets(date)
@@ -147,7 +146,7 @@ class tradingAccount():
                 timeStamp = time.time()
                 timeOfExecution = datetime.datetime.fromtimestamp(timeStamp).strftime('%Y-%m-%d %H:%M:%S')
 
-                executedOrders.append([date, ticker, quantity, openPrice, action, timeOfExecution, totalAssets, float(self.balance)/100, float(self.stockAssets)/100])
+                executedOrders.append([date, ticker, quantity, float(openPrice), action, timeOfExecution, totalAssets, float(self.balance)/100, float(self.stockAssets)/100])
                 
             else:
                 raise ValueError("Insufficient funds to execute trade {}".format(order))
@@ -170,9 +169,9 @@ class tradingAccount():
         action = "Sell"
         executedOrders = []
         for ticker in listOfTickers:
-            tickerData = self.database.getDataframe(ticker)
-            openPrice = tickerData.at[date, "Open"]
-            quantity = self.stocksOwned[ticker]
+            tickerData = database.getDataframe(ticker)
+            openPrice = tickerData.loc[date, "Open"]
+            quantity = self.stocksOwned[ticker][0]
             
             self.balance -= self.commision
             tradeIncome = int(openPrice*quantity*100)
@@ -192,7 +191,7 @@ class tradingAccount():
                 timeStamp = time.time()
                 timeOfExecution = datetime.datetime.fromtimestamp(timeStamp).strftime('%Y-%m-%d %H:%M:%S')
 
-                executedOrders.append([date, ticker, quantity, openPrice, action, timeOfExecution, totalAssets, float(self.balance)/100, float(self.stockAssets)/100])
+                executedOrders.append([date, ticker, quantity, float(openPrice), action, timeOfExecution, totalAssets, float(self.balance)/100, float(self.stockAssets)/100])
                 
             else:
                 raise ValueError("Ticker {} is not a currently owned stock".format(ticker))
@@ -212,6 +211,13 @@ class tradingAccount():
             filepath = self.savepath + "\\" + self.name + "_" + str(time.time()) + ".csv"
 
         self.tradingHistory.to_csv(filepath)
+
+
+    def getHistory(self):
+        '''
+        Returns the trading history for this account as a dataframe
+        '''
+        return self.tradingHistory
 
     
             
