@@ -10,17 +10,23 @@ import sys
 import datetime
 
 
-def runSimulation(dateRange, startingBalance, selector, depositAmount=False, depositFrequency=False, comission=10, sampleSize=False, historyFileName=False, customTickerList=False, preloadToMemory=False, genericParams=[]):
+def runSimulation(account, dateRange, startingDeposit, selector, depositAmount=False, depositFrequency=False, comission=10, sampleSize=False, customTickerList=False, preloadToMemory=False, genericParams=[]):
     '''
-    Runs a single simulation. Saves results to a csv file. Returns a dataframe of trading history.
+    Runs a single simulation. Saves results to a csv file.
 
     -Daterange must be a 2 element list, in the following format: [[<start date>], [<end date>]], date format = string "YYYY-MM-DD".
     -depositFrequency is how often (in days) to deposit funds into your trading account.
-    -selector is a string denoting which stock selection method to use.
-    -Passing a customTickerList will run the simulation using only the tickers included in the list
+    -selector is a StockSelectionInterface object.
+    -Passing a customTickerList will run the simulation using only the tickers included in the list.
     '''
+    #Check for valid parameters
+    if ((depositFrequency) and (not depositAmount)):
+        raise ValueError("Deposit frequency set without deposit amount.")
+    if ((depositAmount) and (not depositFrequency)):
+        raise ValueError("Deposit amount set without deposit frequency.")
+
     #Instaniate objects
-    print("Getting tickers...")
+    print("\nGetting tickers...")
     if (customTickerList):
         tickerList = customTickerList
     elif (sampleSize):
@@ -32,15 +38,11 @@ def runSimulation(dateRange, startingBalance, selector, depositAmount=False, dep
         print("Preloading stock data to memory...")
         database.loadDatabaseToMemory(tickerList)
 
-    
-    if (historyFileName):
-        account = tradingAccount(name=historyFileName)
-    else:
-        account = tradingAccount()
-
-    account.depositFunds(startingBalance)
+    #Set starting balance and comission
+    account.depositFunds(startingDeposit)
     account.setCommision(comission)
 
+    #Extract daterange
     startDate = dateRange[0]
     endDate = dateRange[1]
 
@@ -53,8 +55,11 @@ def runSimulation(dateRange, startingBalance, selector, depositAmount=False, dep
     sys.stdout.write("0.0%")
     sys.stdout.flush()
 
+    daysSinceLastDeposit = 0
+
     #Begin simulation
     for date in utils.daterange(startDate, endDate):
+        #Check if market is open
         if (utils.isWeekday(date)):
             #Selects which stocks to sell
             ownedStocks = account.getOwnedStocks()
@@ -84,6 +89,12 @@ def runSimulation(dateRange, startingBalance, selector, depositAmount=False, dep
             #Buys stocks
             account.placeBuyOrders(buyOrders, date)
 
+        if (depositFrequency):
+            daysSinceLastDeposit += 1
+            if (daysSinceLastDeposit == depositFrequency):
+                account.depositFunds(depositAmount)
+                daysSinceLastDeposit = 0
+
         #Progress bar
         completed = utils.getDayDifference(startDate, date)
         totalToDo = utils.getDayDifference(startDate, endDate)
@@ -97,11 +108,12 @@ def runSimulation(dateRange, startingBalance, selector, depositAmount=False, dep
 
 
 if __name__ == '__main__':
-    dateRange = ["2017-01-03","2017-01-07"]
+    dateRange = ["2017-01-03","2017-01-20"]
     startingBalance = 10000
     selector = TestSelector()
+    account = tradingAccount()
 
-    runSimulation(dateRange, startingBalance, selector, sampleSize=400, preloadToMemory=True)
+    runSimulation(account, dateRange, startingBalance, selector, sampleSize=800, preloadToMemory=True)
     utils.emitAsciiBell()
 
 

@@ -64,7 +64,7 @@ class TestSelector(stockSelector):
             results = sorted(results)
             #print(results)
             
-            randomnessFactor = 0.8  #Used to randomize selection so that the selector isn't perfect. 0 is perfect, 1 is completely random
+            randomnessFactor = 0.85  #Used to randomize selection so that the selector isn't perfect. 0 is perfect, 1 is completely random
 
             lengthOfResults = len(results)
             #print(lengthOfResults)
@@ -131,7 +131,7 @@ class TestSelector(stockSelector):
 
             results = sorted(results)
             
-            randomnessFactor = 0.2  #Used to randomize selection so that the selector isn't perfect. 0 is perfect, 1 is completely random
+            randomnessFactor = 0.5  #Used to randomize selection so that the selector isn't perfect. 0 is perfect, 1 is completely random
 
             stocksToSell = []
             for stock in results:

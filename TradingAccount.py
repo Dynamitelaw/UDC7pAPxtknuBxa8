@@ -32,8 +32,11 @@ class tradingAccount():
             os.makedirs(self.savepath)
 
 
-        self.historyColumns = ["Date", "Ticker", "Quantity", "Price", "Action","TimeOfExecution", "TotalAssets", "LiquidFunds", "StockAssets"]
-        self.tradingHistory = pd.DataFrame(columns=self.historyColumns)
+        self.dailyLogColumns = ["Date", "Ticker", "Quantity", "Price", "Action","TimeOfExecution", "TotalAssets", "LiquidFunds", "StockAssets"]
+        self.dailyLogs = pd.DataFrame(columns=self.dailyLogColumns)
+
+        self.tradeHistoryColumns = ["Ticker", "Date Bought", "Buy Price", "Date Sold", "Sell Price", "Quantity", "Commission", "Trade Profit"]
+        self.tradeHistory = pd.DataFrame(columns=self.tradeHistoryColumns)
 
     
     def depositFunds(self, dollarValue):
@@ -121,6 +124,7 @@ class tradingAccount():
         
         action = "Buy"
         executedOrders = []
+
         for order in listOfOrders:
             ticker = order[0]
             quantity = order[1]
@@ -134,7 +138,7 @@ class tradingAccount():
             if ((self.balance - tradeCost) >= 0):
                 #There is enough money for the trade
                 self.balance -= tradeCost  #*100 since balance is in cents
-                self.stocksOwned[ticker] = quantity, openPrice
+                self.stocksOwned[ticker] = quantity, openPrice, date
 
                 if (simulation):
                     self.updateAssets(date)
@@ -151,8 +155,8 @@ class tradingAccount():
             else:
                 raise ValueError("Insufficient funds to execute trade {}".format(order))
 
-        historyAdditions = pd.DataFrame(executedOrders, columns=self.historyColumns)
-        self.tradingHistory = self.tradingHistory.append(historyAdditions, ignore_index=True)
+        logAdditions = pd.DataFrame(executedOrders, columns=self.dailyLogColumns)
+        self.dailyLogs = self.dailyLogs.append(logAdditions, ignore_index=True)
 
 
     def placeSellOrders(self, listOfTickers, date, simulation=True):
@@ -168,18 +172,22 @@ class tradingAccount():
         
         action = "Sell"
         executedOrders = []
+        completedBuySellCyles = []
+
         for ticker in listOfTickers:
             tickerData = database.getDataframe(ticker)
             openPrice = tickerData.loc[date, "Open"]
             quantity = self.stocksOwned[ticker][0]
+            buyPrice = self.stocksOwned[ticker][1]
+            buyDate = self.stocksOwned[ticker][2]
             
-            self.balance -= self.commision
-            tradeIncome = int(openPrice*quantity*100)
+
+            tradeIncome = int(openPrice*quantity*100) - self.commision
 
             if (ticker in self.stocksOwned):
                 #We own the stock
                 self.balance += tradeIncome  #*100 since balance is in cents
-                del self.stocksOwned[ticker]
+                del self.stocksOwned[ticker]  #Remove stock from stocksOwned
 
                 if (simulation):
                     self.updateAssets(date)
@@ -192,32 +200,52 @@ class tradingAccount():
                 timeOfExecution = datetime.datetime.fromtimestamp(timeStamp).strftime('%Y-%m-%d %H:%M:%S')
 
                 executedOrders.append([date, ticker, quantity, float(openPrice), action, timeOfExecution, totalAssets, float(self.balance)/100, float(self.stockAssets)/100])
-                
+
+                tradeProfit = (tradeIncome - int(quantity*buyPrice*100) - self.commision)/100     #account for commision when you originally bought the stock
+                completedBuySellCyles.append([ticker, buyDate, float(buyPrice), date, float(openPrice), quantity, self.commision/100, tradeProfit])
+
             else:
                 raise ValueError("Ticker {} is not a currently owned stock".format(ticker))
 
-        historyAdditions = pd.DataFrame(executedOrders, columns=self.historyColumns)
-        self.tradingHistory = self.tradingHistory.append(historyAdditions, ignore_index=True)
+        logAdditions = pd.DataFrame(executedOrders, columns=self.dailyLogColumns)
+        self.dailyLogs = self.dailyLogs.append(logAdditions, ignore_index=True)
+
+        tradeHistoryAdditions = pd.DataFrame(completedBuySellCyles, columns=self.tradeHistoryColumns)
+        self.tradeHistory = self.tradeHistory.append(tradeHistoryAdditions, ignore_index=True)
 
 
-    def saveHistory(self, customFileName = False):
+    def saveHistory(self, customLogFileName = False, customHistoryFileName = False):
         '''
-        Saves trading history to a CSV.
-        Defualts to <Account Name>_<timeStamp>.csv
+        Saves daily logs and trading history to seperate CSVs.
+        Defualts to <Account Name>_<Logs||Trades>_<timeStamp>.csv
         '''
-        if (customFileName):
-            filepath = self.savepath+customFileName
+        if (customLogFileName):
+            filepath = self.savepath+customLogFileName
         else:
-            filepath = self.savepath + "\\" + self.name + "_" + str(time.time()) + ".csv"
+            filepath = self.savepath + "\\" + self.name + "_Log_" + str(time.time()) + ".csv"
 
-        self.tradingHistory.to_csv(filepath)
+        self.dailyLogs.to_csv(filepath)
+
+        if (customHistoryFileName):
+            filepath = self.savepath+customHistoryFileName
+        else:
+            filepath = self.savepath + "\\" + self.name + "_TradeHistory_" + str(time.time()) + ".csv"
+
+        self.tradeHistory.to_csv(filepath)
 
 
     def getHistory(self):
         '''
         Returns the trading history for this account as a dataframe
         '''
-        return self.tradingHistory
+        return self.tradeHistory
+
+    
+    def getLogs(self):
+        '''
+        Returns the daily account logs as a dataframe
+        '''
+        return self.dailyLogs
 
     
             
