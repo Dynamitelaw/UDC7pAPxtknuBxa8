@@ -106,11 +106,12 @@ class tradingAccount():
             if (date):
                 tickerData = database.getDataframe(ticker)
                 try:
-                    isMissing = pd.isnull(tickerData).loc[date,"Open"]
+                    isMissing = pd.isnull(tickerData).loc[date,"Open"].bool()
                     if (not isMissing):
                         value = tickerData.loc[date, "Open"]
                     else:
                         value = self.stocksOwned.get(ticker)[3]
+
                 except:
                     #Using old value if current value cannot be found
                     value = self.stocksOwned.get(ticker)[3]
@@ -118,6 +119,7 @@ class tradingAccount():
                 value = rsd.getCurrentPrice(ticker)
             
             self.stockAssets += int(value*quantityOwned*100)
+            #print (date + ": "+ticker + "  $" + str(float(value)))
 
 
     def placeBuyOrders(self, listOfOrders, date, simulation=True):
@@ -219,13 +221,15 @@ class tradingAccount():
             else:
                 raise ValueError("Ticker {} is not a currently owned stock".format(ticker))
 
+        self.updateAssets(date)
+        totalAssets = float(self.balance + self.stockAssets)/100
+        executedOrders.append([date, "", "", "", "CHECKPOINT", datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S'),  totalAssets, float(self.balance)/100, float(self.stockAssets)/100])
+        
         logAdditions = pd.DataFrame(executedOrders, columns=self.dailyLogColumns)
         self.dailyLogs = self.dailyLogs.append(logAdditions, ignore_index=True)
 
         tradeHistoryAdditions = pd.DataFrame(completedBuySellCyles, columns=self.tradeHistoryColumns)
-        self.tradeHistory = self.tradeHistory.append(tradeHistoryAdditions, ignore_index=True)
-
-        self.updateAssets(date)
+        self.tradeHistory = self.tradeHistory.append(tradeHistoryAdditions, ignore_index=True)        
 
 
     def saveHistory(self, SelectorName = "NAN"):

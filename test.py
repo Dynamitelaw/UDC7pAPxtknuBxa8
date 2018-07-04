@@ -18,14 +18,31 @@ import pandas as pd
 
 
 if __name__ == '__main__':
-    startDate = "2015-07-02"
-    endDate = "2015-05-07"
-    date =  "2015-06-23"
+    date = "2017-01-04"
+    ticker = "GM"
+    quantityOwned = 1
+    stocksOwned = {}
+    stocksOwned["GM"] = (0,0,0,0)
+    if (date):
+        tickerData = database.getDataframe(ticker)
+        try:
+            isMissing = pd.isnull(tickerData).loc[date,"Open"]
+            print(isMissing.bool())
+            if (not isMissing):
+                value = tickerData.loc[date, "Open"]
+            else:
+                value = stocksOwned.get(ticker)[3]
+        except Exception as e:
+            #Using old value if current value cannot be found
+            print(e)
+            value = stocksOwned.get(ticker)[3]
+    else:
+        pass
 
-    k = database.getDataframe("TSLA", dateRange=[startDate,endDate], dataFields=["Profit Speed"])#.at[20150506,"Profit Speed"]
-    print(k)
-    isMissing = pd.isnull(k).loc[date,"Profit Speed"]
-    print(isMissing)
+    print (tickerData.loc[date, "Open"])
+    
+    print (date + ": "+ticker + "  $" + str(float(value)))
+
 
     
     

@@ -14,6 +14,7 @@ import datetime
 import pandas as pd
 import os
 from shutil import copyfile
+import matplotlib.pyplot as plt
 
 
 #=============================================================================
@@ -178,10 +179,24 @@ def analyzeData(tradingHistory, dailyLogs):
             if (str(row["Date"]) == currentStatDate):  #if still on the same date
                 if (row["Action"] == "Buy"):
                     totalBuys += 1
-                else:
+                elif (row["Action"] == "Buy"):
                     totalSells += 1
+                elif (logIndex>0):  
+                    if ((row["Action"] == "CHECKPOINT") and (str(dailyLogs.loc[logIndex-1]["Date"]) != str(row["Date"]))):  #No trades were conducted on that day, but we still need to update our assets
+                        assets = float(row["TotalAssets"])
+                        statsOverTime.at[rowIndex, "TotalAssets"] = assets
+                        statsOverTime.at[rowIndex, "Buys"] = 0
+                        statsOverTime.at[rowIndex, "Sells"] = 0
+                        statsOverTime.at[rowIndex, "AssetsInvested"] = float(row["StockAssets"])/ assets
+                        statsOverTime.at[rowIndex, "EstYearlyGrowthRate(Past30Days)"] = statsOverTime.at[rowIndex-1, "EstYearlyGrowthRate(Past30Days)"]
+                        pastRowIndex = utils.floor(rowIndex-30, floor=0)
+                        estRate = utils.estimateYearlyGrowth(statsOverTime.at[pastRowIndex, "TotalAssets"], assets, rowIndex-pastRowIndex)
+                        statsOverTime.at[rowIndex, "EstYearlyGrowthRate(Past30Days)"] = estRate
+                        logIndex +=1 
+                        break
                 
                 logIndex += 1  #go to next log entry
+
                 if (logIndex == len(dailyLogs)):
                     #We're at the end of the log. Fill in final row of stats
                     row = dailyLogs.loc[logIndex-1]  #We hit a transition b/w consecutive dates. Go back one row in logs
@@ -248,6 +263,9 @@ def analyzeData(tradingHistory, dailyLogs):
                     #Move on to next day in stats
                     break
 
+    statsOverTime["Date"] = pd.to_datetime(statsOverTime["Date"], format='%Y-%m-%d')
+    statsOverTime.set_index("Date", inplace=True)
+
 
     ########## Trading History Analysis ##########
     tradeColumns = ["Ticker", "Date Bought", "Buy Price", "Date Sold", "Sell Price", "Quantity", "Commission", "Trade Profit", "Percent Profit", "Hold Length"]
@@ -281,6 +299,9 @@ def analyzeData(tradingHistory, dailyLogs):
 #====================END Simulation Data Analysis=============================
 
 
+#=============================================================================
+#       Save Simulation Results
+#=============================================================================
 def saveResults(results, SelectorName, TimeStamp):
     '''
     Saves the analyzed simulation results to a directory in Data/SimulationData.
@@ -327,6 +348,7 @@ def saveResults(results, SelectorName, TimeStamp):
 #       Main Entry Point
 #=============================================================================
 if __name__ == '__main__':
+    '''
     tradingHistoryPath = "Data\AccountData\TESTACCOUNT\TestSelector_TESTACCOUNT_TradeHistory_1530736254.7936833.csv"
     dailyLogPath = "Data\AccountData\TESTACCOUNT\TestSelector_TESTACCOUNT_Log_1530736254.7936833.csv"
 
@@ -340,17 +362,24 @@ if __name__ == '__main__':
 
     results = analyzeData(tradingHistory, dailyLogs)
     saveResults(results, "TestSelector", "1530736254.7936833")
+    df = results["Stats vs Time"]
+    df["TotalAssets"].plot()
+    plt.show()
     '''
-    dateRange = ["2017-01-03","2017-03-03"]
+    dateRange = ["2017-01-03","2017-03-02"]
     startingBalance = 10000
     selector = TestSelector()
     account = tradingAccount()
 
-    runSimulation(account, dateRange, startingBalance, selector, sampleSize=800, preloadToMemory=True)
+    runSimulation(account, dateRange, startingBalance, selector, sampleSize=800, preloadToMemory=True, PrintToTerminal=True)
     results = analyzeData(account.getHistory(), account.getLogs())
     saveResults(results, selector.name, account.timeSaved)
 
-    utils.emitAsciiBell()'''
+    df = results["Stats vs Time"]
+    df["TotalAssets"].plot()
+    plt.show()
+
+    utils.emitAsciiBell()
     
 
 
