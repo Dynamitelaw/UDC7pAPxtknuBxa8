@@ -14,6 +14,10 @@ import os
 import RetrieveStockData as rsd
 
 
+#=============================================================================
+#       tradingAccount class
+#=============================================================================
+
 class tradingAccount():
     def __init__(self, name="TESTACCOUNT"):
         '''
@@ -100,10 +104,14 @@ class tradingAccount():
             if (date):
                 tickerData = database.getDataframe(ticker)
                 try:
-                    value = tickerData.loc[date, "Open"]
+                    isMissing = pd.isnull(tickerData).loc[date,"Open"]
+                    if (not isMissing):
+                        value = tickerData.loc[date, "Open"]
+                    else:
+                        value = self.stocksOwned.get(ticker)[3]
                 except:
                     #Using old value if current value cannot be found
-                    value = self.stocksOwned.get(ticker)[1]
+                    value = self.stocksOwned.get(ticker)[3]
             else:
                 value = rsd.getCurrentPrice(ticker)
             
@@ -138,7 +146,7 @@ class tradingAccount():
             if ((self.balance - tradeCost) >= 0):
                 #There is enough money for the trade
                 self.balance -= tradeCost  #*100 since balance is in cents
-                self.stocksOwned[ticker] = quantity, openPrice, date
+                self.stocksOwned[ticker] = quantity, openPrice, date, openPrice  #each element in stocksOwned is ticker: (quantity, buyPrice, dateOfPurchase, mostRecentPrice)
 
                 if (simulation):
                     self.updateAssets(date)
@@ -157,6 +165,8 @@ class tradingAccount():
 
         logAdditions = pd.DataFrame(executedOrders, columns=self.dailyLogColumns)
         self.dailyLogs = self.dailyLogs.append(logAdditions, ignore_index=True)
+
+        self.updateAssets(date)
 
 
     def placeSellOrders(self, listOfTickers, date, simulation=True):
@@ -213,24 +223,20 @@ class tradingAccount():
         tradeHistoryAdditions = pd.DataFrame(completedBuySellCyles, columns=self.tradeHistoryColumns)
         self.tradeHistory = self.tradeHistory.append(tradeHistoryAdditions, ignore_index=True)
 
+        self.updateAssets(date)
 
-    def saveHistory(self, customLogFileName = False, customHistoryFileName = False):
+
+    def saveHistory(self, SelectorName = "NAN"):
         '''
         Saves daily logs and trading history to seperate CSVs.
         Defualts to <Account Name>_<Logs||Trades>_<timeStamp>.csv
         '''
-        if (customLogFileName):
-            filepath = self.savepath+customLogFileName
-        else:
-            filepath = self.savepath + "\\" + self.name + "_Log_" + str(time.time()) + ".csv"
+        timeSaved = str(time.time())
 
+        filepath = self.savepath+"\\"+SelectorName+"_" + self.name + "_Log_" + timeSaved + ".csv"
         self.dailyLogs.to_csv(filepath)
 
-        if (customHistoryFileName):
-            filepath = self.savepath+customHistoryFileName
-        else:
-            filepath = self.savepath + "\\" + self.name + "_TradeHistory_" + str(time.time()) + ".csv"
-
+        filepath = self.savepath+"\\"+SelectorName+"_" + self.name + "_TradeHistory_" + timeSaved + ".csv"
         self.tradeHistory.to_csv(filepath)
 
 
@@ -247,6 +253,7 @@ class tradingAccount():
         '''
         return self.dailyLogs
 
+#================END tradingAccount class=====================================
     
             
 

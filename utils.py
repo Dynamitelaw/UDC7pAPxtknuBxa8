@@ -144,3 +144,48 @@ def getDayDifference(startDate, endDate):
     
     dayDifference = int( (date(endYear, endMonth, endDay) - date(startYear, startMonth, startDay)).days)
     return dayDifference
+
+
+def compareDates(date_A, date_B):
+    '''
+    Returns -1 if A < B, 0 if A = B, and 1 if A > B.
+    Date must be a string "YYYY-MM-DD".
+    '''
+    A = dateSplitter(date_A)
+    B = dateSplitter(date_B)
+
+    if (B[0] > A[0]):
+        return -1
+    if (B[1] > A[1]):
+        return -1
+    if (B[2] > A[2]):
+        return -1
+
+    if (A[0] > B[0]):
+        return -1
+    if (A[1] > B[1]):
+        return -1
+    if (A[2] > B[2]):
+        return -1
+    
+    return 0
+
+
+def estimateYearlyGrowth(startValue, endValue, daysRun, frequencyPerYear=12):
+    '''
+    Returns the approximate yearly growth rate.
+    Solved for r in compound interest formula, defualts to compounding monthly
+    '''
+    return (frequencyPerYear * ((endValue/startValue)**(30.4375/daysRun))) - frequencyPerYear
+
+
+def floor(valueIn, floor=0):
+    '''
+    Returns the floor if the value in is less than the floor, 
+    else returns the valueIn
+    '''
+    if (valueIn > floor):
+        return valueIn
+    else:
+        return floor
+

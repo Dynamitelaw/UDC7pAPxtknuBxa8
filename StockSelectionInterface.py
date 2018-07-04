@@ -15,6 +15,7 @@ class stockSelector(ABC):
         of your specified selector.
         '''
         self.minimumPurchase = 2500 
+        #NOTE you must define a self.name attribute in your selector. It's used by the simulator
 
     @abstractmethod
     def selectStocksToBuy(self, maxNumberOfStocks, date=False, customTickerList=False, genricParameters=[]):
@@ -26,7 +27,7 @@ class stockSelector(ABC):
         Passing a customTickerList will only analyze tickers included in that list.
 
         Returns a list of in the following format: [ [Ticker1, RatioOfFundAllocation1], [Ticker2, RatioOfFundAllocation2], ... ] .
-        All ratios will add up to 1.
+        All ratios must add up to 1.
         ''' 
 
     @abstractmethod
