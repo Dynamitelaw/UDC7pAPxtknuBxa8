@@ -1,10 +1,7 @@
 '''
 Dynamitelaw
 
-Contains a collection of useful functions that are not integral to
-DW functions. 
-
-DO NOT DELETE ANYTHING!
+Contains a collection of useful utility functions.
 '''
 
 import sys
@@ -17,6 +14,7 @@ def printLocation(text="$VER: Locate_Demo.py_Version_0.00.10_(C)2007-2012_B.Walk
     I found this arcane shit on stackOverflow. DO NOT TOUCH IT!
 
     Allows you to print in a specific location in the terminal.
+    NOTE Only works in linux
     '''
     x=int(x)
     y=int(y)
