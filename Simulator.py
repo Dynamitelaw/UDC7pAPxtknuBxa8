@@ -12,13 +12,15 @@ from TestSelector import TestSelector
 import sys
 import datetime
 import pandas as pd
+import os
+from shutil import copyfile
 
 
 #=============================================================================
 #       Historical Simulator
 #=============================================================================
 
-def runSimulation(account, dateRange, startingDeposit, selector, sampleSize=False, customTickerList=False, preloadToMemory=False, depositAmount=False, depositFrequency=False, comission=10):
+def runSimulation(account, dateRange, startingDeposit, selector, sampleSize=False, customTickerList=False, preloadToMemory=False, depositAmount=False, depositFrequency=False, comission=10, PrintToTerminal=True):
     '''
     Runs a single simulation. Saves results to a csv file.
 
@@ -34,7 +36,9 @@ def runSimulation(account, dateRange, startingDeposit, selector, sampleSize=Fals
         raise ValueError("Deposit amount set without deposit frequency.")
 
     #Instaniate objects
-    print("\nGetting tickers...")
+    if (PrintToTerminal):
+        print("\nGetting tickers...")
+
     if (customTickerList):
         tickerList = customTickerList
     elif (sampleSize):
@@ -55,13 +59,14 @@ def runSimulation(account, dateRange, startingDeposit, selector, sampleSize=Fals
     endDate = dateRange[1]
 
     #Progress bar header
-    print ("\nRuning Simulation...\n")
-    print ("Selector: " + selector.name)
-    print ("Daterange: "+startDate+" to "+endDate)
-    print ("-------------------------------------------\n")
-    sys.stdout.write("\r")
-    sys.stdout.write("0.0%")
-    sys.stdout.flush()
+    if (PrintToTerminal):
+        print ("\nRuning Simulation...\n")
+        print ("Selector: " + selector.name)  #NOTE Don't forget to set your self.name property in you selector constructor
+        print ("Daterange: "+startDate+" to "+endDate)
+        print ("-------------------------------------------\n")
+        sys.stdout.write("\r")
+        sys.stdout.write("0.0%")
+        sys.stdout.flush()
 
     daysSinceLastDeposit = 0
 
@@ -104,14 +109,15 @@ def runSimulation(account, dateRange, startingDeposit, selector, sampleSize=Fals
                 daysSinceLastDeposit = 0
 
         #Progress bar
-        completed = utils.getDayDifference(startDate, date)
-        totalToDo = utils.getDayDifference(startDate, endDate)
-        percentage = int(float(completed*1000)/(totalToDo-1))/10.0
-        sys.stdout.write("\r")
-        sys.stdout.write(str(percentage)+"%")
-        sys.stdout.flush()
+        if (PrintToTerminal):
+            completed = utils.getDayDifference(startDate, date)
+            totalToDo = utils.getDayDifference(startDate, endDate)
+            percentage = int(float(completed*1000)/(totalToDo-1))/10.0
+            sys.stdout.write("\r")
+            sys.stdout.write(str(percentage)+"%")
+            sys.stdout.flush()
             
-    #Save results        
+    #Save logs        
     account.saveHistory(selector.name)
 
 #====================END Historical Simulator=================================
@@ -207,7 +213,7 @@ def analyzeData(tradingHistory, dailyLogs):
                 else:
                     break
 
-                if (utils.compareDates(nextStatRowDate, row["Date"]) == -1):
+                if (utils.compareDates(nextStatRowDate, row["Date"]) == -1) and (currentStatDate != str(dailyLogs.loc[logIndex-1]["Date"])):
                     #Gap in the daily logs: use previous date to fill
                     statsOverTime.at[rowIndex, "TotalAssets"] = statsOverTime.at[rowIndex-1, "TotalAssets"]
                     statsOverTime.at[rowIndex, "Buys"] = 0
@@ -244,11 +250,11 @@ def analyzeData(tradingHistory, dailyLogs):
 
 
     ########## Trading History Analysis ##########
-    tradeColumns = ["Ticker", "Percent Profit", "Hold Length"]
+    tradeColumns = ["Ticker", "Date Bought", "Buy Price", "Date Sold", "Sell Price", "Quantity", "Commission", "Trade Profit", "Percent Profit", "Hold Length"]
     tradeStats = pd.DataFrame(columns=tradeColumns)
 
-    tradeStats["Ticker"] = tradingHistory["Ticker"]
-    tradeStats["Percent Profit"] = ((tradingHistory["Sell Price"] - tradingHistory["Buy Price"]) / (tradingHistory["Buy Price"]))*100
+    tradeStats[["Ticker", "Date Bought", "Buy Price", "Date Sold", "Sell Price", "Quantity", "Commission", "Trade Profit"]] = tradingHistory[["Ticker", "Date Bought", "Buy Price", "Date Sold", "Sell Price", "Quantity", "Commission", "Trade Profit"]]
+    tradeStats["Percent Profit"] = ((tradingHistory["Sell Price"] - tradingHistory["Buy Price"]) / (tradingHistory["Buy Price"]))*100  #NOTE Excludes commission
     tradeStats["Hold Length"] = tradingHistory.apply(lambda row: utils.getDayDifference(row["Date Bought"], row["Date Sold"]), axis=1)  #https://engineering.upside.com/a-beginners-guide-to-optimizing-pandas-code-for-speed-c09ef2c6a4d6
 
     #More general stats
@@ -275,14 +281,54 @@ def analyzeData(tradingHistory, dailyLogs):
 #====================END Simulation Data Analysis=============================
 
 
+def saveResults(results, SelectorName, TimeStamp):
+    '''
+    Saves the analyzed simulation results to a directory in Data/SimulationData.
+    '''
+    savePath = "Data\SimulationData\\"
+    saveDirectory = SelectorName + "_" + TimeStamp
+
+    savePath += saveDirectory
+
+    if not os.path.exists(savePath):
+            os.makedirs(savePath)
+
+    #Save general stats
+    generalStatsFilename = "GeneralStats.json"
+    filePath = savePath + "\\" + generalStatsFilename
+    file = open(filePath, 'w')
+    file.write(str(results["General Stats"]))
+    file.close
+
+    #Save stats vs time
+    statsVsTimeFilename = "StatsOverTime.csv"
+    filePath = savePath + "\\" + statsVsTimeFilename
+    results["Stats vs Time"].to_csv(filePath)
+
+    #Save trade stats
+    tradingStatsFilename = "TradingStats.csv"
+    filePath = savePath + "\\" + tradingStatsFilename
+    results["Trade Stats"].to_csv(filePath)
+
+    #Copy logs from AccountData to the simulation directory
+    logPath = "Data\AccountData\TESTACCOUNT\\" + SelectorName + "_TESTACCOUNT_Log_" + TimeStamp + ".csv"
+    try:
+        copyfile(logPath, savePath +"\\"+ "Log.csv")
+    except Exception as e:
+        print("Unable to copy log file")
+        print(e)
+
+#====================END saveResults=============================
+
+
 
 
 #=============================================================================
 #       Main Entry Point
 #=============================================================================
 if __name__ == '__main__':
-    tradingHistoryPath = "Data\AcountData\TESTACCOUNT\TestSelector_TESTACCOUNT_TradeHistory_1530651828.6322038.csv"
-    dailyLogPath = "Data\AcountData\TESTACCOUNT\TestSelector_TESTACCOUNT_Log_1530651828.627204.csv"
+    tradingHistoryPath = "Data\AccountData\TESTACCOUNT\TestSelector_TESTACCOUNT_TradeHistory_1530736254.7936833.csv"
+    dailyLogPath = "Data\AccountData\TESTACCOUNT\TestSelector_TESTACCOUNT_Log_1530736254.7936833.csv"
 
     tradingHistory = pd.DataFrame.from_csv(tradingHistoryPath)
     dailyLogs = pd.DataFrame.from_csv(dailyLogPath)
@@ -292,18 +338,19 @@ if __name__ == '__main__':
     #print(tradingHistory)
     #print(len(tradingHistory))
 
-    stats = analyzeData(tradingHistory, dailyLogs)
-    print (stats)
+    results = analyzeData(tradingHistory, dailyLogs)
+    saveResults(results, "TestSelector", "1530736254.7936833")
     '''
-    for i in range(3):
-        dateRange = ["2017-01-03","2017-03-03"]
-        startingBalance = 10000
-        selector = TestSelector()
-        account = tradingAccount()
+    dateRange = ["2017-01-03","2017-03-03"]
+    startingBalance = 10000
+    selector = TestSelector()
+    account = tradingAccount()
 
-        runSimulation(account, dateRange, startingBalance, selector, sampleSize=800, preloadToMemory=True)
-        
-    utils.emitAsciiBell()
-    '''
+    runSimulation(account, dateRange, startingBalance, selector, sampleSize=800, preloadToMemory=True)
+    results = analyzeData(account.getHistory(), account.getLogs())
+    saveResults(results, selector.name, account.timeSaved)
+
+    utils.emitAsciiBell()'''
+    
 
 

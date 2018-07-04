@@ -27,10 +27,12 @@ class tradingAccount():
         self.balance = 0  #balance is an integer (in cents), NOT dollars
         self.stockAssets = 0  #assets is an integer (in cents), NOT dollars
         self.commision = 0 #balance is an integer (in cents), NOT dollars
+        
+        self.timeSaved = "NONE"
                 
         self.name = utils.sanitizeString(name)
         cwd = os.getcwd()
-        self.savepath = cwd + "\\Data\AcountData\\" + self.name
+        self.savepath = cwd + "\\Data\AccountData\\" + self.name
  
         if not os.path.exists(self.savepath):
             os.makedirs(self.savepath)
@@ -231,12 +233,12 @@ class tradingAccount():
         Saves daily logs and trading history to seperate CSVs.
         Defualts to <Account Name>_<Logs||Trades>_<timeStamp>.csv
         '''
-        timeSaved = str(time.time())
+        self.timeSaved = str(time.time())
 
-        filepath = self.savepath+"\\"+SelectorName+"_" + self.name + "_Log_" + timeSaved + ".csv"
+        filepath = self.savepath+"\\"+SelectorName+"_" + self.name + "_Log_" + self.timeSaved + ".csv"
         self.dailyLogs.to_csv(filepath)
 
-        filepath = self.savepath+"\\"+SelectorName+"_" + self.name + "_TradeHistory_" + timeSaved + ".csv"
+        filepath = self.savepath+"\\"+SelectorName+"_" + self.name + "_TradeHistory_" + self.timeSaved + ".csv"
         self.tradeHistory.to_csv(filepath)
 
 
