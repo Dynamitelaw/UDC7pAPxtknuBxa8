@@ -15,6 +15,7 @@ import pandas as pd
 import os
 from shutil import copyfile
 import matplotlib.pyplot as plt
+import ResultsPlotter as rplotter
 
 
 #=============================================================================
@@ -138,7 +139,7 @@ def analyzeData(tradingHistory, dailyLogs):
             "General Stats":
             {
                 "Start Date":str, "End Date":str, "Days Run":int, "Yearly Growth Rate":float,
-                "Average Trades Per Day":float, "Average Trade Profit":float, "Average Hold Length":float
+                "Average Trades Per Day":float, "Average Trade %Profit":float, "Average Hold Length":float
             },
             "Stats vs Time":dataFrame,
             "Trade Stats":dataFrame
@@ -251,7 +252,10 @@ def analyzeData(tradingHistory, dailyLogs):
                     else:
                         pastRowIndex = utils.floor(rowIndex-30, floor=0)
                         estRate = utils.estimateYearlyGrowth(statsOverTime.at[pastRowIndex, "TotalAssets"], assets, rowIndex-pastRowIndex)
-                        statsOverTime.at[rowIndex, "EstYearlyGrowthRate(Past30Days)"] = estRate
+                        if (rowIndex < 20):
+                            statsOverTime.at[rowIndex, "EstYearlyGrowthRate(Past30Days)"] = 1
+                        else:
+                            statsOverTime.at[rowIndex, "EstYearlyGrowthRate(Past30Days)"] = estRate
 
                     #Total Buys and Sells
                     statsOverTime.at[rowIndex, "Buys"] = totalBuys
@@ -284,6 +288,8 @@ def analyzeData(tradingHistory, dailyLogs):
     generalResults["Start Date"] = startDate
     generalResults["End Date"] = endDate
     generalResults["Days Run"] = daysRun
+    generalResults["Starting Assets"] = startingAssets
+    generalResults["Ending Assets"] = endingAssets
     generalResults["Yearly Growth Rate"] =  estimatedYearlyGrowth
     generalResults["Average Trades Per Day"] = averageTradesPerDay
     generalResults["Average Trade %Profit"] = averagePercentProfit
@@ -348,9 +354,9 @@ def saveResults(results, SelectorName, TimeStamp):
 #       Main Entry Point
 #=============================================================================
 if __name__ == '__main__':
-    '''
-    tradingHistoryPath = "Data\AccountData\TESTACCOUNT\TestSelector_TESTACCOUNT_TradeHistory_1530736254.7936833.csv"
-    dailyLogPath = "Data\AccountData\TESTACCOUNT\TestSelector_TESTACCOUNT_Log_1530736254.7936833.csv"
+    
+    tradingHistoryPath = "Data\AccountData\TESTACCOUNT\TestSelector_TESTACCOUNT_TradeHistory_1530744899.1927605.csv"
+    dailyLogPath = "Data\AccountData\TESTACCOUNT\TestSelector_TESTACCOUNT_Log_1530744899.1927605.csv"
 
     tradingHistory = pd.DataFrame.from_csv(tradingHistoryPath)
     dailyLogs = pd.DataFrame.from_csv(dailyLogPath)
@@ -361,10 +367,7 @@ if __name__ == '__main__':
     #print(len(tradingHistory))
 
     results = analyzeData(tradingHistory, dailyLogs)
-    saveResults(results, "TestSelector", "1530736254.7936833")
-    df = results["Stats vs Time"]
-    df["TotalAssets"].plot()
-    plt.show()
+    rplotter.plotResults(results)
     '''
     dateRange = ["2017-01-03","2017-03-02"]
     startingBalance = 10000
@@ -379,7 +382,7 @@ if __name__ == '__main__':
     df["TotalAssets"].plot()
     plt.show()
 
-    utils.emitAsciiBell()
+    utils.emitAsciiBell()'''
     
 
 
