@@ -14,7 +14,6 @@ import datetime
 import pandas as pd
 import os
 from shutil import copyfile
-import matplotlib.pyplot as plt
 import ResultsPlotter as rplotter
 
 
