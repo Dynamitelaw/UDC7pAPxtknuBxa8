@@ -8,9 +8,12 @@ import pandas as pd
 import numpy as np
 import sklearn
 from sklearn import svm,preprocessing
+from sklearn.svm import SVC
 from matplotlib import pyplot as plt
 import os
 import random
+from sklearn.model_selection import StratifiedShuffleSplit
+from sklearn.model_selection import GridSearchCV
 
 def createSVMmodel(dir="Data/SVM/1PercentGrowth1DaysAway/",training_percent=.3,c=1,kernel="rbf",gamma=.1):
     '''Creates and trains a SVM model from data in the dir directory. Takes training_percent
@@ -66,11 +69,20 @@ def createSVMmodel(dir="Data/SVM/1PercentGrowth1DaysAway/",training_percent=.3,c
                 corr_buy+=1
         if results[x] == testingDataY[x]:
             correct_count += 1
+    return clf , correct_count/len(results),X,y
 
-    print(buy_count,corr_buy)
-    print(k,len(results))
-    return clf , correct_count/len(results)
 
 if __name__=="__main__":
-    model,accuracy = createSVMmodel(c=60,gamma=.16)
+    model,accuracy,X,y = createSVMmodel(c=60,gamma=.16)
+    
+    C_range = np.logspace(-2, 10, 13)
+    gamma_range = np.logspace(-9, 3, 13)
+    param_grid = dict(gamma=gamma_range, C=C_range)
+    cv = StratifiedShuffleSplit(n_splits=5, test_size=0.2, random_state=42)
+    grid = GridSearchCV(SVC(), param_grid=param_grid, cv=cv)
+    grid.fit(X, y)
+    
+    print("The best parameters are %s with a score of %0.2f"
+      % (grid.best_params_, grid.best_score_))
+    
     print(accuracy)
