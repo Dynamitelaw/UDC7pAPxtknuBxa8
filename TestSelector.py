@@ -22,8 +22,6 @@ class TestSelector(stockSelector):
         SimpleSlopeSelctor constructor. No genericParameters are required
         '''
         super().__init__(self)
-        
-        self.name = "TestSelector"
 
     
     def selectStocksToBuy(self, maxNumberOfStocks, date=False, customTickerList=False, genricParameters=[]):
@@ -144,6 +142,9 @@ class TestSelector(stockSelector):
 
             return stocksToSell
 
+
+    def getName(self):
+        return "TestSelector"
 
     #------------------------------------------
     #Private or noninterface methods below here    

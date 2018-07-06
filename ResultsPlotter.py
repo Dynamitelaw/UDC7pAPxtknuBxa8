@@ -5,6 +5,7 @@ Plotter for simulation results
 '''
 
 import matplotlib.pyplot as plt 
+import numpy as np
 
 
 def plotResults(results):
@@ -31,6 +32,8 @@ def plotResults(results):
     facecolor=(39/255,40/255,34/255) #Sublime Dark Grey
     graphcolor = (49/255,50/255,44/255) #Slightly lighter grey
     axisColor = (200/255,200/255,200/255) #Mostly White
+    green = (76/255,255/255,0/255)
+    red = (255/255,20/255,0/255)
 
     #Set up Subplots
     fig, axes = plt.subplots(facecolor=facecolor,nrows=2, ncols=2)
@@ -40,9 +43,9 @@ def plotResults(results):
 
     #Assets over Time
     if (generalStats["Ending Assets"] > generalStats["Starting Assets"]):
-        assetLineColor = (76/255,255/255,0/255) #Green
+        assetLineColor = green
     else:
-        assetLineColor = (255/255,20/255,0/255) #Red
+        assetLineColor = red #Red
 
     assets = statsVsTime["TotalAssets"].plot(ax=axes[0, 0], color=assetLineColor)
     assets.set_facecolor(graphcolor)
@@ -57,7 +60,7 @@ def plotResults(results):
     assets.set_ylabel("Total Assets ($)", color=textColor)
 
     assetsDescription = generalStats["Start Date"] + " to " + generalStats["End Date"] + " | " + str(generalStats["Days Run"]) + " Days\n"
-    assetsDescription += "Starting Assets: \$" + str(generalStats["Starting Assets"]) + " | Ending Assets: \$" + str(generalStats["Ending Assets"]) + "\n"
+    assetsDescription += "Starting Assets: \$" + str(generalStats["Starting Assets"]) + "  | Ending Assets: \$" + str(generalStats["Ending Assets"]) + "\n"
     assetsDescription += "Estimated Yearly Growth Rate: " + str(int(generalStats["Yearly Growth Rate"] * 10000)/100.0) + "%"
     axes[0,1].text(-0.14, 0.4, assetsDescription, color=textColor)
 
@@ -74,28 +77,48 @@ def plotResults(results):
     #Trade Histogram
     maxProfit = tradeStats["Percent Profit"].max()
     minProfit = tradeStats["Percent Profit"].min()
-    numberOfBins = 20
-    numberPositiveBins = int(numberOfBins * (maxProfit / (maxProfit + abs(minProfit))))
-    numberNegativeBins = numberOfBins - numberPositiveBins
 
-    binsList = []
+    #Split trades into positive and negative profits
+    positiveProfits = []
+    negativeProfits = []
+    for i in range(0, len(tradeStats["Percent Profit"]), 1):
+        profit = tradeStats.at[i, "Percent Profit"]
+        if (profit>0):
+            positiveProfits.append(profit)
+        else:
+            negativeProfits.append(profit)
+
+    #Generate Bins
+    bins = list(np.linspace(minProfit-5, maxProfit+5, int(len(tradeStats)/3)))
     
-    tradeProfitHistogram = tradeStats["Percent Profit"].hist(ax=axes[1,0])
-    tradeProfitHistogram.set_facecolor(graphcolor)
-    tradeProfitHistogram.spines['bottom'].set_color(axisColor)
-    tradeProfitHistogram.spines['top'].set_color(axisColor) 
-    tradeProfitHistogram.spines['right'].set_color(axisColor)
-    tradeProfitHistogram.spines['left'].set_color(axisColor)
-    tradeProfitHistogram.tick_params(axis='x', colors=axisColor)
-    tradeProfitHistogram.tick_params(axis='y', colors=axisColor)
-    tradeProfitHistogram.yaxis.label.set_color(axisColor)
-    tradeProfitHistogram.xaxis.label.set_color(axisColor)
-    tradeProfitHistogram.set_xlabel("Per Trade Profit (%)", color=textColor)
-    tradeProfitHistogram.set_ylabel("Frequency", color=textColor)
-    tradeProfitDescription = "Average Trades Per Day: " + str(int(generalStats["Average Trades Per Day"] * 100)/100.0) + "\n"
-    tradeProfitDescription += "Average Profit Per Trade: " + str(int(generalStats["Average Trade %Profit"] * 100)/100.0) + "%\n"
-    tradeProfitDescription += "Average Hold Length: " + str(int(generalStats["Average Hold Length"] * 100)/100.0) + " days\n"
-    axes[1,1].text(-0.14, 0.2, tradeProfitDescription, color=textColor)
+    #Set one bin as 0 for clear separation of pos and neg
+    for i in range(0, len(bins), 1):
+        if (bins[i] > 0):
+            bins[i] = 0
+            if ((abs(bins[i-1])/abs(bins[i-2])) < 0.50):
+                del bins[i-1]
+            break
+
+    #Generate Histograms
+    axes[1,0].hist(negativeProfits, bins, label='y', color=red)
+    axes[1,0].hist(positiveProfits, bins,  label='x', color=green)
+
+    #Histogram Styling
+    axes[1,0].set_facecolor(graphcolor)
+    axes[1,0].spines['bottom'].set_color(axisColor)
+    axes[1,0].spines['top'].set_color(axisColor) 
+    axes[1,0].spines['right'].set_color(axisColor)
+    axes[1,0].spines['left'].set_color(axisColor)
+    axes[1,0].tick_params(axis='x', colors=axisColor)
+    axes[1,0].tick_params(axis='y', colors=axisColor)
+    axes[1,0].yaxis.label.set_color(axisColor)
+    axes[1,0].xaxis.label.set_color(axisColor)
+    axes[1,0].set_xlabel("Per Trade Profit (%)", color=textColor)
+    axes[1,0].set_ylabel("Frequency", color=textColor)
+    HistogramDescription = "Average Trades Per Day: " + str(int(generalStats["Average Trades Per Day"] * 100)/100.0) + "\n"
+    HistogramDescription += "Average Profit Per Trade: " + str(int(generalStats["Average Trade %Profit"] * 100)/100.0) + "%\n"
+    HistogramDescription += "Average Hold Length:       " + str(int(generalStats["Average Hold Length"] * 100)/100.0) + " days\n"
+    axes[1,1].text(-0.14, 0.2, HistogramDescription, color=textColor)
     
     #Show Plot
     plt.tight_layout()  #NOTE https://matplotlib.org/users/tight_layout_guide.html

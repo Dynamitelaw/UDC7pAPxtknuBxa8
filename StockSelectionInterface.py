@@ -8,6 +8,7 @@ from abc import ABC,abstractmethod
 
 
 class stockSelector(ABC):
+    
     def __init__ (self, selectorName, genericParams=[]):
         '''
         selecetorName must be a string denoting which selector type to use.
@@ -15,6 +16,7 @@ class stockSelector(ABC):
         of your specified selector.
         '''
         self.minimumPurchase = 2500 
+        self.name = self.getName()
         #NOTE you must define a self.name attribute in your selector. It's used by the simulator
 
     @abstractmethod
@@ -39,6 +41,12 @@ class stockSelector(ABC):
 
         Returns a list of stocks to sell.
         ''' 
+
+    @abstractmethod
+    def getName(self):
+        '''
+        Returns the name of the selector
+        '''
 
     def numberOfStocksToBuy(self, funds):
         '''

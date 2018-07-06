@@ -62,7 +62,7 @@ def runSimulation(account, dateRange, startingDeposit, selector, sampleSize=Fals
     #Progress bar header
     if (PrintToTerminal):
         print ("\nRuning Simulation...\n")
-        print ("Selector: " + selector.name)  #NOTE Don't forget to set your self.name property in you selector constructor
+        print ("Selector: " + selector.getName())  #NOTE Don't forget to set your self.name property in you selector constructor
         print ("Daterange: "+startDate+" to "+endDate)
         print ("-------------------------------------------\n")
         sys.stdout.write("\r")
@@ -119,7 +119,7 @@ def runSimulation(account, dateRange, startingDeposit, selector, sampleSize=Fals
             sys.stdout.flush()
             
     #Save logs        
-    account.saveHistory(selector.name)
+    account.saveHistory(selector.getName())
 
 #====================END Historical Simulator=================================
 
@@ -375,7 +375,7 @@ if __name__ == '__main__':
 
     runSimulation(account, dateRange, startingBalance, selector, sampleSize=800, preloadToMemory=True, PrintToTerminal=True)
     results = analyzeData(account.getHistory(), account.getLogs())
-    saveResults(results, selector.name, account.timeSaved)
+    saveResults(results, selector.getName(), account.timeSaved)
 
     df = results["Stats vs Time"]
     df["TotalAssets"].plot()
