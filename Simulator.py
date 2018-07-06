@@ -353,7 +353,21 @@ def saveResults(results, SelectorName, TimeStamp):
 #       Main Entry Point
 #=============================================================================
 if __name__ == '__main__':
-    
+    dateRange = ["2017-01-03","2017-03-02"]
+    startingBalance = 10000
+    selector = TestSelector()  #NOTE Just put your selector here Cole
+    account = tradingAccount()
+
+    runSimulation(account, dateRange, startingBalance, selector, sampleSize=800, preloadToMemory=True, PrintToTerminal=True)
+    results = analyzeData(account.getHistory(), account.getLogs())
+    saveResults(results, selector.getName(), account.timeSaved)
+
+    utils.emitAsciiBell()
+
+    rplotter.plotResults(results)
+  
+
+    '''
     tradingHistoryPath = "Data\AccountData\TESTACCOUNT\TestSelector_TESTACCOUNT_TradeHistory_1530744899.1927605.csv"
     dailyLogPath = "Data\AccountData\TESTACCOUNT\TestSelector_TESTACCOUNT_Log_1530744899.1927605.csv"
 
@@ -368,20 +382,6 @@ if __name__ == '__main__':
     results = analyzeData(tradingHistory, dailyLogs)
     rplotter.plotResults(results)
     '''
-    dateRange = ["2017-01-03","2017-03-02"]
-    startingBalance = 10000
-    selector = TestSelector()
-    account = tradingAccount()
-
-    runSimulation(account, dateRange, startingBalance, selector, sampleSize=800, preloadToMemory=True, PrintToTerminal=True)
-    results = analyzeData(account.getHistory(), account.getLogs())
-    saveResults(results, selector.getName(), account.timeSaved)
-
-    df = results["Stats vs Time"]
-    df["TotalAssets"].plot()
-    plt.show()
-
-    utils.emitAsciiBell()'''
     
 
 
