@@ -45,7 +45,7 @@ def plotResults(results):
     if (generalStats["Ending Assets"] > generalStats["Starting Assets"]):
         assetLineColor = green
     else:
-        assetLineColor = red #Red
+        assetLineColor = red 
 
     assets = statsVsTime["TotalAssets"].plot(ax=axes[0, 0], color=assetLineColor)
     assets.set_facecolor(graphcolor)

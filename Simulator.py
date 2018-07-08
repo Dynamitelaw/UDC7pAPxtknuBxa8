@@ -98,8 +98,8 @@ def runSimulation(account, dateRange, startingDeposit, selector, sampleSize=Fals
                 ticker = stock[0]
                 price = database.getDataframe(ticker, [date,date], ["Open"]).loc[date, "Open"]
                 quantity = int((stock[1]*(availibleFunds-(len(stocksToBuy)*comission))) / price)
-
-                buyOrders.append([ticker, quantity])
+                if quantity>0:
+                    buyOrders.append([ticker, quantity])
 
             #Buys stocks
             account.placeBuyOrders(buyOrders, date)
@@ -354,7 +354,7 @@ def saveResults(results, SelectorName, TimeStamp):
 #       Main Entry Point
 #=============================================================================
 if __name__ == '__main__':
-    dateRange = ["2017-01-03","2018-03-02"]
+    dateRange = ["2017-01-03","2018-05-02"]
     startingBalance = 20000
     selector = SVMSelector()  #NOTE Just put your selector here Cole
     account = tradingAccount()

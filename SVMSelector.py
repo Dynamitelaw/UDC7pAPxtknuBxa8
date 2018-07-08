@@ -14,9 +14,9 @@ class SVMSelector(stockSelector):
         super().__init__()
         dir="Data/SVM/1PercentGrowth3DaysAway/"
         k=0
-        while k<6:
-            self.clf,accuracy,buyCount,k,days,self.t_X = createSVMmodel(dir,c=100,gamma=.1,training_percent=.3,date_range=[date(2000,1,1),date(2016,1,1)])
-        self.myStocks = [[],[],[],[]]
+        while k<4:
+            self.clf,accuracy,buyCount,k,days,self.t_X = createSVMmodel(dir,c=100,gamma=.1,training_percent=.5,date_range=[date(2000,1,1),date(2016,1,1)])
+        self.myStocks = [[],[],[]]
         self.cycle = 0
     def selectStocksToBuy(self, maxNumberOfStocks, date=False, customTickerList=False, genricParameters=[]):
         '''
@@ -40,19 +40,25 @@ class SVMSelector(stockSelector):
             customTickerList = getTickerList()
 
         sampleTickerList = customTickerList[:]
+        buyTickerList = []
         shuffle(sampleTickerList)
+        
         for ticker in sampleTickerList:
             tickerDict = getDataframe(ticker, [date,date])
-            isMissing = pd.isnull(tickerDict)
+            isMissing = False
             try:
-                isMissing = (True in np.isnan(tickerDict.iloc[0].values))
-                if tickerDict==False:
+                df=getDataframe(ticker)
+                date_index = df.index.get_loc(date)+1
+                newDate = str(df.index[date_index].values[0])[:10]
+                tickerDict = getDataframe(ticker, [newDate,newDate])
+                if True in np.isnan(tickerDict.iloc[0].values):
                     isMissing = True
             except:
                 isMissing = True
             if not isMissing:
                 line = tickerDict.iloc[0].drop(columns=["Optimal Dates","Desired Level 1 Out Buy","Desired Level 1 Out Sell","Profit Speed"]).values.tolist()
                 data.append(line)
+                buyTickerList.append(ticker)
                 #print(list(map(float,DatabaseDictionary[customTickerList[i]].loc[date].values.tolist()[0])))
         if len(data)==0:
             return []
@@ -64,16 +70,16 @@ class SVMSelector(stockSelector):
         buys=[]
         self.myStocks[self.cycle] = []
         c=0
-        while count<maxNumberOfStocks and c<len(sampleTickerList):
+        while count<1 and c<len(buyTickerList):
             if X[i]==1:
-                buys.append([sampleTickerList[c]])
-                self.myStocks[self.cycle].append(sampleTickerList[c])
+                buys.append([buyTickerList[c]])
+                self.myStocks[self.cycle].append(buyTickerList[c])
                 count +=1
             i+=1
             c+=1
         for i in range(len(buys)):
             buys[i].append(1/float(len(buys)))
-        self.cycle = (self.cycle+1)%4
+        self.cycle = (self.cycle+1)%3
         return buys
 
 
@@ -92,10 +98,14 @@ class SVMSelector(stockSelector):
         
         sellList = []
         for stock in listOfOwnedStocks:
-            if isMissing == False:
-                pass
-            else:
-                isMissing = pd.isnull(getDataframe(stock, [date,date]).loc[date,'Close']) 
+            df = getDataframe(stock, [date,date])
+            try:    
+                if df!=False:
+                    isMissing = pd.isnull(df.loc[date,'Close'])
+                else:
+                    isMissing=True 
+            except:
+                isMissing = False
             if (stock in self.myStocks[self.cycle]) and (not isMissing):
                 sellList.append(stock)
         return sellList

@@ -12,6 +12,7 @@ import datetime
 import time
 import os
 import RetrieveStockData as rsd
+import numpy as np
 
 
 #=============================================================================
@@ -44,7 +45,7 @@ class tradingAccount():
         self.tradeHistoryColumns = ["Ticker", "Date Bought", "Buy Price", "Date Sold", "Sell Price", "Quantity", "Commission", "Trade Profit"]
         self.tradeHistory = pd.DataFrame(columns=self.tradeHistoryColumns)
 
-    
+
     def depositFunds(self, dollarValue):
         '''
         Increase (or decrease) account balance
@@ -190,7 +191,10 @@ class tradingAccount():
 
         for ticker in listOfTickers:
             tickerData = database.getDataframe(ticker)
-            openPrice = tickerData.loc[date, "Open"]
+            openPrice = tickerData.loc[date, "Close"].values[0]
+            if np.isnan(openPrice):
+                date_index = tickerData.index.get_loc(date)
+                openPrice = tickerData.iloc[date_index+1,"Close"]
             quantity = self.stocksOwned[ticker][0]
             buyPrice = self.stocksOwned[ticker][1]
             buyDate = self.stocksOwned[ticker][2]

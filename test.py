@@ -10,7 +10,7 @@ from TestSelector import TestSelector
 from TradingAccount import tradingAccount
 import os
 import pandas as pd
-
+from PandaDatabase import *
 
 
 
@@ -18,32 +18,14 @@ import pandas as pd
 
 
 if __name__ == '__main__':
-    date = "2017-01-04"
-    ticker = "GM"
-    quantityOwned = 1
-    stocksOwned = {}
-    stocksOwned["GM"] = (0,0,0,0)
-    if (date):
-        tickerData = database.getDataframe(ticker)
-        try:
-            isMissing = pd.isnull(tickerData).loc[date,"Open"]
-            print(isMissing.bool())
-            if (not isMissing):
-                value = tickerData.loc[date, "Open"]
-            else:
-                value = stocksOwned.get(ticker)[3]
-        except Exception as e:
-            #Using old value if current value cannot be found
-            print(e)
-            value = stocksOwned.get(ticker)[3]
-    else:
-        pass
-
-    print (tickerData.loc[date, "Open"])
-    
-    print (date + ": "+ticker + "  $" + str(float(value)))
-
-
+    ticker = "AAPL"
+    date = "2015-01-02"
+    df=getDataframe(ticker)
+    date_index = df.index.get_loc(date)+1
+    newDate = str(df.index[date_index].values[0])[:10]
+    tickerDict = getDataframe(ticker, [newDate,newDate])
+    print(tickerDict)
+    print(newDate)
     
     
     #fixAllDates()
