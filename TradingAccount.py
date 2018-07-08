@@ -152,7 +152,12 @@ class tradingAccount():
                 if ((self.balance - tradeCost) >= 0):
                     #There is enough money for the trade
                     self.balance -= tradeCost  #*100 since balance is in cents
-                    self.stocksOwned[ticker] = quantity, openPrice, date, openPrice  #each element in stocksOwned is ticker: (quantity, buyPrice, dateOfPurchase, mostRecentPrice)
+
+                    if (ticker in self.stocksOwned):
+                        #If we own the stock, add the new quantity to the old quantity
+                        self.stocksOwned[ticker] = self.stocksOwned[ticker][0] + quantity, openPrice, date, openPrice  #each element in stocksOwned is ticker: (quantity, buyPrice, dateOfPurchase, mostRecentPrice)
+                    else:
+                        self.stocksOwned[ticker] = quantity, openPrice, date, openPrice  #each element in stocksOwned is ticker: (quantity, buyPrice, dateOfPurchase, mostRecentPrice)
 
                     if (simulation):
                         self.updateAssets(date)
@@ -174,7 +179,7 @@ class tradingAccount():
         self.updateAssets(date)
         totalAssets = float(self.balance + self.stockAssets)/100
         executedOrders.append([date, "", "", "", "CHECKPOINT", datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S'),  totalAssets, float(self.balance)/100, float(self.stockAssets)/100])
-        
+
         logAdditions = pd.DataFrame(executedOrders, columns=self.dailyLogColumns)
         self.dailyLogs = self.dailyLogs.append(logAdditions, ignore_index=True)
 
