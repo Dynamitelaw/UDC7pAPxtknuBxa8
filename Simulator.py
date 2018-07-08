@@ -380,7 +380,7 @@ def runMultiSim(numberOfSimulations, selectorName, dateRange, startingDeposit, s
     if (PrintToTerminal):
         print("Your patience has been rewarded. I bestow upon you the results of your CPU's tireless efforts")
 
-    print(results)
+    return results
 
 
 def simulationWrapper(dateRange, startingDeposit, selectorName, sampleSize, customTickerList, preloadToMemory, depositAmount, depositFrequency, comission, PrintToTerminal):
@@ -414,12 +414,13 @@ def simulationWrapper(dateRange, startingDeposit, selectorName, sampleSize, cust
 #=============================================================================
 if __name__ == '__main__':
     
-    # numberOfSimulations = 3
-    # selectorName = "TestSelector"
-    # dateRange = ["2017-01-03","2017-03-02"]
-    # startingBalance = 20000
+    numberOfSimulations = 3
+    selectorName = "TestSelector"
+    dateRange = ["2017-01-03","2017-03-02"]
+    startingBalance = 20000
 
-    # runMultiSim(numberOfSimulations, selectorName, dateRange, startingBalance, sampleSize=100, preloadToMemory=True,  comission=10)
+    results = runMultiSim(numberOfSimulations, selectorName, dateRange, startingBalance, sampleSize=100, preloadToMemory=True,  comission=10)
+    rplotter.plotMultipleResults(results)
     
     # selector = SVMSelector()  #NOTE Just put your selector here Cole
     # account = tradingAccount()
@@ -434,20 +435,20 @@ if __name__ == '__main__':
   
 
     
-    tradingHistoryPath1 = "Data\AccountData\TESTACCOUNT\TestSelector_TESTACCOUNT_TradeHistory_1531086427.924168.csv"
-    dailyLogPath1 = "Data\AccountData\TESTACCOUNT\TestSelector_TESTACCOUNT_Log_1531086427.924168.csv"
-    tradingHistoryPath2 = "Data\AccountData\TESTACCOUNT\TestSelector_TESTACCOUNT_TradeHistory_1531086026.0894861.csv"
-    dailyLogPath2 = "Data\AccountData\TESTACCOUNT\TestSelector_TESTACCOUNT_Log_1531086026.0894861.csv"
+    # tradingHistoryPath1 = "Data\AccountData\TESTACCOUNT\TestSelector_TESTACCOUNT_TradeHistory_1531086427.924168.csv"
+    # dailyLogPath1 = "Data\AccountData\TESTACCOUNT\TestSelector_TESTACCOUNT_Log_1531086427.924168.csv"
+    # tradingHistoryPath2 = "Data\AccountData\TESTACCOUNT\TestSelector_TESTACCOUNT_TradeHistory_1531086026.0894861.csv"
+    # dailyLogPath2 = "Data\AccountData\TESTACCOUNT\TestSelector_TESTACCOUNT_Log_1531086026.0894861.csv"
 
-    tradingHistory1 = pd.DataFrame.from_csv(tradingHistoryPath1)
-    dailyLogs1 = pd.DataFrame.from_csv(dailyLogPath1)
-    tradingHistory2 = pd.DataFrame.from_csv(tradingHistoryPath2)
-    dailyLogs2 = pd.DataFrame.from_csv(dailyLogPath2)
+    # tradingHistory1 = pd.DataFrame.from_csv(tradingHistoryPath1)
+    # dailyLogs1 = pd.DataFrame.from_csv(dailyLogPath1)
+    # tradingHistory2 = pd.DataFrame.from_csv(tradingHistoryPath2)
+    # dailyLogs2 = pd.DataFrame.from_csv(dailyLogPath2)
 
-    results1 = analyzeData(tradingHistory1, dailyLogs1)
-    results2 = analyzeData(tradingHistory2, dailyLogs2)
+    # results1 = analyzeData(tradingHistory1, dailyLogs1)
+    # results2 = analyzeData(tradingHistory2, dailyLogs2)
 
-    rplotter.plotMultipleResults([results1, results2])
+    # rplotter.plotMultipleResults([results1, results2])
     
     
 
