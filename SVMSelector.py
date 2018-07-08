@@ -31,7 +31,8 @@ class SVMSelector(stockSelector):
         '''
         data = []
         tickerSubList = []
-
+        if maxNumberOfStocks<1:
+            return []
         if date == False:
             print("No date specified")
             return ValueError

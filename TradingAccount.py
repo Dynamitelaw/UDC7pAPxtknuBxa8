@@ -13,6 +13,7 @@ import time
 import os
 import RetrieveStockData as rsd
 import numpy as np
+import json
 
 
 #=============================================================================
@@ -116,8 +117,25 @@ class tradingAccount():
                 except:
                     #Using old value if current value cannot be found
                     value = self.stocksOwned.get(ticker)[3]
+            
+                #Check to see if any splits occured
+                try:
+                    splitData = pd.DataFrame.from_csv("Data/SplitData/"+ticker+".csv").values.tolist()
+                    for line in splitData[0]:
+                        splitDict = json.loads(line.replace("'",'"'))
+                        if splitDict['paymentDate']==date:
+                            print(splitDict)
+                            self.stocksOwned.get(ticker)[0] *= splitDict['toFactor']
+                            quantityOwned = self.stocksOwned.get(ticker)[0]
+                            print("SPLIT:",ticker)
+                except Exception as e:
+                    pass
+
             else:
                 value = rsd.getCurrentPrice(ticker)
+            
+            
+            
             
             self.stockAssets += int(value*quantityOwned*100)
             #print (date + ": "+ticker + "  $" + str(float(value)))

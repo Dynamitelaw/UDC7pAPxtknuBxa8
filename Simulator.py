@@ -355,34 +355,34 @@ def saveResults(results, SelectorName, TimeStamp):
 #       Main Entry Point
 #=============================================================================
 if __name__ == '__main__':
-    # dateRange = ["2017-01-03","2018-05-02"]
-    # startingBalance = 20000
-    # selector = SVMSelector()  #NOTE Just put your selector here Cole
-    # account = tradingAccount()
+    dateRange = ["2017-01-03","2018-05-02"]
+    startingBalance = 20000
+    selector = SVMSelector()  #NOTE Just put your selector here Cole
+    account = tradingAccount()
 
-    # runSimulation(account, dateRange, startingBalance, selector, sampleSize=400, preloadToMemory=True, PrintToTerminal=True,comission=0)
-    # results = analyzeData(account.getHistory(), account.getLogs())
-    # saveResults(results, selector.getName(), account.timeSaved)
+    runSimulation(account, dateRange, startingBalance, selector, sampleSize=400, preloadToMemory=True, PrintToTerminal=True,comission=0)
+    results = analyzeData(account.getHistory(), account.getLogs())
+    saveResults(results, selector.getName(), account.timeSaved)
 
-    # utils.emitAsciiBell()
+    utils.emitAsciiBell()
 
-    # rplotter.plotResults(results)
+    rplotter.plotResults(results)
   
 
    
-    tradingHistoryPath = "Data\AccountData\TESTACCOUNT\SVMSelector_TESTACCOUNT_TradeHistory_1530858834.8107054.csv"
-    dailyLogPath = "Data\AccountData\TESTACCOUNT\SVMSelector_TESTACCOUNT_Log_1530858834.8107054.csv"
+    # tradingHistoryPath = "Data\AccountData\TESTACCOUNT\SVMSelector_TESTACCOUNT_TradeHistory_1530858834.8107054.csv"
+    # dailyLogPath = "Data\AccountData\TESTACCOUNT\SVMSelector_TESTACCOUNT_Log_1530858834.8107054.csv"
 
-    tradingHistory = pd.DataFrame.from_csv(tradingHistoryPath)
-    dailyLogs = pd.DataFrame.from_csv(dailyLogPath)
+    # tradingHistory = pd.DataFrame.from_csv(tradingHistoryPath)
+    # dailyLogs = pd.DataFrame.from_csv(dailyLogPath)
 
-    #print(tradingHistory)
-    #print("----------------")
-    #print(tradingHistory)
-    #print(len(tradingHistory))
+    # #print(tradingHistory)
+    # #print("----------------")
+    # #print(tradingHistory)
+    # #print(len(tradingHistory))
 
-    results = analyzeData(tradingHistory, dailyLogs)
-    rplotter.plotResults(results)
+    # results = analyzeData(tradingHistory, dailyLogs)
+    # rplotter.plotResults(results)
     
     
 
