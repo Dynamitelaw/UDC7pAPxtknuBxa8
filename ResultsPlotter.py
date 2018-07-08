@@ -89,14 +89,23 @@ def plotResults(results):
             negativeProfits.append(profit)
 
     #Generate Bins
-    bins = list(np.linspace(minProfit-5, maxProfit+5, int(len(tradeStats)/3)))
+    numberOfBins = 30
+    binWidth = (maxProfit - minProfit) / numberOfBins
+    bins = []
+    bins.append(0)
+
+    #Negative Bins
+    while (True):
+        newBin = bins[0] - binWidth
+        bins.insert(0, newBin)
+        if (newBin < minProfit):
+            break
     
-    #Set one bin as 0 for clear separation of pos and neg
-    for i in range(0, len(bins), 1):
-        if (bins[i] > 0):
-            bins[i] = 0
-            if ((abs(bins[i-1])/abs(bins[i-2])) < 0.50):
-                del bins[i-1]
+    #Postive Bins
+    while (True):
+        newBin = bins[len(bins)-1] + binWidth
+        bins.append(newBin)
+        if (newBin > maxProfit):
             break
 
     #Generate Histograms
