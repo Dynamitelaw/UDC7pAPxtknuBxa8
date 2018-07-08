@@ -65,7 +65,6 @@ def loadDataframeFromFile(fileName):
     dataframe = pd.read_csv(DatabaseProcessedDataPath+"\\"+fileName, parse_dates=True)
     dataframe["date"] = pd.to_datetime(dataframe["date"], format='%Y-%m-%d')
     dataframe.set_index("date", inplace=True)
-    dataframe = dataframe.drop(columns=["Optimal Dates","Desired Level 1 Out Buy","Desired Level 1 Out Sell","Profit Speed"])
     #print(dataframe)
     return [ticker, dataframe]
 

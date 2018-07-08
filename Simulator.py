@@ -15,13 +15,13 @@ import pandas as pd
 import os
 from shutil import copyfile
 import ResultsPlotter as rplotter
+from multiprocessing import Pool
 from SVMSelector import SVMSelector
 
 
 #=============================================================================
 #       Historical Simulator
 #=============================================================================
-
 def runSimulation(account, dateRange, startingDeposit, selector, sampleSize=False, customTickerList=False, preloadToMemory=False, depositAmount=False, depositFrequency=False, comission=10, PrintToTerminal=True):
     '''
     Runs a single simulation. Saves results to a csv file.
@@ -118,19 +118,18 @@ def runSimulation(account, dateRange, startingDeposit, selector, sampleSize=Fals
             sys.stdout.write("\r")
             sys.stdout.write(str(percentage)+"%")
             sys.stdout.flush()
-            
+
+    if (PrintToTerminal):
+        print("\n")    
     #Save logs        
     account.saveHistory(selector.getName())
 
-#====================END Historical Simulator=================================
-
-
+    #====================END Historical Simulator=============================
 
 
 #=============================================================================
 #       Simulation Data Analysis
 #=============================================================================
-
 def analyzeData(tradingHistory, dailyLogs):
     '''
     Analyzes the trading history and daily logs of the passed account. 
@@ -138,8 +137,8 @@ def analyzeData(tradingHistory, dailyLogs):
         {
             "General Stats":
             {
-                "Start Date":str, "End Date":str, "Days Run":int, "Yearly Growth Rate":float,
-                "Average Trades Per Day":float, "Average Trade %Profit":float, "Average Hold Length":float
+                "Start Date":str, "End Date":str, "Days Run":int, "Starting Assets":float, "Ending Assets":float, 
+                Yearly Growth Rate":float, "Average Trades Per Day":float, "Average Trade %Profit":float, "Average Hold Length":float
             },
             "Stats vs Time":dataFrame,
             "Trade Stats":dataFrame
@@ -303,7 +302,7 @@ def analyzeData(tradingHistory, dailyLogs):
 
     return returnDict
 
-#====================END Simulation Data Analysis=============================
+    #====================END Simulation Data Analysis=========================
 
 
 #=============================================================================
@@ -346,44 +345,110 @@ def saveResults(results, SelectorName, TimeStamp):
         print("Unable to copy log file")
         print(e)
 
-#====================END saveResults=============================
+    #====================END saveResults=============================
 
 
+#=============================================================================
+#       Run Multiple Simulations
+#=============================================================================
+def runMultiSim(numberOfSimulations, selectorName, dateRange, startingDeposit, sampleSize=False, customTickerList=False, preloadToMemory=False, depositAmount=False, depositFrequency=False, comission=10, PrintToTerminal=True):
+    '''
+    Runs multiple simulations and analyzes the results as a set.
+
+    -Daterange must be a 2 element list, in the following format: [[<start date>], [<end date>]], date format = string "YYYY-MM-DD".
+    '''
+
+    inputArguments = []
+    for i in range(numberOfSimulations):
+        arguments = dateRange, startingDeposit, selectorName, sampleSize, customTickerList, preloadToMemory, depositAmount, depositFrequency, comission, PrintToTerminal
+        inputArguments.append(arguments)
+
+    results = []
+    i = 1
+    for arguments in inputArguments:
+        if (PrintToTerminal):
+            print("##############################################")
+            print("Simulation " + str(i) + "/" + str(numberOfSimulations))
+            print("##############################################")
+            i += 1
+
+        result = simulationWrapper(*arguments)
+        results.append(results)
+
+    utils.emitAsciiBell()
+
+    if (PrintToTerminal):
+        print("Your patience has been rewarded. I bestow upon you the results of your CPU's tireless efforts")
+
+    print(results)
+
+
+def simulationWrapper(dateRange, startingDeposit, selectorName, sampleSize, customTickerList, preloadToMemory, depositAmount, depositFrequency, comission, PrintToTerminal):
+    '''
+    Wrapper for the runSimulation function to support analyzing multiple simulations
+    '''
+    #Instantiate selector
+    if (selectorName == "TestSelector"):
+        selector = TestSelector()
+    elif (selectorName == "SVMSelector"):
+        selector = SVMSelector()
+    
+    else:
+        raise ValueError ("{} is not a valid selector name".format(selectorName))
+
+    #Instantiate account
+    account = tradingAccount()
+
+    #Run simulation
+    runSimulation(account, dateRange, startingDeposit, selector, sampleSize=sampleSize, customTickerList=customTickerList, preloadToMemory=preloadToMemory, depositAmount=depositAmount, depositFrequency=depositFrequency, comission=comission, PrintToTerminal=PrintToTerminal)
+    results = analyzeData(account.getHistory(), account.getLogs())
+    saveResults(results, selector.getName(), account.timeSaved)
+
+    return results
+
+    #====================END Run Multiple Simulations=============================
 
 
 #=============================================================================
 #       Main Entry Point
 #=============================================================================
 if __name__ == '__main__':
-    dateRange = ["2017-01-03","2018-05-02"]
-    startingBalance = 20000
-    selector = SVMSelector()  #NOTE Just put your selector here Cole
-    account = tradingAccount()
+    
+    # numberOfSimulations = 3
+    # selectorName = "TestSelector"
+    # dateRange = ["2017-01-03","2017-03-02"]
+    # startingBalance = 20000
 
-    runSimulation(account, dateRange, startingBalance, selector, sampleSize=400, preloadToMemory=True, PrintToTerminal=True,comission=0)
-    results = analyzeData(account.getHistory(), account.getLogs())
-    saveResults(results, selector.getName(), account.timeSaved)
+    # runMultiSim(numberOfSimulations, selectorName, dateRange, startingBalance, sampleSize=100, preloadToMemory=True,  comission=10)
+    
+    # selector = SVMSelector()  #NOTE Just put your selector here Cole
+    # account = tradingAccount()
 
-    utils.emitAsciiBell()
+    # runSimulation(account, dateRange, startingBalance, selector, sampleSize=400, preloadToMemory=True, PrintToTerminal=True,comission=0)
+    # results = analyzeData(account.getHistory(), account.getLogs())
+    # saveResults(results, selector.getName(), account.timeSaved)
 
-    rplotter.plotResults(results)
+    # utils.emitAsciiBell()
+
+    # rplotter.plotResults(results)
   
 
-    '''
-    tradingHistoryPath = "Data\AccountData\TESTACCOUNT\TestSelector_TESTACCOUNT_TradeHistory_1530744899.1927605.csv"
-    dailyLogPath = "Data\AccountData\TESTACCOUNT\TestSelector_TESTACCOUNT_Log_1530744899.1927605.csv"
+    
+    tradingHistoryPath1 = "Data\AccountData\TESTACCOUNT\TestSelector_TESTACCOUNT_TradeHistory_1531086427.924168.csv"
+    dailyLogPath1 = "Data\AccountData\TESTACCOUNT\TestSelector_TESTACCOUNT_Log_1531086427.924168.csv"
+    tradingHistoryPath2 = "Data\AccountData\TESTACCOUNT\TestSelector_TESTACCOUNT_TradeHistory_1531086026.0894861.csv"
+    dailyLogPath2 = "Data\AccountData\TESTACCOUNT\TestSelector_TESTACCOUNT_Log_1531086026.0894861.csv"
 
-    tradingHistory = pd.DataFrame.from_csv(tradingHistoryPath)
-    dailyLogs = pd.DataFrame.from_csv(dailyLogPath)
+    tradingHistory1 = pd.DataFrame.from_csv(tradingHistoryPath1)
+    dailyLogs1 = pd.DataFrame.from_csv(dailyLogPath1)
+    tradingHistory2 = pd.DataFrame.from_csv(tradingHistoryPath2)
+    dailyLogs2 = pd.DataFrame.from_csv(dailyLogPath2)
 
-    #print(tradingHistory)
-    #print("----------------")
-    #print(tradingHistory)
-    #print(len(tradingHistory))
+    results1 = analyzeData(tradingHistory1, dailyLogs1)
+    results2 = analyzeData(tradingHistory2, dailyLogs2)
 
-    results = analyzeData(tradingHistory, dailyLogs)
-    rplotter.plotResults(results)
-    '''
+    rplotter.plotMultipleResults([results1, results2])
+    
     
 
 
