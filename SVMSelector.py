@@ -54,13 +54,13 @@ class SVMSelector(stockSelector):
                 df=getDataframe(ticker)
                 date_index = df.index.get_loc(date)+1
                 newDate = str(df.index[date_index].values[0])[:10]
-                tickerDict = getDataframe(ticker, [newDate,newDate])
+                tickerDict = getDataframe(ticker, [newDate,newDate]).drop(columns=["Optimal Dates","Desired Level 1 Out Buy","Desired Level 1 Out Sell","Profit Speed"])
                 if True in np.isnan(tickerDict.iloc[0].values):
                     isMissing = True
             except:
                 isMissing = True
             if not isMissing:
-                line = tickerDict.iloc[0].drop(columns=["Optimal Dates","Desired Level 1 Out Buy","Desired Level 1 Out Sell","Profit Speed"]).values.tolist()
+                line = tickerDict.iloc[0].values.tolist()
                 slopeDict[ticker] = tickerDict.iloc[0].at["5 Day Slope"]
                 data.append(line)
                 buyTickerList.append(ticker)
