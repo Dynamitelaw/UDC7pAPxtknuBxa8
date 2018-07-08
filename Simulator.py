@@ -272,12 +272,13 @@ def analyzeData(tradingHistory, dailyLogs):
 
 
     ########## Trading History Analysis ##########
-    tradeColumns = ["Ticker", "Date Bought", "Buy Price", "Date Sold", "Sell Price", "Quantity", "Commission", "Trade Profit", "Percent Profit", "Hold Length"]
+    tradeColumns = ["Ticker", "Date Bought", "Buy Price", "Date Sold", "Sell Price", "Quantity", "Buy In Amount", "Commission", "Trade Profit", "Percent Profit", "Hold Length"]
     tradeStats = pd.DataFrame(columns=tradeColumns)
 
     tradeStats[["Ticker", "Date Bought", "Buy Price", "Date Sold", "Sell Price", "Quantity", "Commission", "Trade Profit"]] = tradingHistory[["Ticker", "Date Bought", "Buy Price", "Date Sold", "Sell Price", "Quantity", "Commission", "Trade Profit"]]
     tradeStats["Percent Profit"] = ((tradingHistory["Sell Price"] - tradingHistory["Buy Price"]) / (tradingHistory["Buy Price"]))*100  #NOTE Excludes commission
     tradeStats["Hold Length"] = tradingHistory.apply(lambda row: utils.getDayDifference(row["Date Bought"], row["Date Sold"]), axis=1)  #https://engineering.upside.com/a-beginners-guide-to-optimizing-pandas-code-for-speed-c09ef2c6a4d6
+    tradeStats["Buy In Amount"] = tradingHistory["Buy Price"] * tradingHistory["Quantity"]
 
     #More general stats
     averagePercentProfit = tradeStats["Percent Profit"].mean()
