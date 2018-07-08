@@ -433,6 +433,7 @@ if __name__ == '__main__':
     # rplotter.plotResults(results)
   
 
+<<<<<<< HEAD
     
     tradingHistoryPath1 = "Data\AccountData\TESTACCOUNT\TestSelector_TESTACCOUNT_TradeHistory_1531086427.924168.csv"
     dailyLogPath1 = "Data\AccountData\TESTACCOUNT\TestSelector_TESTACCOUNT_Log_1531086427.924168.csv"
@@ -448,6 +449,22 @@ if __name__ == '__main__':
     results2 = analyzeData(tradingHistory2, dailyLogs2)
 
     rplotter.plotMultipleResults([results1, results2])
+=======
+   
+    # tradingHistoryPath = "Data\AccountData\TESTACCOUNT\SVMSelector_TESTACCOUNT_TradeHistory_1530858834.8107054.csv"
+    # dailyLogPath = "Data\AccountData\TESTACCOUNT\SVMSelector_TESTACCOUNT_Log_1530858834.8107054.csv"
+
+    # tradingHistory = pd.DataFrame.from_csv(tradingHistoryPath)
+    # dailyLogs = pd.DataFrame.from_csv(dailyLogPath)
+
+    # #print(tradingHistory)
+    # #print("----------------")
+    # #print(tradingHistory)
+    # #print(len(tradingHistory))
+
+    # results = analyzeData(tradingHistory, dailyLogs)
+    # rplotter.plotResults(results)
+>>>>>>> b34d0265adcef0b094866198cf18579bfde23a0a
     
     
 

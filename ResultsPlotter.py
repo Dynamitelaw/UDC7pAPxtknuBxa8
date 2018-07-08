@@ -38,6 +38,7 @@ def plotResults(results):
 
     #Set up Subplots
     fig, axes = plt.subplots(facecolor=facecolor,nrows=2, ncols=2)
+    fig.set_size_inches((9,6))
     axes[0, 1].axis('off')
     axes[1, 1].axis('off')
     #axes[2, 1].axis('off') (76/255,255/255,0/255)

@@ -18,6 +18,7 @@ class SVMSelector(stockSelector):
             self.clf,accuracy,buyCount,k,days,self.t_X = createSVMmodel(dir,c=1000,gamma=1,training_percent=.5,date_range=[date(2013,1,1),date(2016,1,1)])
         self.myStocks = [[],[],[],[]]
         self.cycle = 0
+    
     def selectStocksToBuy(self, maxNumberOfStocks, date=False, customTickerList=False, genricParameters=[]):
         '''
         Selects which stocks to buy, and the proportion of funds to be allocated to each.
@@ -31,7 +32,11 @@ class SVMSelector(stockSelector):
         '''
         data = []
         tickerSubList = []
-
+        
+        if maxNumberOfStocks<1:
+            self.cycle = (self.cycle+1)%4
+            return []
+        
         if date == False:
             print("No date specified")
             return ValueError
@@ -50,13 +55,13 @@ class SVMSelector(stockSelector):
                 df=getDataframe(ticker)
                 date_index = df.index.get_loc(date)+1
                 newDate = str(df.index[date_index].values[0])[:10]
-                tickerDict = getDataframe(ticker, [newDate,newDate])
+                tickerDict = getDataframe(ticker, [newDate,newDate]).drop(columns=["Optimal Dates","Desired Level 1 Out Buy","Desired Level 1 Out Sell","Profit Speed"])
                 if True in np.isnan(tickerDict.iloc[0].values):
                     isMissing = True
             except:
                 isMissing = True
             if not isMissing:
-                line = tickerDict.iloc[0].drop(columns=["Optimal Dates","Desired Level 1 Out Buy","Desired Level 1 Out Sell","Profit Speed"]).values.tolist()
+                line = tickerDict.iloc[0].values.tolist()
                 slopeDict[ticker] = tickerDict.iloc[0].at["5 Day Slope"]
                 data.append(line)
                 buyTickerList.append(ticker)
