@@ -142,31 +142,34 @@ class tradingAccount():
             ticker = order[0]
             quantity = order[1]
 
-            tickerData = database.getDataframe(ticker)
-            openPrice = tickerData.loc[date, "Open"]
-            
-            self.balance -= self.commision
-            tradeCost = int(openPrice*quantity*100)
+            if (quantity > 0):
+                tickerData = database.getDataframe(ticker)
+                openPrice = tickerData.loc[date, "Open"]
+                
+                self.balance -= self.commision
+                tradeCost = int(openPrice*quantity*100)
 
-            if ((self.balance - tradeCost) >= 0):
-                #There is enough money for the trade
-                self.balance -= tradeCost  #*100 since balance is in cents
-                self.stocksOwned[ticker] = quantity, openPrice, date, openPrice  #each element in stocksOwned is ticker: (quantity, buyPrice, dateOfPurchase, mostRecentPrice)
+                if ((self.balance - tradeCost) >= 0):
+                    #There is enough money for the trade
+                    self.balance -= tradeCost  #*100 since balance is in cents
+                    self.stocksOwned[ticker] = quantity, openPrice, date, openPrice  #each element in stocksOwned is ticker: (quantity, buyPrice, dateOfPurchase, mostRecentPrice)
 
-                if (simulation):
-                    self.updateAssets(date)
+                    if (simulation):
+                        self.updateAssets(date)
+                    else:
+                        self.updateAssets()
+
+                    totalAssets = float(self.balance + self.stockAssets)/100
+                    
+                    timeStamp = time.time()
+                    timeOfExecution = datetime.datetime.fromtimestamp(timeStamp).strftime('%Y-%m-%d %H:%M:%S')
+
+                    executedOrders.append([date, ticker, quantity, float(openPrice), action, timeOfExecution, totalAssets, float(self.balance)/100, float(self.stockAssets)/100])
+                    
                 else:
-                    self.updateAssets()
-
-                totalAssets = float(self.balance + self.stockAssets)/100
-                
-                timeStamp = time.time()
-                timeOfExecution = datetime.datetime.fromtimestamp(timeStamp).strftime('%Y-%m-%d %H:%M:%S')
-
-                executedOrders.append([date, ticker, quantity, float(openPrice), action, timeOfExecution, totalAssets, float(self.balance)/100, float(self.stockAssets)/100])
-                
+                    raise ValueError("Insufficient funds to execute trade {}".format(order))
             else:
-                raise ValueError("Insufficient funds to execute trade {}".format(order))
+                raise ValueError("Buy quantity of 0 recieved")
 
         logAdditions = pd.DataFrame(executedOrders, columns=self.dailyLogColumns)
         self.dailyLogs = self.dailyLogs.append(logAdditions, ignore_index=True)
