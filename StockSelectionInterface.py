@@ -9,7 +9,7 @@ from abc import ABC,abstractmethod
 
 class stockSelector(ABC):
     
-    def __init__ (self, selectorName, genericParams=[]):
+    def __init__ (self, genericParams=[]):
         '''
         selecetorName must be a string denoting which selector type to use.
         genericParams is a list where you pass the arguments needed by the constructor

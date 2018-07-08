@@ -15,6 +15,7 @@ import pandas as pd
 import os
 from shutil import copyfile
 import ResultsPlotter as rplotter
+from SVMSelector import SVMSelector
 
 
 #=============================================================================
@@ -353,12 +354,12 @@ def saveResults(results, SelectorName, TimeStamp):
 #       Main Entry Point
 #=============================================================================
 if __name__ == '__main__':
-    dateRange = ["2017-01-03","2017-03-02"]
-    startingBalance = 10000
-    selector = TestSelector()  #NOTE Just put your selector here Cole
+    dateRange = ["2017-01-03","2018-03-02"]
+    startingBalance = 20000
+    selector = SVMSelector()  #NOTE Just put your selector here Cole
     account = tradingAccount()
 
-    runSimulation(account, dateRange, startingBalance, selector, sampleSize=800, preloadToMemory=True, PrintToTerminal=True)
+    runSimulation(account, dateRange, startingBalance, selector, sampleSize=400, preloadToMemory=True, PrintToTerminal=True,comission=0)
     results = analyzeData(account.getHistory(), account.getLogs())
     saveResults(results, selector.getName(), account.timeSaved)
 

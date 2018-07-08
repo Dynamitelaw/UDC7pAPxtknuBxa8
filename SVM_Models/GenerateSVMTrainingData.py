@@ -9,7 +9,7 @@ from datetime import datetime
 import os
 from sklearn import svm,preprocessing
 
-def XpercentGrowthNDaysAway(x=1,n=1,dir='Data/PcsData/'):
+def XpercentGrowthNDaysAway(x=1,n=3,dir='Data/PcsData/'):
     ''' Iterates through all of the .csv data files in the dir directory and
     creates new data files in /Data/SVM/{x}PercentGrowth{N}DaysAway with an
     additional column "Result" with 0 if the percent change after N days from
@@ -32,7 +32,7 @@ def XpercentGrowthNDaysAway(x=1,n=1,dir='Data/PcsData/'):
             try:
                 df = pd.DataFrame.from_csv(os.path.join(dir,f))
                 df.index.name = 'date'
-                df = df.sort_values('date',ascending=0)
+                df = df.sort_values('date',ascending=1)
                 date = df.index.tolist()
                 results = []
                 p_change = []
