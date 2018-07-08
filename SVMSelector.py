@@ -14,9 +14,9 @@ class SVMSelector(stockSelector):
         super().__init__()
         dir="Data/SVM/1PercentGrowth3DaysAway/"
         k=0
-        while k<4:
-            self.clf,accuracy,buyCount,k,days,self.t_X = createSVMmodel(dir,c=100,gamma=.1,training_percent=.5,date_range=[date(2000,1,1),date(2016,1,1)])
-        self.myStocks = [[],[],[]]
+        while k<2:
+            self.clf,accuracy,buyCount,k,days,self.t_X = createSVMmodel(dir,c=1000,gamma=1,training_percent=.5,date_range=[date(2013,1,1),date(2016,1,1)])
+        self.myStocks = [[],[],[],[]]
         self.cycle = 0
     def selectStocksToBuy(self, maxNumberOfStocks, date=False, customTickerList=False, genricParameters=[]):
         '''
@@ -42,7 +42,7 @@ class SVMSelector(stockSelector):
         sampleTickerList = customTickerList[:]
         buyTickerList = []
         shuffle(sampleTickerList)
-        
+        slopeDict = {}
         for ticker in sampleTickerList:
             tickerDict = getDataframe(ticker, [date,date])
             isMissing = False
@@ -57,6 +57,7 @@ class SVMSelector(stockSelector):
                 isMissing = True
             if not isMissing:
                 line = tickerDict.iloc[0].drop(columns=["Optimal Dates","Desired Level 1 Out Buy","Desired Level 1 Out Sell","Profit Speed"]).values.tolist()
+                slopeDict[ticker] = tickerDict.iloc[0].at["5 Day Slope"]
                 data.append(line)
                 buyTickerList.append(ticker)
                 #print(list(map(float,DatabaseDictionary[customTickerList[i]].loc[date].values.tolist()[0])))
@@ -70,16 +71,35 @@ class SVMSelector(stockSelector):
         buys=[]
         self.myStocks[self.cycle] = []
         c=0
-        while count<1 and c<len(buyTickerList):
-            if X[i]==1:
-                buys.append([buyTickerList[c]])
-                self.myStocks[self.cycle].append(buyTickerList[c])
-                count +=1
-            i+=1
+        while c<len(buyTickerList):
+            if X[i] == 0:
+                slopeDict.pop(buyTickerList[c],None)
+            if X[i] == 1:
+                alreadyOwn = False
+                for stockList in self.myStocks:
+                    if buyTickerList[c] in stockList:
+                         alreadyOwn = True
+                    if alreadyOwn:
+                        slopeDict.pop(buyTickerList[c],None)
             c+=1
+            i+=1    
+        maxStock = min(slopeDict.keys(), key=(lambda k: slopeDict[k]))
+        buys.append([maxStock,1])
+        self.myStocks[self.cycle].append(maxStock)
+            # if X[i]==1:
+            #     alreadyOwn = False
+            #     for stockList in self.myStocks:
+            #         if buyTickerList[c] in stockList:
+            #             alreadyOwn = True
+            #     if not alreadyOwn:        
+            #         buys.append([buyTickerList[c]])
+            #         self.myStocks[self.cycle].append(buyTickerList[c])
+            #     count +=1
+            # i+=1
+            # c+=1
         for i in range(len(buys)):
             buys[i].append(1/float(len(buys)))
-        self.cycle = (self.cycle+1)%3
+        self.cycle = (self.cycle+1)%4
         return buys
 
 

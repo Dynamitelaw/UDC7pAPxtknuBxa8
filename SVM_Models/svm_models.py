@@ -12,7 +12,6 @@ from sklearn import svm,preprocessing
 from sklearn.svm import SVC
 from matplotlib import pyplot as plt
 import os
-from utils import emitAsciiBell
 import random
 from sklearn.model_selection import StratifiedShuffleSplit
 from sklearn.model_selection import GridSearchCV
@@ -90,8 +89,8 @@ def logSearchParams(dir="Data/SVM/1PercentGrowth1DaysAway/",training_percent=.3)
     X = np.array(df.drop(columns=["Result","Percent Results"]).values)
     X = preprocessing.scale(X)
     y = df["Result"].values
-    C_range = np.logspace(-2, 10, 5)
-    gamma_range = np.logspace(-9, 3, 5)
+    C_range = np.logspace(-2, 10, 13)
+    gamma_range = np.logspace(-9, 3, 13)
     param_grid = dict(gamma=gamma_range, C=C_range)
     cv = StratifiedShuffleSplit(n_splits=5, test_size=0.2, random_state=42)
     grid = GridSearchCV(SVC(), param_grid=param_grid, cv=cv)
@@ -100,7 +99,7 @@ def logSearchParams(dir="Data/SVM/1PercentGrowth1DaysAway/",training_percent=.3)
     print("The best parameters are %s with a score of %0.2f"
       % (grid.best_params_, grid.best_score_))
 
-    f = open("bestGridParams.txt",w)
+    f = open("bestGridParams.txt",'w')
     f.write("The best parameters are %s with a score of %0.2f"
       % (grid.best_params_, grid.best_score_))
     f.close()
@@ -142,9 +141,8 @@ def testParams(dir,c,gamma,sample_size=10,training_percent=.3,date_range=None):
 
 if __name__=="__main__":
     dir="Data/SVM/1PercentGrowth3DaysAway/"
-    logSearchParams(dir="Data/SVM/1PercentGrowth3DaysAway/",training_percent=.3)
-    emitAsciiBell()
-    #testParams(dir=dir,c=100,gamma=.1,sample_size=100,training_percent=.3,date_range=[date(2013,1,1),date(2016,1,1)])
+    #logSearchParams(dir="Data/SVM/1PercentGrowth3DaysAway/",training_percent=.3)
+    testParams(dir=dir,c=10000,gamma=1,sample_size=10,training_percent=.3,date_range=[date(2013,1,1),date(2016,1,1)])
 
     
     
