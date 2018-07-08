@@ -7,6 +7,7 @@ from datetime import date
 from PandaDatabase import *
 import numpy as np
 from sklearn.preprocessing import scale
+from random import shuffle
 
 class SVMSelector(stockSelector):
     def __init__(self):
@@ -30,12 +31,28 @@ class SVMSelector(stockSelector):
         '''
         data = []
         tickerSubList = []
-        for i in range(len(customTickerList)):
-            if date in DatabaseDictionary[customTickerList[i]].index:
-                line = DatabaseDictionary[customTickerList[i]].loc[date].values.tolist()[0]
-                if not(True in np.isnan(line)):
-                    data.append(line)
-                    tickerSubList.append(customTickerList[i])
+
+        if date == False:
+            print("No date specified")
+            return ValueError
+
+        if customTickerList==False:
+            customTickerList = getTickerList()
+
+        sampleTickerList = customTickerList[:]
+        shuffle(sampleTickerList)
+        for ticker in sampleTickerList:
+            tickerDict = getDataframe(ticker, [date,date])
+            isMissing = pd.isnull(tickerDict)
+            try:
+                isMissing = (True in np.isnan(tickerDict.iloc[0].values))
+                if tickerDict==False:
+                    isMissing = True
+            except:
+                isMissing = True
+            if not isMissing:
+                line = tickerDict.iloc[0].drop(columns=["Optimal Dates","Desired Level 1 Out Buy","Desired Level 1 Out Sell","Profit Speed"]).values.tolist()
+                data.append(line)
                 #print(list(map(float,DatabaseDictionary[customTickerList[i]].loc[date].values.tolist()[0])))
         if len(data)==0:
             return []
@@ -47,10 +64,10 @@ class SVMSelector(stockSelector):
         buys=[]
         self.myStocks[self.cycle] = []
         c=0
-        while count<maxNumberOfStocks and c<len(tickerSubList):
+        while count<maxNumberOfStocks and c<len(sampleTickerList):
             if X[i]==1:
-                buys.append([tickerSubList[c]])
-                self.myStocks[self.cycle].append(tickerSubList[c])
+                buys.append([sampleTickerList[c]])
+                self.myStocks[self.cycle].append(sampleTickerList[c])
                 count +=1
             i+=1
             c+=1
@@ -69,9 +86,17 @@ class SVMSelector(stockSelector):
 
         Returns a list of stocks to sell.
         ''' 
+        if date == False:
+            print("No date specified")
+            raise ValueError
+        
         sellList = []
         for stock in listOfOwnedStocks:
-            if stock in self.myStocks[self.cycle]:
+            if isMissing == False:
+                pass
+            else:
+                isMissing = pd.isnull(getDataframe(stock, [date,date]).loc[date,'Close']) 
+            if (stock in self.myStocks[self.cycle]) and (not isMissing):
                 sellList.append(stock)
         return sellList
 
