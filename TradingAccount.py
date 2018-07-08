@@ -171,6 +171,10 @@ class tradingAccount():
             else:
                 raise ValueError("Buy quantity of 0 recieved")
 
+        self.updateAssets(date)
+        totalAssets = float(self.balance + self.stockAssets)/100
+        executedOrders.append([date, "", "", "", "CHECKPOINT", datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S'),  totalAssets, float(self.balance)/100, float(self.stockAssets)/100])
+        
         logAdditions = pd.DataFrame(executedOrders, columns=self.dailyLogColumns)
         self.dailyLogs = self.dailyLogs.append(logAdditions, ignore_index=True)
 
@@ -227,10 +231,6 @@ class tradingAccount():
 
             else:
                 raise ValueError("Ticker {} is not a currently owned stock".format(ticker))
-
-        self.updateAssets(date)
-        totalAssets = float(self.balance + self.stockAssets)/100
-        executedOrders.append([date, "", "", "", "CHECKPOINT", datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S'),  totalAssets, float(self.balance)/100, float(self.stockAssets)/100])
         
         logAdditions = pd.DataFrame(executedOrders, columns=self.dailyLogColumns)
         self.dailyLogs = self.dailyLogs.append(logAdditions, ignore_index=True)
