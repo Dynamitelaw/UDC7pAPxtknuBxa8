@@ -12,6 +12,7 @@ from sklearn import svm,preprocessing
 from sklearn.svm import SVC
 from matplotlib import pyplot as plt
 import os
+from utils import emitAsciiBell
 import random
 from sklearn.model_selection import StratifiedShuffleSplit
 from sklearn.model_selection import GridSearchCV
@@ -98,6 +99,11 @@ def logSearchParams(dir="Data/SVM/1PercentGrowth1DaysAway/",training_percent=.3)
     
     print("The best parameters are %s with a score of %0.2f"
       % (grid.best_params_, grid.best_score_))
+
+    f = open("bestGridParams.txt",w)
+    f.write("The best parameters are %s with a score of %0.2f"
+      % (grid.best_params_, grid.best_score_))
+    f.close()
     return grid.best_params_
 
 #c=1000000000.0,gamma=1e-07
@@ -137,6 +143,7 @@ def testParams(dir,c,gamma,sample_size=10,training_percent=.3,date_range=None):
 if __name__=="__main__":
     dir="Data/SVM/1PercentGrowth3DaysAway/"
     logSearchParams(dir="Data/SVM/1PercentGrowth3DaysAway/",training_percent=.3)
+    emitAsciiBell()
     #testParams(dir=dir,c=100,gamma=.1,sample_size=100,training_percent=.3,date_range=[date(2013,1,1),date(2016,1,1)])
 
     
