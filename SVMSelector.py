@@ -34,6 +34,7 @@ class SVMSelector(stockSelector):
         tickerSubList = []
         
         if maxNumberOfStocks<1:
+            self.cycle = (self.cycle+1)%4
             return []
         
         if date == False:
