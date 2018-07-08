@@ -100,6 +100,8 @@ class SVMSelector(stockSelector):
         for i in range(len(buys)):
             buys[i].append(1/float(len(buys)))
         self.cycle = (self.cycle+1)%4
+        if maxNumberOfStocks<1:
+            return []
         return buys
 
 

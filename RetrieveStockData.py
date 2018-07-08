@@ -12,12 +12,14 @@ iexfinance documentation: https://pypi.org/project/iexfinance/
 
 import iexfinance as iex
 import utils
+import os
 from datetime import datetime
 import pandas as pd
 import sys
 import multiprocessing
 from multiprocessing import Pool
 import tqdm
+from PandaDatabase import getTickerList
 
 
 def getHistoricalData(ticker, daterange):
@@ -42,6 +44,31 @@ def getCurrentPrice(ticker):
     Returns the current price of passed ticker
     '''
     return iex.Stock(ticker).get_price()
+
+def getStockSplits(customTickerList=None,dir="Data/SplitData"):
+    '''
+    Retrieves the split data for every ticker in the customTickerList.
+    If no customTickerList is given, retrieves for all tickrs. IEX claims to update every hour
+    from 6 a.m. to 8 p.m.
+    '''
+    if customTickerList==None:
+        tickerList = getTickerList()
+    else: 
+        tickerList = customTickerList
+    
+    if not os.path.isdir(dir):
+        os.mkdir(dir)
+    for ticker in tickerList:
+        try:
+            sr = iex.StockReader(symbols=[ticker],output_format="pandas")
+            df = sr.get_splits(range='5y')
+            df.to_csv(os.path.join(dir,ticker+".csv"))
+        except Exception as e:
+            print(e)
+            pass
+
+
+
 
 def getOpenPrice(ticker):
     '''
@@ -133,3 +160,4 @@ def updateStockDataFolder():
 if __name__ == '__main__':
     updateTickerList()
     updateStockDataFolder()
+    getStockSplits
