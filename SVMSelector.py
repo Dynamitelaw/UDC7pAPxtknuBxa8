@@ -18,6 +18,7 @@ class SVMSelector(stockSelector):
             self.clf,accuracy,buyCount,k,days,self.t_X = createSVMmodel(dir,c=1000,gamma=1,training_percent=.5,date_range=[date(2013,1,1),date(2016,1,1)])
         self.myStocks = [[],[],[],[]]
         self.cycle = 0
+    
     def selectStocksToBuy(self, maxNumberOfStocks, date=False, customTickerList=False, genricParameters=[]):
         '''
         Selects which stocks to buy, and the proportion of funds to be allocated to each.
@@ -31,8 +32,10 @@ class SVMSelector(stockSelector):
         '''
         data = []
         tickerSubList = []
+        
         if maxNumberOfStocks<1:
             return []
+        
         if date == False:
             print("No date specified")
             return ValueError
@@ -101,8 +104,6 @@ class SVMSelector(stockSelector):
         for i in range(len(buys)):
             buys[i].append(1/float(len(buys)))
         self.cycle = (self.cycle+1)%4
-        if maxNumberOfStocks<1:
-            return []
         return buys
 
 
