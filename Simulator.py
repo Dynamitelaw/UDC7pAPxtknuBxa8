@@ -373,9 +373,7 @@ def runMultiSim(numberOfSimulations, selectorName, dateRange, startingDeposit, s
             i += 1
 
         result = simulationWrapper(*arguments)
-        results.append(results)
-
-    utils.emitAsciiBell()
+        results.append(result)
 
     if (PrintToTerminal):
         print("Your patience has been rewarded. I bestow upon you the results of your CPU's tireless efforts")
@@ -416,11 +414,13 @@ if __name__ == '__main__':
     
     numberOfSimulations = 3
     selectorName = "TestSelector"
-    dateRange = ["2017-01-03","2017-03-02"]
+    dateRange = ["2017-01-03","2017-02-02"]
     startingBalance = 20000
 
     results = runMultiSim(numberOfSimulations, selectorName, dateRange, startingBalance, sampleSize=100, preloadToMemory=True,  comission=10)
+    utils.emitAsciiBell()
     rplotter.plotMultipleResults(results)
+    
     
     # selector = SVMSelector()  #NOTE Just put your selector here Cole
     # account = tradingAccount()
