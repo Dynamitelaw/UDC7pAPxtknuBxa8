@@ -124,10 +124,10 @@ class tradingAccount():
                     for line in splitData[0]:
                         splitDict = json.loads(line.replace("'",'"'))
                         if splitDict['paymentDate']==date:
-                            print(splitDict)
+                            #print(splitDict)
                             self.stocksOwned.get(ticker)[0] *= splitDict['toFactor']
                             quantityOwned = self.stocksOwned.get(ticker)[0]
-                            print("SPLIT:",ticker)
+                            #print("SPLIT:",ticker)
                 except Exception as e:
                     pass
 

@@ -14,8 +14,9 @@ class SVMSelector(stockSelector):
         super().__init__()
         dir="Data/SVM/1PercentGrowth3DaysAway/"
         k=0
-        while k<2:
-            self.clf,accuracy,buyCount,k,days,self.t_X = createSVMmodel(dir,c=1000,gamma=1,training_percent=.5,date_range=[date(2013,1,1),date(2016,1,1)])
+        #c=1000000000,gamma=0.001
+        self.the_Ticker = "EIM"
+        self.clf,accuracy,buyCount,k,days,self.t_X = createSVMmodel(dir=dir,c=1000000000,gamma=0.001,date_range=[date(2016,12,2),date(2017,1,2)],customTickers=[self.the_Ticker])
         self.myStocks = [[],[],[],[]]
         self.cycle = 0
     
@@ -42,7 +43,7 @@ class SVMSelector(stockSelector):
             return ValueError
 
         if customTickerList==False:
-            customTickerList = getTickerList()
+            customTickerList = [self.the_Ticker]
 
         sampleTickerList = customTickerList[:]
         buyTickerList = []
