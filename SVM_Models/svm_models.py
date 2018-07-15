@@ -71,7 +71,7 @@ def getTrainingDataFrame(dir,date_range=None,customTickers=None):
     if customTickers == None:
         tickers = []
         for root,dirs,files in os.walk(dir):
-                for f in files[0:100]:
+                for f in files[0:10]:
                     tickers.append(f)
     else:
         tickers = customTickers[:]
@@ -162,15 +162,32 @@ def createSlopesSVMmodel(dir="Data/SVM/5day_vs_2day_vs_Profit Speed/",c=1,kernel
     #Collects all data into memory
     df = pd.DataFrame()
     for root, dirs,files in os.walk(dir):
-        for f in files:
+        for f in files[1:1000]:
             stock_df = pd.DataFrame.from_csv(os.path.join(dir,f))
             df = df.append(stock_df)
 
     df = sklearn.utils.shuffle(df)
-    
+    drops = []
+    for i in range(len(df.index)):
+        arr = df.iloc[i].values
+        hasNan = False
+        for j in range(len(arr)):
+           
+            try:
+                arr[j] = float(arr[j])
+                if pd.isnull(arr[j]) or math.isnan(arr[j]):
+                   hasNan = True
+            except:
+                hasNan = True
+        if hasNan:
+            drops.append(i)
+
+    df = df.drop(df.index[drops])
+
+    df.replace(["NaN","nan", 'NaT'], np.nan, inplace = True)
+    df = df.dropna(axis=0,how="all",thresh=3)
     X = np.array(df.drop(columns=["Result"]).values)
     y = np.array(df["Result"].values)
-
 
     #Separates the data into training and testing data
     training_index = int(len(X)*.7)
@@ -188,13 +205,17 @@ def createSlopesSVMmodel(dir="Data/SVM/5day_vs_2day_vs_Profit Speed/",c=1,kernel
     results = clf.predict(testingDataX)
 
     correct_count = 0
+    correct_pos = 0
 
     #Gets accuracy
     for i in range(len(results)):
         if results[i] == testingDataY[i]:
             correct_count+=1
+        if results[i] == 1:
+            correct_pos += 1
     
     print(correct_count/len(results))
+    print(correct_pos)
 
     return clf, correct_count/len(results)
 
@@ -208,7 +229,7 @@ def createSlopesSVMmodel(dir="Data/SVM/5day_vs_2day_vs_Profit Speed/",c=1,kernel
 
 if __name__=="__main__":
     
-    createSlopesSVMmodel()
+    createSlopesSVMmodel(c=1000,gamma=1)
     
     
     
