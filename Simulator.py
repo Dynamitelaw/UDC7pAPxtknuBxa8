@@ -412,7 +412,7 @@ def simulationWrapper(dateRange, startingDeposit, selectorName, sampleSize, cust
 #=============================================================================
 if __name__ == '__main__':
     
-    numberOfSimulations = 1
+    numberOfSimulations = 50
     selectorName = "SVMSelector"
     dateRange = ["2017-01-03","2018-02-02"]
     startingBalance = 20000
