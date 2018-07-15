@@ -18,15 +18,16 @@ from PandaDatabase import *
 
 
 if __name__ == '__main__':
-    ticker = "AAPL"
-    date = "2015-01-02"
-    df=getDataframe(ticker)
-    date_index = df.index.get_loc(date)+1
-    newDate = str(df.index[date_index].values[0])[:10]
-    tickerDict = getDataframe(ticker, [newDate,newDate])
-    print(tickerDict)
-    print(newDate)
-    
+    levels = list(np.linspace(-30*1.1, 0, 4))
+    levelToInsert = (levels[-1]+levels[-2])/3
+    levels.insert(1, levelToInsert)
+    levelsToAppend = list(np.linspace(0, 30*1.1, 4))
+    levelToInsert = (levelsToAppend[0]+levelsToAppend[1])/3
+    levelsToAppend.insert(1, levelToInsert)
+    levels += levelsToAppend
+    levels = sorted(list(set(levels)))
+
+    print(levels)
     
     #fixAllDates()
     #fixDates("APHB.csv")
