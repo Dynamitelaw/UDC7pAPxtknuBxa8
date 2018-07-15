@@ -8,6 +8,9 @@ import numpy as np
 from datetime import datetime
 import os
 from sklearn import svm,preprocessing
+import sys
+sys.path.append("./")
+from PandaDatabase import getDataframe, getTickerList
 
 def XpercentGrowthNDaysAway(x=1,n=3,dir='Data/PcsData/'):
     ''' Iterates through all of the .csv data files in the dir directory and
@@ -53,8 +56,36 @@ def XpercentGrowthNDaysAway(x=1,n=3,dir='Data/PcsData/'):
             except:
                 pass
 
+
+def create_5day_2day_training_data(param="Profit Speed", dateRange=["2000-01-01","2015-01-01"]):
+    '''
+    Creates training data to draw surface for 5dayslope vs 2dayslope vs parameter
+    '''
+
+    #Ensuring that our data files have a home
+    os.makedirs("Data/SVM/5day_vs_2day_vs_{}".format(param),exist_ok=True)
+    
+    tickerList = getTickerList()
+
+    for ticker in tickerList:
+        df = getDataframe(ticker,dateRange=dateRange,dataFields=["2 Day Slope", "5 Day Slope", param])
+        if not(type(df) is bool):
+            param_array = df[param].values.tolist()
+            class_array = []
+            for val in param_array:
+                if val>0:
+                    class_array.append(1)
+                else:
+                    class_array.append(0)
+            df["Result"] = class_array
+            df.to_csv(os.path.join("Data/SVM/5day_vs_2day_vs_{}".format(param),ticker+".csv"))
+    
+    
+    
+
+
 if __name__=="__main__":
-    XpercentGrowthNDaysAway()
+    create_5day_2day_training_data()
     
 
 
