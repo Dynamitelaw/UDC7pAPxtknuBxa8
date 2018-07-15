@@ -7,7 +7,7 @@ Contains a collection of useful utility functions.
 import sys
 import time
 import datetime
-from datetime import timedelta, date
+from datetime import timedelta, datetime
 
 
 def printLocation(text="$VER: Locate_Demo.py_Version_0.00.10_(C)2007-2012_B.Walker_G0LCU.", x=0, y=0):
@@ -126,8 +126,8 @@ def daterange(start_date, end_date):
     '''
     startDateList = start_date.split("-")
     endDateList = end_date.split("-")
-    startDate = date(int(startDateList[0]), int(startDateList[1]), int(startDateList[2]))
-    endDate = date(int(endDateList[0]), int(endDateList[1]), int(endDateList[2]))
+    startDate = datetime.date(int(startDateList[0]), int(startDateList[1]), int(startDateList[2]))
+    endDate = datetime.date(int(endDateList[0]), int(endDateList[1]), int(endDateList[2]))
 
     for n in range(int ((endDate - startDate).days)):
         yield (startDate + timedelta(n)).strftime("%Y-%m-%d")
@@ -148,7 +148,7 @@ def dateParser(date_string):
     '''
     Returns a datetime date object for the date string of the form YYYY-MM-DD
     '''
-    output_date = date(*dateSplitter(date_string))
+    output_date = datetime.date(*dateSplitter(date_string))
     output_date = datetime.datetime.combine(output_date,datetime.time(0,0))
     return output_date
 
@@ -159,7 +159,7 @@ def getDayDifference(startDate, endDate):
     startYear, startMonth, startDay = dateSplitter(startDate)
     endYear, endMonth, endDay = dateSplitter(endDate)
     
-    dayDifference = int( (date(endYear, endMonth, endDay) - date(startYear, startMonth, startDay)).days)
+    dayDifference = int( (datetime.date(endYear, endMonth, endDay) - datetime.date(startYear, startMonth, startDay)).days)
     return dayDifference
 
 
