@@ -149,21 +149,83 @@ def testParams(dir,c,gamma,sample_size=10,date_range=None,customTickers=None):
     # plt.show()
 
 
+def createSlopesSVMmodel(dir="Data/SVM/5day_vs_2day_vs_Profit Speed/",c=1,kernel="rbf",gamma=.1):
+    '''
+    Creates an SVM model for finding surface for profitable region of the heatmap in meh_selector
+    Takes path to training data as input. Test output in the "Result" Column
+    '''
+
+    if not os.path.isdir(dir):
+        print("Invalid data directory")
+        return
+
+    #Collects all data into memory
+    df = pd.DataFrame()
+    for root, dirs,files in os.walk(dir):
+        for f in files:
+            stock_df = pd.DataFrame.from_csv(os.path.join(dir,f))
+            df = df.append(stock_df)
+
+    df = sklearn.utils.shuffle(df)
+    
+    X = np.array(df.drop(columns=["Result"]).values)
+    y = np.array(df["Result"].values)
+
+
+    #Separates the data into training and testing data
+    training_index = int(len(X)*.7)
+
+    trainingDataX = X[0:training_index]
+    trainingDataY = y[0:training_index]
+    testingDataX = X[training_index:]
+    testingDataY = y[training_index:]
+
+    #Creates and trains model
+    clf = svm.SVC(kernel=kernel, C=c,gamma=gamma)
+    clf.fit(trainingDataX,trainingDataY)
+
+    #Gets prediction results
+    results = clf.predict(testingDataX)
+
+    correct_count = 0
+
+    #Gets accuracy
+    for i in range(len(results)):
+        if results[i] == testingDataY[i]:
+            correct_count+=1
+    
+    print(correct_count/len(results))
+
+    return clf, correct_count/len(results)
+
+
+
+
+
+
+
+
 
 if __name__=="__main__":
-    dir="Data/SVM/1PercentGrowth3DaysAway/"
-    k_max=0
-    c_max=0
-    gamma_max=0
-    #logSearchParams(dir="Data/SVM/1PercentGrowth3DaysAway/",training_percent=.3)
-    for i in range(-10,11):
-        for j in range(-10,11):
-            k = testParams(dir=dir,c=10**j,gamma=10**i,sample_size=1,date_range=[date(2015,1,1),date(2016,1,1)],customTickers=['AAPL'])
-            if k>k_max:
-                k_max = k
-                c_max = 10**j
-                gamma_max = 10**i
     
-    print("Best K={} at c={},gamma={}".format(k_max,c_max,gamma_max))
+    createSlopesSVMmodel()
+    
+    
+    
+    
+    # dir="Data/SVM/1PercentGrowth3DaysAway/"
+    # k_max=0
+    # c_max=0
+    # gamma_max=0
+    # #logSearchParams(dir="Data/SVM/1PercentGrowth3DaysAway/",training_percent=.3)
+    # for i in range(-10,11):
+    #     for j in range(-10,11):
+    #         k = testParams(dir=dir,c=10**j,gamma=10**i,sample_size=1,date_range=[date(2015,1,1),date(2016,1,1)],customTickers=['AAPL'])
+    #         if k>k_max:
+    #             k_max = k
+    #             c_max = 10**j
+    #             gamma_max = 10**i
+    
+    # print("Best K={} at c={},gamma={}".format(k_max,c_max,gamma_max))
     
     
