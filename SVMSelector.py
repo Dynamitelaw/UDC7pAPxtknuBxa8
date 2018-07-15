@@ -15,8 +15,11 @@ class SVMSelector(stockSelector):
         dir="Data/SVM/1PercentGrowth3DaysAway/"
         k=0
         #c=1000000000,gamma=0.001
-        self.the_Ticker = "EIM"
-        self.clf,accuracy,buyCount,k,days,self.t_X = createSVMmodel(dir=dir,c=1000000000,gamma=0.001,date_range=[date(2016,12,2),date(2017,1,2)],customTickers=[self.the_Ticker])
+        tickerList = getTickerList()
+        shuffle(tickerList)
+        df = False
+        self.the_Ticker=tickerList[0]
+        self.clf,accuracy,buyCount,k,days,self.t_X = createSVMmodel(dir=dir,c=100000,gamma=0.001,date_range=[date(2016,12,2),date(2017,1,2)],customTickers=[self.the_Ticker])
         self.myStocks = [[],[],[],[]]
         self.cycle = 0
     
@@ -89,9 +92,12 @@ class SVMSelector(stockSelector):
                         slopeDict.pop(buyTickerList[c],None)
             c+=1
             i+=1    
-        maxStock = min(slopeDict.keys(), key=(lambda k: slopeDict[k]))
-        buys.append([maxStock,1])
-        self.myStocks[self.cycle].append(maxStock)
+        if len(slopeDict)>0:
+            maxStock = min(slopeDict.keys(), key=(lambda k: slopeDict[k]))
+            buys.append([maxStock,1])
+            self.myStocks[self.cycle].append(maxStock)
+        else:
+            return []
             # if X[i]==1:
             #     alreadyOwn = False
             #     for stockList in self.myStocks:

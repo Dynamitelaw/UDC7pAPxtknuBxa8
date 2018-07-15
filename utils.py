@@ -7,7 +7,8 @@ Contains a collection of useful utility functions.
 import sys
 import time
 import datetime
-from datetime import timedelta, date
+from datetime import timedelta, date,time
+
 
 def printLocation(text="$VER: Locate_Demo.py_Version_0.00.10_(C)2007-2012_B.Walker_G0LCU.", x=0, y=0):
     '''
@@ -132,6 +133,14 @@ def dateSplitter(date):
     day = int(dateList[2])
 
     return year, month, day
+
+def dateParser(date_string):
+    '''
+    Returns a datetime date object for the date string of the form YYYY-MM-DD
+    '''
+    output_date = date(*dateSplitter(date_string))
+    output_date = datetime.datetime.combine(output_date,time(0,0))
+    return output_date
 
 def getDayDifference(startDate, endDate):
     '''

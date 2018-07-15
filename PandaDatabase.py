@@ -10,9 +10,10 @@ import os
 import multiprocessing
 from multiprocessing import Pool
 import utils
+from utils import dateParser
 import time
 import random
-
+from datetime import date
 
 DatabaseLock = multiprocessing.Lock()
 
@@ -69,7 +70,7 @@ def loadDataframeFromFile(fileName):
     return [ticker, dataframe]
 
 
-def getDataframe(ticker, dateRange=False, dataFields=False, sorting=0):
+def getDataframe(ticker, dateRange=False, dataFields=False, sorting=0, printError=False):
     '''
     Returns the dataframe corresponding to the passed ticker.
     Returns False if dataframe is not present or values requested are not valid.
@@ -86,15 +87,15 @@ def getDataframe(ticker, dateRange=False, dataFields=False, sorting=0):
         DatabaseLock.release()
 
         if (dateRange):
+            dateRange = [dateParser(dateRange[0]),dateParser(dateRange[1])]
             if (dataFields):
-                dataframeReturn = dataframe.loc[dateRange[0]:dateRange[1],dataFields]
+                mask = (dataframe.index >= dateRange[0]) & (dataframe.index <= dateRange[1])
+                dataframeReturn = dataframe.loc[mask,dataFields]
             else:
-                dataframeReturn = dataframe.loc[dateRange[0]:dateRange[1]]
+                mask = (dataframe.index >= dateRange[0]) & (dataframe.index <= dateRange[1])
+                dataframeReturn = dataframe.loc[mask]
         elif (dataFields):
-            if (dateRange):
-                dataframeReturn = dataframe.loc[dateRange[0]:dateRange[1],dataFields]
-            else:
-                dataframeReturn = dataframe[dataFields]
+            dataframeReturn = dataframe[dataFields]
         else:
             dataframeReturn = dataframe
 
@@ -108,14 +109,16 @@ def getDataframe(ticker, dateRange=False, dataFields=False, sorting=0):
         DatabaseLock.release()
         try:
             if (dateRange):
+                dateRange = [dateParser(dateRange[0]),dateParser(dateRange[1])]
                 if (dataFields):
-                    dataframe = loadDataframeFromFile(ticker+".csv")[1].loc[dateRange[0]:dateRange[1],dataFields]
+                    dataframe = loadDataframeFromFile(ticker+".csv")[1]
+                    mask = (dataframe.index >= dateRange[0]) & (dataframe.index <= dateRange[1])
+                    dataframe = dataframe.loc[mask,dataFields]
                 else:
-                    dataframe = loadDataframeFromFile(ticker+".csv")[1].loc[dateRange[0]:dateRange[1]]
+                    dataframe = loadDataframeFromFile(ticker+".csv")[1]
+                    mask = (dataframe.index >= dateRange[0]) & (dataframe.index <= dateRange[1])
+                    dataframe = dataframe.loc[mask]
             elif (dataFields):
-                if (dateRange):
-                    dataframe = loadDataframeFromFile(ticker+".csv")[1].loc[dateRange[0]:dateRange[1],dataFields]
-                else:
                     dataframe = loadDataframeFromFile(ticker+".csv")[1][dataFields]
             else:
                 dataframe = loadDataframeFromFile(ticker+".csv")[1]
@@ -126,7 +129,10 @@ def getDataframe(ticker, dateRange=False, dataFields=False, sorting=0):
             else:
                 #dataframe.sort_values('date',ascending=sorting)
                 return dataframe
-        except:
+        except Exception as e:
+            if printError:
+                print(e)
+                print(str(e))
             return False
 
 
@@ -159,4 +165,11 @@ def getTickerList(randomize=False, numberOfShuffles=1):
 
 
 
-       
+if __name__=="__main__":
+    stock = "FNX" 
+    df_w_o_date = getDataframe(stock)
+    print(df_w_o_date)
+    valid_dates = ["1997-08-14","2013-08-15"]
+    #print(valid_dates[0]==dateParser('2018-05-22'))
+    df = getDataframe(stock,dateRange=[valid_dates[0],valid_dates[1]],dataFields=["Open"])
+    print(df)
