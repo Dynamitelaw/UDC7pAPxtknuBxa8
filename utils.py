@@ -7,7 +7,7 @@ Contains a collection of useful utility functions.
 import sys
 import time
 import datetime
-from datetime import timedelta, date,time
+from datetime import timedelta, date
 
 
 def printLocation(text="$VER: Locate_Demo.py_Version_0.00.10_(C)2007-2012_B.Walker_G0LCU.", x=0, y=0):
@@ -139,7 +139,7 @@ def dateParser(date_string):
     Returns a datetime date object for the date string of the form YYYY-MM-DD
     '''
     output_date = date(*dateSplitter(date_string))
-    output_date = datetime.datetime.combine(output_date,time(0,0))
+    output_date = datetime.datetime.combine(output_date,datetime.time(0,0))
     return output_date
 
 def getDayDifference(startDate, endDate):
@@ -196,3 +196,12 @@ def floor(valueIn, floor=0):
     else:
         return floor
 
+
+def printProgressBar(completed, total):
+    '''
+    Prints the percent completed out of the total
+    '''
+    percentage = int(float(completed*1000)/(total-1))/10.0
+    sys.stdout.write("\r")
+    sys.stdout.write(str(percentage)+"%")
+    sys.stdout.flush()
