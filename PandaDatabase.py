@@ -87,7 +87,8 @@ def getDataframe(ticker, dateRange=False, dataFields=False, sorting=0, printErro
         DatabaseLock.release()
 
         if (dateRange):
-            dateRange = [dateParser(dateRange[0]),dateParser(dateRange[1])]
+            if type(dateRange[0]) is str:
+                dateRange = [dateParser(dateRange[0]),dateParser(dateRange[1])]
             if (dataFields):
                 mask = (dataframe.index >= dateRange[0]) & (dataframe.index <= dateRange[1])
                 dataframeReturn = dataframe.loc[mask,dataFields]
@@ -109,7 +110,8 @@ def getDataframe(ticker, dateRange=False, dataFields=False, sorting=0, printErro
         DatabaseLock.release()
         try:
             if (dateRange):
-                dateRange = [dateParser(dateRange[0]),dateParser(dateRange[1])]
+                if type(dateRange[0]) is str:
+                    dateRange = [dateParser(dateRange[0]),dateParser(dateRange[1])]
                 if (dataFields):
                     dataframe = loadDataframeFromFile(ticker+".csv")[1]
                     mask = (dataframe.index >= dateRange[0]) & (dataframe.index <= dateRange[1])
@@ -162,6 +164,24 @@ def getTickerList(randomize=False, numberOfShuffles=1):
 
     return DatabaseTickerList
 
+def getSharedDates(stocks):
+    '''
+    Returns the range of dates shared by all of the stocks in the list 'stocks'
+    '''
+    if len(stocks)<2:
+        print("Invalid input, 'stocks' should be a list")
+        return False
+
+    date_lists = []
+    for i in range(len(stocks)):
+        date_lists.append(getDataframe(stocks[i]).index)
+    
+    date_set = set(date_lists[0])
+
+    for date_list in date_lists:
+        date_set = date_set & set(date_list)
+    
+    return list(date_set)
 
 
 
