@@ -418,6 +418,7 @@ if __name__ == '__main__':
     startingBalance = 20000
 
     results = runMultiSim(numberOfSimulations, selectorName, dateRange, startingBalance, sampleSize=100, preloadToMemory=True,  comission=0)
+    utils.emitAsciiBell()
     rplotter.plotMultipleResults(results)
     
     
