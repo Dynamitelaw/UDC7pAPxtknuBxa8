@@ -62,6 +62,16 @@ def emitAsciiBell():
     time.sleep(1)
 
 
+def printProgressBar(completed, total):
+    '''
+    Prints the percent completed out of the total
+    '''
+    percentage = int(float(completed*1000)/(total-1))/10.0
+    sys.stdout.write("\r")
+    sys.stdout.write(str(percentage)+"%")
+    sys.stdout.flush()
+
+
 def sanitizeString(stringToSanitize):
     disallowedCharacters = ["/", ".", "\\", "$"]
     
@@ -196,12 +206,3 @@ def floor(valueIn, floor=0):
     else:
         return floor
 
-
-def printProgressBar(completed, total):
-    '''
-    Prints the percent completed out of the total
-    '''
-    percentage = int(float(completed*1000)/(total-1))/10.0
-    sys.stdout.write("\r")
-    sys.stdout.write(str(percentage)+"%")
-    sys.stdout.flush()

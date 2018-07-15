@@ -25,7 +25,7 @@ i = 0
 numberOfStocks = len(tickerList)
 for ticker in tickerList:
     i += 1
-    stockData = database.getDataframe(ticker, dataFields=["Open", "2 Day Slope", "5 Day Slope", "Profit Speed"], dateRange=["2010-01-01", "2016-06-06"])
+    stockData = database.getDataframe(ticker, dataFields=["Open", "2 Day Slope", "5 Day Slope", "Profit Speed"], dateRange=["2016-06-07", "2018-06-06"])  #"2010-01-01", "2016-06-06"
     
     try:
         tempDataframe = pd.DataFrame(columns=dataColumns)
@@ -61,9 +61,39 @@ endingIndex = int(len(holderDataframe) * 0.975)
 holderDataframe = holderDataframe.iloc[startingIndex:endingIndex]
 
 print("\n" + str(len(holderDataframe)) + " datapoints")
-# histogram = holderDataframe["Profit Speed"].plot.hist()
-# plt.show()
 
+
+#Generate Bins
+numberOfBins = 30
+maxProfit = holderDataframe["Profit Speed"].max()
+minProfit = holderDataframe["Profit Speed"].min()
+binWidth = (maxProfit - minProfit) / numberOfBins
+bins = []
+bins.append(0)
+
+#Negative Bins
+while (True):
+    newBin = bins[0] - binWidth
+    bins.insert(0, newBin)
+    if (newBin < minProfit):
+        break
+
+#Postive Bins
+while (True):
+    newBin = bins[len(bins)-1] + binWidth
+    bins.append(newBin)
+    if (newBin > maxProfit):
+        break
+
+fig, axes = plt.subplots(nrows=2, ncols=1)
+histogramAll = holderDataframe["Profit Speed"].plot.hist(ax=axes[0], alpha=0.5, bins=bins)
+
+goodRegionDataframe = holderDataframe[holderDataframe.apply(lambda row: (row["2 Day Normalized Slope"] > 2) and (row["5 Day Normalized Slope"] > -45) and (row["5 Day Normalized Slope"] > ((-1.8333*row["2 Day Normalized Slope"])+(13.6666))), axis=1)]
+goodRegionHistogram = goodRegionDataframe["Profit Speed"].plot.hist(ax=axes[1], alpha=0.5, bins=bins)
+print(len(goodRegionDataframe))
+plt.show()
+
+'''
 x, y, z = np.array(holderDataframe["2 Day Normalized Slope"].values), np.array(holderDataframe["5 Day Normalized Slope"].values), np.array(holderDataframe["Profit Speed"].values)
 
 # define grid.
@@ -92,6 +122,8 @@ plt.xlim(np.amin(x),np.amax(x))
 plt.ylim(np.amin(y),np.amax(y))
 plt.title("2 Day Normalized Slope vs 5 Day Normalized Slope vs ProfitSpeed")
 
+
 utils.emitAsciiBell()
 
 plt.show()
+'''
