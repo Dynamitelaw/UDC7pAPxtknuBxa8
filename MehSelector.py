@@ -18,6 +18,57 @@ import utils
 
 tickerList = database.getTickerList()
 
+#=============================================================================
+#   Normalized Continuous Momentum
+#=============================================================================
+dataColumns = ["2 Day Normalized Momentum", "5 Day Normalized Momentum", "Profit Speed"]
+holderDataframe = pd.DataFrame(columns=dataColumns)
+
+i = 0
+numberOfStocks = len(tickerList)
+for ticker in tickerList:
+    i += 1
+    stockData = database.getDataframe(ticker, dataFields=["Open", "2 Day Momentum", "5 Day Momentum", "Profit Speed"], dateRange=["2010-01-01", "2016-06-06"])  #"2010-01-01", "2016-06-06"  |  "2016-06-07", "2018-06-06"
+    
+    try:
+        tempDataframe = pd.DataFrame(columns=dataColumns)
+
+        #Multiple by 1000 for a more convenient scale. Should probably be 100, that way data points would represent % values
+        tempDataframe["2 Day Normalized Momentum"] = stockData["2 Day Momentum"] / stockData["Open"] * 1000
+        tempDataframe["5 Day Normalized Momentum"] = stockData["5 Day Momentum"] / stockData["Open"] * 1000
+        tempDataframe["Profit Speed"] = stockData["Profit Speed"] * 1000
+
+        holderDataframe = holderDataframe.append(tempDataframe, ignore_index=True)
+    except:
+        pass
+
+    utils.printProgressBar(i, numberOfStocks)
+
+holderDataframe.dropna(axis=0, how='any', inplace=True)
+
+#Filter out extreme  outliers by only plotting the middle 95% of each column
+holderDataframe.sort_values(by="2 Day Normalized Momentum", inplace=True)
+holderDataframe.reset_index(drop=True, inplace=True)
+startingIndex = int(len(holderDataframe) * 0.025)
+endingIndex = int(len(holderDataframe) * 0.975)
+holderDataframe = holderDataframe.iloc[startingIndex:endingIndex]
+
+holderDataframe.sort_values(by="5 Day Normalized Momentum", inplace=True)
+holderDataframe.reset_index(drop=True, inplace=True)
+startingIndex = int(len(holderDataframe) * 0.025)
+endingIndex = int(len(holderDataframe) * 0.975)
+holderDataframe = holderDataframe.iloc[startingIndex:endingIndex]
+
+holderDataframe.sort_values(by="Profit Speed", inplace=True)
+holderDataframe.reset_index(drop=True, inplace=True)
+startingIndex = int(len(holderDataframe) * 0.025)
+endingIndex = int(len(holderDataframe) * 0.975)
+holderDataframe = holderDataframe.iloc[startingIndex:endingIndex]
+
+#=============================================================================
+#   2D and 5D normalized slopes
+#=============================================================================
+'''
 dataColumns = ["2 Day Normalized Slope", "5 Day Normalized Slope", "Profit Speed"]
 holderDataframe = pd.DataFrame(columns=dataColumns)
 
@@ -30,6 +81,7 @@ for ticker in tickerList:
     try:
         tempDataframe = pd.DataFrame(columns=dataColumns)
 
+        #Multiple by 1000 for a more convenient scale. Should probably be 100, that way data points would represent % values
         tempDataframe["2 Day Normalized Slope"] = stockData["2 Day Slope"] / stockData["Open"] * 1000
         tempDataframe["5 Day Normalized Slope"] = stockData["5 Day Slope"] / stockData["Open"] * 1000
         tempDataframe["Profit Speed"] = stockData["Profit Speed"] * 1000
@@ -42,6 +94,7 @@ for ticker in tickerList:
 
 holderDataframe.dropna(axis=0, how='any', inplace=True)
 
+#Filter out extreme  outliers by only plotting the middle 95% of each column
 holderDataframe.sort_values(by="2 Day Normalized Slope", inplace=True)
 holderDataframe.reset_index(drop=True, inplace=True)
 startingIndex = int(len(holderDataframe) * 0.025)
@@ -61,8 +114,12 @@ endingIndex = int(len(holderDataframe) * 0.975)
 holderDataframe = holderDataframe.iloc[startingIndex:endingIndex]
 
 print("\n" + str(len(holderDataframe)) + " datapoints")
+'''
 
-
+#=============================================================================
+#   Slope Histograms
+#=============================================================================
+'''
 #Generate Bins
 numberOfBins = 30
 maxProfit = holderDataframe["Profit Speed"].max()
@@ -88,13 +145,21 @@ while (True):
 fig, axes = plt.subplots(nrows=2, ncols=1)
 histogramAll = holderDataframe["Profit Speed"].plot.hist(ax=axes[0], alpha=0.5, bins=bins)
 
-goodRegionDataframe = holderDataframe[holderDataframe.apply(lambda row: (row["2 Day Normalized Slope"] > 2) and (row["5 Day Normalized Slope"] > -45) and (row["5 Day Normalized Slope"] > ((-1.8333*row["2 Day Normalized Slope"])+(13.6666))), axis=1)]
+#Joey's ghetto paint filter (plus removing 0s for more accurate histogram)
+goodRegionDataframe = holderDataframe[holderDataframe.apply(lambda row: (row["2 Day Normalized Slope"] > 2) and (row["5 Day Normalized Slope"] > -45) and (row["5 Day Normalized Slope"] > ((-1.8333*row["2 Day Normalized Slope"])+(13.6666))) and (row["Profit Speed"] != 0), axis=1)]
 goodRegionHistogram = goodRegionDataframe["Profit Speed"].plot.hist(ax=axes[1], alpha=0.5, bins=bins)
 print(len(goodRegionDataframe))
-plt.show()
 
+utils.emitAsciiBell()
+plt.show()
 '''
-x, y, z = np.array(holderDataframe["2 Day Normalized Slope"].values), np.array(holderDataframe["5 Day Normalized Slope"].values), np.array(holderDataframe["Profit Speed"].values)
+
+#=============================================================================
+#   Contour Map
+#=============================================================================
+
+#Change Column names depending on what you're plotting
+x, y, z = np.array(holderDataframe["2 Day Normalized Momentum"].values), np.array(holderDataframe["5 Day Normalized Momentum"].values), np.array(holderDataframe["Profit Speed"].values)
 
 # define grid.
 xi = np.linspace(np.amin(x),np.amax(x),100)
@@ -116,14 +181,16 @@ levels = sorted(list(set(levels)))
 CS = plt.contour(xi,yi,zi,15,linewidths=0.5,colors='k', vmin=np.amin(z), vmax=np.amax(z), levels=levels)
 CS = plt.contourf(xi,yi,zi,15,cmap=plt.cm.jet, vmin=np.amin(z), vmax=np.amax(z), levels=levels)
 plt.colorbar() # draw colorbar
+
 # plot data points.
 # plt.scatter(x,y,marker='o',c='b',s=5)
+
 plt.xlim(np.amin(x),np.amax(x))
 plt.ylim(np.amin(y),np.amax(y))
-plt.title("2 Day Normalized Slope vs 5 Day Normalized Slope vs ProfitSpeed")
 
+#Change title 
+plt.title("2 Day Normalized Momentum vs 5 Day Normalized Momentum vs ProfitSpeed")
 
 utils.emitAsciiBell()
-
 plt.show()
-'''
+

@@ -312,7 +312,7 @@ def process(ticker, dataframe=False):
         for i in range(0, len(dates), 1):
             dates[i] = dates[i][0]
         
-        header = ["Open", "High", "Low", "Close", "Volume", "Adj Close", "2 Day Slope", "5 Day Slope", "Standard Dev", "Optimal Dates", "Desired Level 1 Out Buy", "Desired Level 1 Out Sell", "Profit Speed", "2 Day Momentum", "5 Day Moementum", "2D Discrete Moementum", "5D Discrete Moementum"]
+        header = ["Open", "High", "Low", "Close", "Volume", "Adj Close", "2 Day Slope", "5 Day Slope", "Standard Dev", "Optimal Dates", "Desired Level 1 Out Buy", "Desired Level 1 Out Sell", "Profit Speed", "2 Day Momentum", "5 Day Momentum", "2D Discrete Moementum", "5D Discrete Moementum"]
 
         dataFrame = pd.DataFrame(data=data, index = dates, columns = header)
         dataFrame.index.name = "date"
