@@ -68,8 +68,11 @@ def create_5day_2day_training_data(param="Profit Speed", dateRange=["2000-01-01"
     tickerList = getTickerList()
 
     for ticker in tickerList:
-        df = getDataframe(ticker,dateRange=dateRange,dataFields=["2 Day Slope", "5 Day Slope", param])
+        df = getDataframe(ticker,dateRange=dateRange,dataFields=["Open","2 Day Slope", "5 Day Slope", param])
         if not(type(df) is bool):
+            df["2 Day Slope"] = df["2 Day Slope"]/df["Open"]
+            df["5 Day Slope"] = df["5 Day Slope"]/df["Open"]
+            df = df.drop(columns=["Open"])
             param_array = df[param].values.tolist()
             class_array = []
             for val in param_array:
