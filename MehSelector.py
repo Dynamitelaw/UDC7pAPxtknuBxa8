@@ -17,7 +17,7 @@ import utils
 
 
 tickerList = database.getTickerList()
-
+'''
 #=============================================================================
 #   Normalized Continuous Momentum
 #=============================================================================
@@ -64,11 +64,11 @@ holderDataframe.reset_index(drop=True, inplace=True)
 startingIndex = int(len(holderDataframe) * 0.025)
 endingIndex = int(len(holderDataframe) * 0.975)
 holderDataframe = holderDataframe.iloc[startingIndex:endingIndex]
-
+'''
 #=============================================================================
 #   2D and 5D normalized slopes
 #=============================================================================
-'''
+
 dataColumns = ["2 Day Normalized Slope", "5 Day Normalized Slope", "Profit Speed"]
 holderDataframe = pd.DataFrame(columns=dataColumns)
 
@@ -114,12 +114,12 @@ endingIndex = int(len(holderDataframe) * 0.975)
 holderDataframe = holderDataframe.iloc[startingIndex:endingIndex]
 
 print("\n" + str(len(holderDataframe)) + " datapoints")
-'''
+
 
 #=============================================================================
 #   Slope Histograms
 #=============================================================================
-'''
+
 #Generate Bins
 numberOfBins = 30
 maxProfit = holderDataframe["Profit Speed"].max()
@@ -152,12 +152,12 @@ print(len(goodRegionDataframe))
 
 utils.emitAsciiBell()
 plt.show()
-'''
+
 
 #=============================================================================
 #   Contour Map
 #=============================================================================
-
+'''
 #Change Column names depending on what you're plotting
 x, y, z = np.array(holderDataframe["2 Day Normalized Momentum"].values), np.array(holderDataframe["5 Day Normalized Momentum"].values), np.array(holderDataframe["Profit Speed"].values)
 
@@ -193,4 +193,5 @@ plt.title("2 Day Normalized Momentum vs 5 Day Normalized Momentum vs ProfitSpeed
 
 utils.emitAsciiBell()
 plt.show()
+'''
 
