@@ -231,7 +231,7 @@ def createSlopesSVMmodel(dir="Data/SVM/5day_vs_2day_vs_Profit Speed/",c=1,kernel
 
 if __name__=="__main__":
     
-    createSlopesSVMmodel(c=10,gamma=1)
+    createSlopesSVMmodel(c=1000,gamma=.1)
     
     
     
