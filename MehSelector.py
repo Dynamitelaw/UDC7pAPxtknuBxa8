@@ -12,6 +12,9 @@ import numpy as np
 from scipy.interpolate import griddata
 import matplotlib.pyplot as plt
 import numpy.ma as ma
+import sys
+sys.path.append("./SVM_Models")
+from svm_models import createSlopesSVMmodel
 from numpy.random import uniform, seed
 import utils
 
@@ -74,7 +77,7 @@ holderDataframe = pd.DataFrame(columns=dataColumns)
 
 i = 0
 numberOfStocks = len(tickerList)
-for ticker in tickerList:
+for ticker in tickerList[0:50]:
     i += 1
     stockData = database.getDataframe(ticker, dataFields=["Open", "2 Day Slope", "5 Day Slope", "Profit Speed"], dateRange=["2016-06-07", "2018-06-06"])  #"2010-01-01", "2016-06-06"
     
@@ -82,9 +85,9 @@ for ticker in tickerList:
         tempDataframe = pd.DataFrame(columns=dataColumns)
 
         #Multiple by 1000 for a more convenient scale. Should probably be 100, that way data points would represent % values
-        tempDataframe["2 Day Normalized Slope"] = stockData["2 Day Slope"] / stockData["Open"] * 1000
-        tempDataframe["5 Day Normalized Slope"] = stockData["5 Day Slope"] / stockData["Open"] * 1000
-        tempDataframe["Profit Speed"] = stockData["Profit Speed"] * 1000
+        tempDataframe["2 Day Normalized Slope"] = stockData["2 Day Slope"] / stockData["Open"] 
+        tempDataframe["5 Day Normalized Slope"] = stockData["5 Day Slope"] / stockData["Open"] 
+        tempDataframe["Profit Speed"] = stockData["Profit Speed"] 
 
         holderDataframe = holderDataframe.append(tempDataframe, ignore_index=True)
     except:
@@ -145,8 +148,14 @@ while (True):
 fig, axes = plt.subplots(nrows=2, ncols=1)
 histogramAll = holderDataframe["Profit Speed"].plot.hist(ax=axes[0], alpha=0.5, bins=bins)
 
+c = 10000
+g = 1
+model, accuracy = createSlopesSVMmodel(c = c, gamma= g)
+
+#model.predict()
 #Joey's ghetto paint filter (plus removing 0s for more accurate histogram)
-goodRegionDataframe = holderDataframe[holderDataframe.apply(lambda row: (row["2 Day Normalized Slope"] > 2) and (row["5 Day Normalized Slope"] > -45) and (row["5 Day Normalized Slope"] > ((-1.8333*row["2 Day Normalized Slope"])+(13.6666))) and (row["Profit Speed"] != 0), axis=1)]
+#goodRegionDataframe = holderDataframe[holderDataframe.apply(lambda row: (row["2 Day Normalized Slope"] > 2) and (row["5 Day Normalized Slope"] > -45) and (row["5 Day Normalized Slope"] > ((-1.8333*row["2 Day Normalized Slope"])+(13.6666))) and (row["Profit Speed"] != 0), axis=1)]
+goodRegionDataframe = holderDataframe[holderDataframe.apply(lambda row: bool(model.predict([[float(row["2 Day Normalized Slope"]), float(row["5 Day Normalized Slope"])]])[0]), axis=1)]
 goodRegionHistogram = goodRegionDataframe["Profit Speed"].plot.hist(ax=axes[1], alpha=0.5, bins=bins)
 print(len(goodRegionDataframe))
 

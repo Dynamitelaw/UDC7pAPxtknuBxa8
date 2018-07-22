@@ -18,16 +18,9 @@ from PandaDatabase import *
 
 
 if __name__ == '__main__':
-    levels = list(np.linspace(-30*1.1, 0, 4))
-    levelToInsert = (levels[-1]+levels[-2])/3
-    levels.insert(1, levelToInsert)
-    levelsToAppend = list(np.linspace(0, 30*1.1, 4))
-    levelToInsert = (levelsToAppend[0]+levelsToAppend[1])/3
-    levelsToAppend.insert(1, levelToInsert)
-    levels += levelsToAppend
-    levels = sorted(list(set(levels)))
+    print(bool(1))
 
-    print(levels)
+    #print(levels)
     
     #fixAllDates()
     #fixDates("APHB.csv")
