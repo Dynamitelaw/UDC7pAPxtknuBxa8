@@ -162,7 +162,11 @@ def createSlopesSVMmodel(dir="Data/SVM/5day_vs_2day_vs_Profit Speed/",c=1,kernel
     #Collects all data into memory
     df = pd.DataFrame()
     for root, dirs,files in os.walk(dir):
+<<<<<<< HEAD
         for f in files[1:100]:
+=======
+        for f in files[1:200]:
+>>>>>>> 10472cef7da816a838f8441783b3578246a9eb02
             stock_df = pd.DataFrame.from_csv(os.path.join(dir,f))
             df = df.append(stock_df)
 
