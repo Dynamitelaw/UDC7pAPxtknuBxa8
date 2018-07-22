@@ -162,7 +162,7 @@ def createSlopesSVMmodel(dir="Data/SVM/5day_vs_2day_vs_Profit Speed/",c=1,kernel
     #Collects all data into memory
     df = pd.DataFrame()
     for root, dirs,files in os.walk(dir):
-        for f in files[1:10]:
+        for f in files[1:100]:
             stock_df = pd.DataFrame.from_csv(os.path.join(dir,f))
             df = df.append(stock_df)
 
@@ -191,6 +191,8 @@ def createSlopesSVMmodel(dir="Data/SVM/5day_vs_2day_vs_Profit Speed/",c=1,kernel
 
     #Separates the data into training and testing data
     training_index = int(len(X)*.7)
+
+    X = X*100
 
     trainingDataX = X[0:training_index]
     trainingDataY = y[0:training_index]
@@ -229,7 +231,7 @@ def createSlopesSVMmodel(dir="Data/SVM/5day_vs_2day_vs_Profit Speed/",c=1,kernel
 
 if __name__=="__main__":
     
-    createSlopesSVMmodel(c=1000,gamma=1)
+    createSlopesSVMmodel(c=10,gamma=1)
     
     
     
