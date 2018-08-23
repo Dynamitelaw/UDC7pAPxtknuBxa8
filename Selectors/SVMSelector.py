@@ -1,6 +1,5 @@
 import os
 import sys
-sys.path.insert(0,'SVM_Models/')
 from svm_models import createSVMmodel
 from StockSelectionInterface import stockSelector
 from datetime import date

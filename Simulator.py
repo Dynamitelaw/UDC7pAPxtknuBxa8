@@ -5,17 +5,21 @@ Contains functions to run simulations on historical data,
 and to analyze the results of each simulation.
 '''
 
+#External Modules
+import sys
+import os
+from shutil import copyfile
+from multiprocessing import Pool
+import datetime
+import pandas as pd
+
+#Custom Modules
+import SystemPathImports
 import utils
 from TradingAccount import tradingAccount
 import PandaDatabase as database
 from TestSelector import TestSelector
-import sys
-import datetime
-import pandas as pd
-import os
-from shutil import copyfile
 import ResultsPlotter as rplotter
-from multiprocessing import Pool
 from SVMSelector import SVMSelector
 
 
@@ -412,12 +416,12 @@ def simulationWrapper(dateRange, startingDeposit, selectorName, sampleSize, cust
 #=============================================================================
 if __name__ == '__main__':
     
-    numberOfSimulations = 50
-    selectorName = "SVMSelector"
-    dateRange = ["2017-01-03","2018-02-02"]
-    startingBalance = 20000
+    numberOfSimulations = 2
+    selectorName = "TestSelector"
+    dateRange = ["2017-01-03","2017-02-02"]
+    startingBalance = 10000
 
-    results = runMultiSim(numberOfSimulations, selectorName, dateRange, startingBalance, sampleSize=100, preloadToMemory=True,  comission=0)
+    results = runMultiSim(numberOfSimulations, selectorName, dateRange, startingBalance, sampleSize=1000, preloadToMemory=True,  comission=0)
     utils.emitAsciiBell()
     rplotter.plotMultipleResults(results)
     

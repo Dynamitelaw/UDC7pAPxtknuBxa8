@@ -3,13 +3,17 @@ IlPesce
 Contains methods for generating training data for SVM's
 '''
 
+#External imports
 import pandas as pd
 import numpy as np
 from datetime import datetime
 import os
 from sklearn import svm,preprocessing
 import sys
+
+#Custom modules
 sys.path.append("./")
+import SystemPathImports
 from PandaDatabase import getDataframe, getTickerList
 
 def XpercentGrowthNDaysAway(x=1,n=3,dir='Data/PcsData/'):
