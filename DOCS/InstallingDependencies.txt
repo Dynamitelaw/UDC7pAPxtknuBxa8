@@ -44,7 +44,7 @@ Step 5) Verify installation by trying to import tensorflow in a python cmd windo
 CPU Version
 --------------------
 Step 1) Install Tensorflow
-    pip3 install --upgrade tensorflow-gpu
+    pip3 install --upgrade tensorflow
 
 Step 2) Verify installation by trying to import tensorflow in a python cmd window
     >>> import tensorflow as tf
