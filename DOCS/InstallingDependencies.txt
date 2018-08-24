@@ -1,0 +1,63 @@
+=================================
+Setup Tensorflow Backend
+=================================
+--------------------
+GPU Version
+--------------------
+Step 1) Update NVIDIA drivers (if you updated recently, you probably don't need to do this)
+
+Step 2) Download and run the CUDA Toolkit installer
+    https://developer.nvidia.com/compute/cuda/9.0/Prod/local_installers/cuda_9.0.176_win10-exe
+    *NOTE: Make sure you install v9.0
+
+Step 3) Install cuDNN
+    Download the library files
+        If you want to jump through NVIDIA hoops -> https://developer.nvidia.com/rdp/cudnn-download
+        Or if you don't -> https://drive.google.com/file/d/1MUAYs1lM1ED7jqRV0A9XRvvSMSq6AX9o/view?usp=sharing
+        *NOTE: Make sure you get v9.0
+    Unzip the cuDNN package.
+    Copy the following files into the CUDA Toolkit directory.
+        Copy <installpath>\cuda\bin\cudnn64_7.dll to C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\bin.
+        Copy <installpath>\cuda\ include\cudnn.h to C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\include.
+        Copy <installpath>\cuda\lib\x64\cudnn.lib to C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\lib\x64.
+    Set the following environment variables to point to where cuDNN is located. To access the value of the $(CUDA_PATH) environment variable, perform the following steps:
+        GOTO Control Panel->System and Security->System->Advanced System Settings
+        Click Environment Variables at the bottom of the window.
+        Ensure the following values are set:
+            Variable Name: CUDA_PATH 
+            Variable Value: C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0
+
+            *NOTE: If Tensorflow cannot find the location of a dll file, also add the following entry to your Path table
+            C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\bin
+
+Step 4) Install Tensorflow
+    pip3 install --upgrade tensorflow-gpu
+
+Step 5) Verify installation by trying to import tensorflow in a python cmd window
+    *NOTE: Make sure to open the cmd window AFTER you setup your path variables, otherwise they won't be updated
+    >>> import tensorflow as tf
+    >>> hello = tf.constant('Hello, TensorFlow!')
+    >>> sess = tf.Session()
+    >>> print(sess.run(hello))
+
+--------------------
+CPU Version
+--------------------
+Step 1) Install Tensorflow
+    pip3 install --upgrade tensorflow-gpu
+
+Step 2) Verify installation by trying to import tensorflow in a python cmd window
+    >>> import tensorflow as tf
+    >>> hello = tf.constant('Hello, TensorFlow!')
+    >>> sess = tf.Session()
+    >>> print(sess.run(hello))
+
+
+=================================
+Setup Keras Frontend
+=================================
+Step 1) Install package
+    pip install keras
+
+Step 2) Verify package installation by trying to import Keras in a python cmd window
+    The printout after the import should end with "Using TensorFlow backend."
