@@ -126,7 +126,11 @@ if __name__ == '__main__':
     X = [list(i[0:3]) for i in allDataPoints]
     Y = [i[3] for i in allDataPoints]
     
-    # Evaluate model
+    #Create and train NN model
+    # seed = 7
+    # kfold = StratifiedKFold(n_splits=10, shuffle=True, random_state=seed)
+
+    # Evaluate model using standardized dataset. 
     # https://www.kaggle.com/parthsuresh/binary-classifier-using-keras-97-98-accuracy
     estimators = []
     estimators.append(('standardize', StandardScaler()))
