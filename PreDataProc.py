@@ -4,6 +4,7 @@ Processes raw stock data for neural network intput.
 Adds 2 day slope, 5 day slope, 30 day standard deviation, optimal buy and sell dates, and desired network outputs.
 '''
 
+#External Imports
 import numpy as np
 import io
 import os
@@ -13,8 +14,11 @@ from multiprocessing import Pool
 import sys
 import time
 import pandas as pd
-import utils
 import tqdm
+
+#Custom Imports
+import SystemPathImports
+import utils
 
 
 
@@ -140,7 +144,7 @@ def ProfitSpeed(array):
                 if (((array[i,0]) * (i - sindx)) == 0):
                     raise ValueError("Divide by zero in profit speed")
                 
-                Pspeed = (array[sindx,0] - array[i,0]) / ((array[i,0]) * (i - sindx))       #profit/(time*price at buy in) 
+                Pspeed = ((array[sindx,0] - array[i,0]) / ((array[i,0]) * (i - sindx)))*100       #profit/(time*price at buy in). x100 so that Pspeed represents % per day
                 ps[i] = Pspeed 
 
                 #finds profit speed before optimal buy date
@@ -152,14 +156,14 @@ def ProfitSpeed(array):
                         if (((array[i+d,0]) * d) == 0):
                             raise ValueError("Divide by zero in profit speed")
                             
-                        Pspeedp1 = (array[i,0] - array[i+d,0]) / ((array[i+d,0]) * d)  #~  RuntimeWarning: divide by zero encountered in double_scalars
+                        Pspeedp1 = ((array[i,0] - array[i+d,0]) / ((array[i+d,0]) * d))*100  #~  RuntimeWarning: divide by zero encountered in double_scalars. x100 so that Pspeed represents % per day
                         ps[i+d] = Pspeedp1 
                     else:
                         z = False
                
                 #finds profit speed after optimal buy date
                 for r in range(i-1,sindx,-1):
-                    Pspeedr = (array[sindx,0] - array[r,0]) / ((array[r,0]) * (r - sindx))
+                    Pspeedr = ((array[sindx,0] - array[r,0]) / ((array[r,0]) * (r - sindx)))*100  #x100 so that Pspeed represents % per day
                     ps[r] = Pspeedr
             
     
@@ -316,8 +320,19 @@ def process(ticker, dataframe=False):
 
         dataFrame = pd.DataFrame(data=data, index = dates, columns = header)
         dataFrame.index.name = "date"
+
+        #Adding new data column processing under here, so we don't have to deal with our arcane legacy numpy code
+        dataFrame["2 Day Normalized Slope"] = dataFrame["2 Day Slope"] / dataFrame["Open"] * 100  #Multiple by 100, that way data points would represent % values
+        dataFrame["5 Day Normalized Slope"] = dataFrame["5 Day Slope"] / dataFrame["Open"] * 100
+
+        dataFrame["2 Day Normalized Momentum"] = dataFrame["2 Day Momentum"] / dataFrame["Open"] * 100
+        dataFrame["5 Day Normalized Momentum"] = dataFrame["5 Day Momentum"] / dataFrame["Open"] * 100
+
+        #Create PcsData direcetory if not present
         if not os.path.isdir("Data/PcsData"):
             os.mkdir("Data/PcsData")
+
+        #Save processed data
         savepath = 'Data/PcsData/' + ticker + '.csv'
         dataFrame.to_csv(savepath)
 
@@ -345,8 +360,6 @@ def processAllTickers():
 
     for _ in tqdm.tqdm(pool.imap_unordered(process, listOfTickers), total=len(listOfTickers)):
         pass
-
-    utils.emitAsciiBell()
 
 #-------------------------------------------------------------------------------------------
 
