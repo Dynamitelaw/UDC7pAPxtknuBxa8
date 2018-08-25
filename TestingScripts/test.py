@@ -73,7 +73,7 @@ def addDatapointsFromStock(ticker):
 
 if __name__ == '__main__':
     #Populate datapoints list
-    numberOfStocks = 10
+    numberOfStocks = 1000
     tickerList = database.getTickerList(randomize=True)[0:numberOfStocks]
 
     print("Number of stocks for training: " + str(numberOfStocks))
@@ -112,8 +112,8 @@ if __name__ == '__main__':
     print("\n===================================")
     print("Evaluating network...")
 
-    avgTrainingTimePerDatapoint = 0.374
-    eta = int((len(allDataPoints) * epochs * avgTrainingTimePerDatapoint)/1000)
+    avgTrainingTimePerDatapoint = 0.052
+    eta = int((len(allDataPoints) * epochs * avgTrainingTimePerDatapoint)/1000) + 30
     etaString = time.strftime('%H:%M:%S', time.gmtime(eta))
     print("ETA: " + etaString + "\n")
 
@@ -126,7 +126,7 @@ if __name__ == '__main__':
     results = cross_val_score(pipeline, X, Y, cv=kfold)
     endTime = time.time()
 
-    print("Results: %.2f%% (%.2f%%)" % (results.mean()*100, results.std()*100))
+    print("\nResults: %.2f%% (%.2f%%)" % (results.mean()*100, results.std()*100))
 
     trainingTimePerDatapoint = (1000*(endTime - startTime)) / (len(allDataPoints)*epochs)
     print ("Total training time: " + time.strftime('%H:%M:%S', time.gmtime(endTime - startTime)))
