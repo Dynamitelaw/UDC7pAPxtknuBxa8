@@ -26,119 +26,99 @@ import PandaDatabase as database
 
 # baseline model
 def create_baseline():
-	# create model
-	model = Sequential()
-	model.add(Dense(60, input_dim=3, kernel_initializer='normal', activation='relu'))
-	model.add(Dense(1, kernel_initializer='normal', activation='sigmoid'))
-	# Compile model
-	model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
-	return model
+    # create model
+    model = Sequential()
+    model.add(Dense(7, input_dim=7, kernel_initializer='normal', activation='relu'))
+    model.add(Dense(30, kernel_initializer='normal', activation='relu'))
+    model.add(Dense(20, kernel_initializer='normal', activation='relu'))
+    model.add(Dense(10, kernel_initializer='normal', activation='relu'))
+    model.add(Dense(1, kernel_initializer='normal', activation='sigmoid'))
+    # Compile model
+    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+    return model
+
+
+def addDatapointsFromStock(ticker):
+    DataPoints = []
+
+    try:
+        stockData = database.getDataframe(ticker, dataFields=["2 Day Normalized Slope", "5 Day Normalized Slope", "2 Day Normalized Momentum", "5 Day Normalized Momentum", "2D Discrete Moementum", "5D Discrete Moementum", "Standard Dev Normalized", "Profit Speed"], dateRange=["2010-01-01", "2016-06-06"])
+        stockData.dropna(inplace = True)  #Remove any rows with missing data
+
+        #Seperate dataframe into Positive profit speeds and negative profit speeds
+        positiveProfitSpeedDframe = stockData[stockData.apply(lambda row: row["Profit Speed"] > 0, axis=1)]
+        negativeProfitSpeedDframe = stockData[stockData.apply(lambda row: row["Profit Speed"] <= 0, axis=1)]
+        
+        #Make sure datapoints are equally distributed between positive and negative profit speeds
+        numberOfPositives = len(positiveProfitSpeedDframe)
+        numberOfNegatives = len(negativeProfitSpeedDframe)
+
+        if (numberOfPositives > numberOfNegatives):
+            positiveProfitSpeedDframe = positiveProfitSpeedDframe.iloc[0:numberOfNegatives]
+        elif (numberOfNegatives > numberOfPositives):
+            negativeProfitSpeedDframe = negativeProfitSpeedDframe.iloc[0:numberOfPositives]
+
+        positiveDataList = list(positiveProfitSpeedDframe.values)
+        negativeDataList = list(negativeProfitSpeedDframe.values)
+        
+        DataPoints += positiveDataList
+        DataPoints += negativeDataList
+        
+        return DataPoints
+
+    except Exception as e:
+        #print(e)
+        return False
 
 
 if __name__ == '__main__':
-    #=================================================
-    #Generate two random groups for NN validation
-    #=================================================
-    #3D Sphereical group definitions
-    AClusterCenter = [0,0,0]
-    AClusterRadius = 57
+    #Populate datapoints list
+    numberOfStocks = 500
+    tickerList = database.getTickerList(randomize=True)[0:numberOfStocks]
 
-    BClusterCenter = [28,28,28]
-    BClusterRadius = 57
+    print("Number of stocks for training: " + str(numberOfStocks))
+    print("Getting datapoints for training...")
+    processCount = multiprocessing.cpu_count() - 1
+    processPool = Pool(processCount)
 
-    #Generate Random datapoints that belong to each group
-    datapointsPerCluster =300
+    results = list(processPool.map(addDatapointsFromStock, tickerList))
+    processPool.close()
+    processPool.join()
 
-    #A Cluster
-    datapointsInA = 0
-    Acluster = []
-    while True:
-        #Create random coordinate
-        x = uniform(AClusterCenter[0]-AClusterRadius, AClusterCenter[0]+AClusterRadius)
-        y = uniform(AClusterCenter[1]-AClusterRadius, AClusterCenter[1]+AClusterRadius)
-        z = uniform(AClusterCenter[2]-AClusterRadius, AClusterCenter[2]+AClusterRadius)
-
-        #Check to make sure coordinate is inside defined cluster
-        xDistance = x - AClusterCenter[0]
-        yDistance = y - AClusterCenter[1]
-        zDistance = z - AClusterCenter[2]
-
-        distanceFromCenterSquared = zDistance**2 + yDistance**2 + xDistance**2
-        if (distanceFromCenterSquared <= (AClusterRadius**2)):
-            #If inside cluster boundary, add point to cluster
-            Acluster.append((x,y,z,1))
-            datapointsInA += 1
-            if (datapointsInA == datapointsPerCluster):
-                #Break if enough datapoints have been collected
-                break
-
-    #B Cluster
-    datapointsInB = 0
-    Bcluster = []
-    while True:
-        #Create random coordinate
-        x = uniform(BClusterCenter[0]-BClusterRadius, BClusterCenter[0]+BClusterRadius)
-        y = uniform(BClusterCenter[1]-BClusterRadius, BClusterCenter[1]+BClusterRadius)
-        z = uniform(BClusterCenter[2]-BClusterRadius, BClusterCenter[2]+BClusterRadius)
-
-        #Check to make sure coordinate is inside defined cluster
-        xDistance = x - BClusterCenter[0]
-        yDistance = y - BClusterCenter[1]
-        zDistance = z - BClusterCenter[2]
-
-        distanceFromCenterSquared = zDistance**2 + yDistance**2 + xDistance**2
-        if (distanceFromCenterSquared <= (BClusterRadius**2)):
-            #If inside cluster boundary, add point to cluster
-            Bcluster.append((x,y,z,0))
-            datapointsInB += 1
-            if (datapointsInB == datapointsPerCluster):
-                #Break if enough datapoints have been collected
-                break
-
-
-    #Plot clusters to check if we did everything right
-    fig = pyplot.figure()
-    ax = Axes3D(fig)
-
-    A_x_vals = [i[0] for i in Acluster]
-    A_y_vals = [i[1] for i in Acluster]
-    A_z_vals = [i[2] for i in Acluster]
-    ax.scatter(A_x_vals, A_y_vals, A_z_vals, c = "orange")
-
-    B_x_vals = [i[0] for i in Bcluster]
-    B_y_vals = [i[1] for i in Bcluster]
-    B_z_vals = [i[2] for i in Bcluster]
-    ax.scatter(B_x_vals, B_y_vals, B_z_vals, c = "blue")
-
-    pyplot.show()
-
-    #=================================================
-    #Train NN to classify between the two clusters
-    #=================================================
-
-    #Prepare data
     allDataPoints = []
-    allDataPoints += Acluster
-    allDataPoints += Bcluster
+    for dataPoints in results:
+        if (dataPoints != False):
+            allDataPoints += dataPoints
 
+
+    print("Number of datapoints: " + str(len(allDataPoints)))
+
+    #=======================================================
+    #Train NN to classify between pos and neg Profit speed
+    #=======================================================
+    
+    shuffle(allDataPoints)
     shuffle(allDataPoints)
 
-    X = [list(i[0:3]) for i in allDataPoints]
-    Y = [i[3] for i in allDataPoints]
-    
-    #Create and train NN model
-    # seed = 7
-    # kfold = StratifiedKFold(n_splits=10, shuffle=True, random_state=seed)
+    X = [i[0:7] for i in allDataPoints]
+    Y = [int(i[7] > 0) for i in allDataPoints]
 
+    
     # Evaluate model using standardized dataset. 
     # https://www.kaggle.com/parthsuresh/binary-classifier-using-keras-97-98-accuracy
+
+    print("\n===================================")
+    print("Evaluating network...")
     estimators = []
     estimators.append(('standardize', StandardScaler()))
     estimators.append(('mlp', KerasClassifier(build_fn=create_baseline, epochs=25, batch_size=5, verbose=0)))
     pipeline = Pipeline(estimators)
     kfold = StratifiedKFold(n_splits=10, shuffle=True)
     results = cross_val_score(pipeline, X, Y, cv=kfold)
+
     print("Results: %.2f%% (%.2f%%)" % (results.mean()*100, results.std()*100))
+    
+    
 
 
 

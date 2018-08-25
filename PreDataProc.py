@@ -328,6 +328,8 @@ def process(ticker, dataframe=False):
         dataFrame["2 Day Normalized Momentum"] = dataFrame["2 Day Momentum"] / dataFrame["Open"] * 100
         dataFrame["5 Day Normalized Momentum"] = dataFrame["5 Day Momentum"] / dataFrame["Open"] * 100
 
+        dataFrame["Standard Dev Normalized"] = dataFrame["Standard Dev"] / dataFrame["Open"] * 100
+
         #Create PcsData direcetory if not present
         if not os.path.isdir("Data/PcsData"):
             os.mkdir("Data/PcsData")
