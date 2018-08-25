@@ -73,7 +73,7 @@ def addDatapointsFromStock(ticker):
 
 if __name__ == '__main__':
     #Populate datapoints list
-    numberOfStocks = 500
+    numberOfStocks = 10
     tickerList = database.getTickerList(randomize=True)[0:numberOfStocks]
 
     print("Number of stocks for training: " + str(numberOfStocks))
@@ -107,16 +107,30 @@ if __name__ == '__main__':
     # Evaluate model using standardized dataset. 
     # https://www.kaggle.com/parthsuresh/binary-classifier-using-keras-97-98-accuracy
 
+    epochs = 25
+
     print("\n===================================")
     print("Evaluating network...")
+
+    avgTrainingTimePerDatapoint = 0.374
+    eta = int((len(allDataPoints) * epochs * avgTrainingTimePerDatapoint)/1000)
+    etaString = time.strftime('%H:%M:%S', time.gmtime(eta))
+    print("ETA: " + etaString + "\n")
+
+    startTime = time.time()
     estimators = []
     estimators.append(('standardize', StandardScaler()))
-    estimators.append(('mlp', KerasClassifier(build_fn=create_baseline, epochs=25, batch_size=5, verbose=0)))
+    estimators.append(('mlp', KerasClassifier(build_fn=create_baseline, epochs=epochs, batch_size=2000, verbose=0)))
     pipeline = Pipeline(estimators)
     kfold = StratifiedKFold(n_splits=10, shuffle=True)
     results = cross_val_score(pipeline, X, Y, cv=kfold)
+    endTime = time.time()
 
     print("Results: %.2f%% (%.2f%%)" % (results.mean()*100, results.std()*100))
+
+    trainingTimePerDatapoint = (1000*(endTime - startTime)) / (len(allDataPoints)*epochs)
+    print ("Total training time: " + time.strftime('%H:%M:%S', time.gmtime(endTime - startTime)))
+    print("Training time per datapoint (per epoch): " + str(trainingTimePerDatapoint) + " ms")
     
     
 
