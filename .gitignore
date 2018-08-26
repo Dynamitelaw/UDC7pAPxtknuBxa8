@@ -11,6 +11,7 @@ Data/PcsData/
 Data/StockData/
 Data/AccountData/
 Data/SimulationData/
+.vscode
 
 # C extensions
 *.so

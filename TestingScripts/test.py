@@ -80,9 +80,6 @@ def addDatapointsFromStock(ticker):
 
 
 if __name__ == '__main__':
-    allDataPoints = addDatapointsFromStock("TSLA")
- 
-    '''
     #Populate datapoints list
     numberOfStocks = 100
     tickerList = database.getTickerList(randomize=True)[0:numberOfStocks]
@@ -107,7 +104,7 @@ if __name__ == '__main__':
     #=======================================================
     #Train NN to classify between pos and neg Profit speed
     #=======================================================
-    '''
+    
     shuffle(allDataPoints)
     shuffle(allDataPoints)
 
