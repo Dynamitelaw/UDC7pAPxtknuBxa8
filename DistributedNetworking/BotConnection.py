@@ -164,7 +164,7 @@ def startClient():
     #Tries to bind the incoming port
     try:
         listen.bind((incomingHost, PORT_LISTEN))
-        LOGPRINT("Inbound socket bound to port: " + str(PORT_LISTEN))
+        LOGPRINT("Listening socket bound to port: " + str(PORT_LISTEN))
     except Exception as e:
         LOGPRINT("Error: " + str(e))
         LOGPRINT("Ending client")

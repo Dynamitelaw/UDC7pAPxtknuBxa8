@@ -4,3 +4,88 @@ DESKTOP-NKDVTB2 2018-08-26 02:09:04: TCP socket created
 DESKTOP-NKDVTB2 2018-08-26 02:09:04: Could not connect to . Retrying in 60 seconds
 DESKTOP-NKDVTB2 2018-08-26 02:09:04: Socket bound to port: 25700
 DESKTOP-NKDVTB2 2018-08-26 02:09:04: Could not connect to . Retrying in 60 seconds
+DESKTOP-NKDVTB2 2018-08-26 02:38:13 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:39:01 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:39:36 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:40:00 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:41:25 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:42:18 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:42:29 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:42:58 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:44:25 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:44:27 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:44:28 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:44:29 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:44:30 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:44:31 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:44:32 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:44:33 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:44:35 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:44:36 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:44:37 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:44:38 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:44:40 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:44:41 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:44:42 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:44:44 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:44:45 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:44:47 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:44:48 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:44:49 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:44:50 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:44:51 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:44:52 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:44:53 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:44:54 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:44:56 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:44:57 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:44:58 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:44:59 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:00 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:01 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:03 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:04 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:06 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:07 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:09 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:10 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:11 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:12 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:13 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:14 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:15 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:17 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:18 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:19 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:20 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:21 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:22 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:23 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:24 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:26 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:27 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:28 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:29 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:30 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:32 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:33 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:34 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:35 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:36 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:37 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:39 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:40 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:41 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:42 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:44 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:45 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:47 >> Pulling sourcecode from git
+DESKTOP-NKDVTB2 2018-08-26 02:45:48 >> This is Joey's machine
+DESKTOP-NKDVTB2 2018-08-26 02:45:48 >> TCP socket created
+DESKTOP-NKDVTB2 2018-08-26 02:45:48 >> Could not connect to . Retrying in 60 seconds
+DESKTOP-NKDVTB2 2018-08-26 02:45:48 >> Inbound socket bound to port: 25700
+DESKTOP-NKDVTB2 2018-08-26 02:45:48 >> Could not connect to . Retrying in 60 seconds
+DESKTOP-NKDVTB2 2018-08-26 02:46:48 >> Could not connect to . Retrying in 60 seconds
+DESKTOP-NKDVTB2 2018-08-26 02:46:48 >> Could not connect to . Retrying in 60 seconds
+DESKTOP-NKDVTB2 2018-08-26 02:47:48 >> Could not connect to . Retrying in 60 seconds
+DESKTOP-NKDVTB2 2018-08-26 02:47:48 >> Could not connect to . Retrying in 60 seconds
