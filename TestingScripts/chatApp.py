@@ -1,7 +1,7 @@
-from Tkinter import *
-from ttk import *
+from tkinter import *
+from tkinter.ttk import *
 import socket
-import thread
+import threading
 
 class ChatClient(Frame):
   
@@ -23,7 +23,7 @@ class ChatClient(Frame):
     self.FrameSizeY  = 600
     FramePosX   = (ScreenSizeX - self.FrameSizeX)/2
     FramePosY   = (ScreenSizeY - self.FrameSizeY)/2
-    self.root.geometry("%sx%s+%s+%s" % (self.FrameSizeX,self.FrameSizeY,FramePosX,FramePosY))
+    self.root.geometry("%dx%d+%d+%d" % (self.FrameSizeX,self.FrameSizeY,FramePosX,FramePosY))
     self.root.resizable(width=False, height=False)
     
     padX = 10
@@ -95,7 +95,7 @@ class ChatClient(Frame):
         self.serverSoc.bind(serveraddr)
         self.serverSoc.listen(5)
         self.setStatus("Server listening on %s:%s" % serveraddr)
-        thread.start_new_thread(self.listenClients,())
+        threading.Thread(self.listenClients,())
         self.serverStatus = 1
         self.name = self.nameVar.get().replace(' ','')
         if self.name == '':
@@ -108,7 +108,7 @@ class ChatClient(Frame):
       clientsoc, clientaddr = self.serverSoc.accept()
       self.setStatus("Client connected from %s:%s" % clientaddr)
       self.addClient(clientsoc, clientaddr)
-      thread.start_new_thread(self.handleClientMessages, (clientsoc, clientaddr))
+      threading.Thread(self.handleClientMessages, (clientsoc, clientaddr))
     self.serverSoc.close()
   
   def handleAddClient(self):
@@ -121,7 +121,7 @@ class ChatClient(Frame):
         clientsoc.connect(clientaddr)
         self.setStatus("Connected to client on %s:%s" % clientaddr)
         self.addClient(clientsoc, clientaddr)
-        thread.start_new_thread(self.handleClientMessages, (clientsoc, clientaddr))
+        threading.Thread(self.handleClientMessages, (clientsoc, clientaddr))
     except:
         self.setStatus("Error connecting to client")
 
@@ -160,14 +160,14 @@ class ChatClient(Frame):
     self.friends.insert(self.counter,"%s:%s" % clientaddr)
   
   def removeClient(self, clientsoc, clientaddr):
-      print self.allClients
+      print (self.allClients)
       self.friends.delete(self.allClients[clientsoc])
       del self.allClients[clientsoc]
-      print self.allClients
+      print (self.allClients)
   
   def setStatus(self, msg):
     self.statusLabel.config(text=msg)
-    print msg
+    print (msg)
       
 def main():  
   root = Tk()
