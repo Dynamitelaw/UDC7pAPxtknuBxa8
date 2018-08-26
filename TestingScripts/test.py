@@ -23,12 +23,14 @@ import SystemPathImports
 import utils
 import PandaDatabase as database
 
+#Global Variables
+daysToPass = 2
 
 # baseline model
 def create_baseline():
     # create model
     model = Sequential()
-    model.add(Dense(7, input_dim=7, kernel_initializer='normal', activation='relu'))
+    model.add(Dense(7*daysToPass, input_dim=7*daysToPass, kernel_initializer='normal', activation='relu'))
     model.add(Dense(30, kernel_initializer='normal', activation='relu'))
     model.add(Dense(20, kernel_initializer='normal', activation='relu'))
     model.add(Dense(10, kernel_initializer='normal', activation='relu'))
@@ -42,46 +44,45 @@ def addDatapointsFromStock(ticker):
     DataPoints = []
 
     try:
-        stockData = database.getDataframe(ticker, dataFields=["2 Day Normalized Slope", "5 Day Normalized Slope", "2 Day Normalized Momentum", "5 Day Normalized Momentum", "2D Discrete Moementum", "5D Discrete Moementum", "Standard Dev Normalized", "Profit Speed"], dateRange=["2010-01-01", "2016-06-06"])
+        dataFields = ["2 Day Normalized Slope", "5 Day Normalized Slope", "2 Day Normalized Momentum", "5 Day Normalized Momentum", "2D Discrete Moementum", "5D Discrete Moementum", "Standard Dev Normalized", "Profit Speed"]
+        stockData = database.getDataframe(ticker, dataFields= dataFields, dateRange=["2010-01-01", "2016-06-06"])
         stockData.dropna(inplace = True)  #Remove any rows with missing data
 
+        #Create input output pairs based on amount of days to include
+        chunks = []
+        for i in range(0, len(stockData)-daysToPass, 1):
+            chunkFrame = stockData.iloc[i:i+daysToPass]  #chunk is the dataframe containing all the days to include in this datapoint
+            chunk = (chunkFrame[dataFields[0:-1]].values.flatten() , float(chunkFrame.iloc[0]["Profit Speed"]))  #extract input data and output profitspeed
+            chunks.append(chunk)
+            
+
         #Seperate dataframe into Positive profit speeds and negative profit speeds
-        positiveProfitSpeedDframe = stockData[stockData.apply(lambda row: row["Profit Speed"] > 0, axis=1)]
-        negativeProfitSpeedDframe = stockData[stockData.apply(lambda row: row["Profit Speed"] <= 0, axis=1)]
+        positiveProfitSpeedList = [i for i in chunks if (i[1] > 0)]
+        negativeProfitSpeedList = [i for i in chunks if (i[1] <= 0)]
         
         #Make sure datapoints are equally distributed between positive and negative profit speeds
-        numberOfPositives = len(positiveProfitSpeedDframe)
-        numberOfNegatives = len(negativeProfitSpeedDframe)
+        numberOfPositives = len(positiveProfitSpeedList)
+        numberOfNegatives = len(negativeProfitSpeedList)
 
         if (numberOfPositives > numberOfNegatives):
-            positiveProfitSpeedDframe = positiveProfitSpeedDframe.iloc[0:numberOfNegatives]
+            positiveProfitSpeedList = positiveProfitSpeedList[0:numberOfNegatives]
         elif (numberOfNegatives > numberOfPositives):
-            negativeProfitSpeedDframe = negativeProfitSpeedDframe.iloc[0:numberOfPositives]
-
-        positiveDataPS_plus = positiveProfitSpeedDframe[:]
-        positiveDataPS_plus.drop(positiveDataPS_plus.index[0]) 
-        positiveDataPS_minus = positiveProfitSpeedDframe[:]
-        positiveDataPS_minus.drop(positiveDataPS_minus.index[-1]) 
-        negativeDataPS_plus = negativeProfitSpeedDframe[:]
-        negativeDataPS_plus.drop(negativeDataPS_plus.index[0]) 
-        negativeDataPS_minus = negativeProfitSpeedDframe[:]
-        negativeDataPS_minus.drop(negativeDataPS_minus.index[-1]) 
-
-
-        positiveDataList = list(pd.concat([positiveDataPS_plus,positiveDataPS_minus],axis=1).values)
-        negativeDataList = list(pd.concat([negativeDataPS_plus,negativeDataPS_minus],axis=1).values)
+            negativeProfitSpeedList = negativeProfitSpeedList[0:numberOfPositives]
         
-        DataPoints += positiveDataList
-        DataPoints += negativeDataList
+        DataPoints += positiveProfitSpeedList
+        DataPoints += negativeProfitSpeedList
         
         return DataPoints
 
     except Exception as e:
-        #print(e)
+        print(e)
         return False
 
 
 if __name__ == '__main__':
+    allDataPoints = addDatapointsFromStock("TSLA")
+ 
+    '''
     #Populate datapoints list
     numberOfStocks = 100
     tickerList = database.getTickerList(randomize=True)[0:numberOfStocks]
@@ -106,12 +107,12 @@ if __name__ == '__main__':
     #=======================================================
     #Train NN to classify between pos and neg Profit speed
     #=======================================================
-    
+    '''
     shuffle(allDataPoints)
     shuffle(allDataPoints)
 
-    X = [i[0:7] for i in allDataPoints]
-    Y = [int(i[7] > 0) for i in allDataPoints]
+    X = [i[0] for i in allDataPoints]
+    Y = [int(i[1] > 0) for i in allDataPoints]
 
     
     # Evaluate model using standardized dataset. 
@@ -141,6 +142,7 @@ if __name__ == '__main__':
     trainingTimePerDatapoint = (1000*(endTime - startTime)) / (len(allDataPoints)*epochs)
     print ("Total training time: " + time.strftime('%H:%M:%S', time.gmtime(endTime - startTime)))
     print("Training time per datapoint (per epoch): " + str(trainingTimePerDatapoint) + " ms")
+    
     
     
 

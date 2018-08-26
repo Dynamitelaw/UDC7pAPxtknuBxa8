@@ -9,7 +9,7 @@ from time import sleep
 
 #Custom Imports
 from DistributionUtils import LOGPRINT
-import DistributedFunctions
+from DistributedFunctions import *
 
 
 #Define global variables
@@ -104,6 +104,6 @@ def startClient():
 
 
 if __name__ == '__main__':
-    startClient()
-    #print(HEARBEAT_MESSAGE)
+    #startClient()
+    print(HEARBEAT_MESSAGE)
 
