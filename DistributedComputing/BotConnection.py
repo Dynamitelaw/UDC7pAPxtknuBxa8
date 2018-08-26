@@ -26,13 +26,6 @@ KILLING_THREAD = "KILLLING_THREAD"
 UPDATE_COMMAND = "UPDATE PROJECT"
 KILL_COMMAND = "KILL CLIENT"
 
-JOEY_DESKTOP_IP = "108.35.27.76"
-JOEY_DESKTOP_HOSTNAME = "DESKTOP-NKDVTB2"
-COLE_DESKTOP_IP = ""
-COLE_DESKTOP_HOSTNAME = ""
-RAMIN_DESKTOP_IP = ""
-RAMIN_DESKTOP_HOSTNAME = ""
-
 LOCAL_IP = socket.gethostbyname(socket.gethostname())
 PORT_LISTEN = 25700
 BUFFER_SIZE = 4096
@@ -41,7 +34,7 @@ OUTBOUND_RETRY_INTERVAL = 60
 
 class Connection():
     '''
-    Handles a single two-way connections with another node
+    Handles a single two-way connection with another node
     '''
     def __init__(self, connection, bufferSize, addr):
         '''
@@ -90,7 +83,7 @@ class Connection():
 
     def incommingConnectionThread(self):
         '''
-        Handles a single inbound connection
+        Handles incomming messages
         '''
         #Start a heartbeat thread for this connection
         if (not self.heartBeatRunning):
@@ -139,6 +132,9 @@ class Connection():
         return "ACK"
 
     def __str__(self):
+        '''
+        String representation of connection object
+        '''
         return (str(self.peerAddress))
         
 
