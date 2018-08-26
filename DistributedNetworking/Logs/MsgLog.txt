@@ -25,3 +25,14 @@ DESKTOP-NKDVTB2 2018-08-25 21:05:00: Msg received: b'as'
 DESKTOP-NKDVTB2 2018-08-25 21:05:00: Msg received: b'\r\n'
 DESKTOP-NKDVTB2 2018-08-25 21:05:14: Msg received: b'asd'
 DESKTOP-NKDVTB2 2018-08-25 21:05:14: Msg received: b'\r\n'
+DESKTOP-NKDVTB2 2018-08-25 23:04:25: TCP socket created
+DESKTOP-NKDVTB2 2018-08-25 23:04:25: Socket bound to port: 25700
+DESKTOP-NKDVTB2 2018-08-25 23:04:43: Connection established with ('127.0.0.1', 63712)
+DESKTOP-NKDVTB2 2018-08-25 23:04:43: Msg received: b"\xff\xfb\x1f\xff\xfb \xff\xfb\x18\xff\xfb'\xff\xfd\x01\xff\xfb\x03\xff\xfd\x03"
+DESKTOP-NKDVTB2 2018-08-25 23:05:12: Msg received: b'UPDATE PROJECT'
+DESKTOP-NKDVTB2 2018-08-25 23:05:12: Msg received: b'\r\n'
+DESKTOP-NKDVTB2 2018-08-25 23:07:24: Msg received: b''
+DESKTOP-NKDVTB2 2018-08-25 23:07:24: Socket error: [WinError 10053] An established connection was aborted by the software in your host machine
+DESKTOP-NKDVTB2 2018-08-25 23:07:24: Msg received: b''
+DESKTOP-NKDVTB2 2018-08-25 23:08:07: TCP socket created
+DESKTOP-NKDVTB2 2018-08-25 23:08:07: Socket bound to port: 23
