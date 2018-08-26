@@ -11,7 +11,12 @@ Data/PcsData/
 Data/StockData/
 Data/AccountData/
 Data/SimulationData/
-.vscode
+
+#Ignore Visual Studio settings
+.vscode/
+
+#Ignore local IP mappings
+DistributedComputing/Mappings/LOCAL.json
 
 # C extensions
 *.so

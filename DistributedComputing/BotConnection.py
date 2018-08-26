@@ -1,0 +1,245 @@
+'''
+Dynamitelaw
+'''
+
+#External Imports
+import socket
+import threading
+from time import sleep
+
+#Custom Imports
+from DistributionUtils import *
+from DistributedFunctions import *
+
+
+#Define global variables
+peerMappings = {}
+peerMappingsLock = threading.Lock()
+
+openConnections = {}
+openConnectionsLock = threading.Lock()
+
+HEARBEAT_MESSAGE = "HEARTBEAT"
+HEARBEAT_INTERVAL = 10
+KILLING_THREAD = "KILLLING_THREAD"
+
+UPDATE_COMMAND = "UPDATE PROJECT"
+KILL_COMMAND = "KILL CLIENT"
+
+JOEY_DESKTOP_IP = "108.35.27.76"
+JOEY_DESKTOP_HOSTNAME = "DESKTOP-NKDVTB2"
+COLE_DESKTOP_IP = ""
+COLE_DESKTOP_HOSTNAME = ""
+RAMIN_DESKTOP_IP = ""
+RAMIN_DESKTOP_HOSTNAME = ""
+
+LOCAL_IP = socket.gethostbyname(socket.gethostname())
+PORT_LISTEN = 25700
+BUFFER_SIZE = 4096
+OUTBOUND_RETRY_INTERVAL = 60
+
+
+class Connection():
+    '''
+    Handles a single two-way connections with another node
+    '''
+    def __init__(self, connection, bufferSize, addr):
+        '''
+        Connection constructor
+        '''
+        self.connectionSocket = connection
+        self.bufferSize = bufferSize
+        self.peerAddress = addr
+        self.peerIp = self.peerAddress[0] 
+        self.peerSocket = self.peerAddress[1] 
+        self.heartBeatRunning = False
+        self.peerName = "null"
+
+        LOGPRINT("New Connection object created. Starting incoming handler thread...")
+
+        #Add this connection object to the openConnection dictionary
+        #  Look for hostname associated with this IP address
+        foundMatchingHostname = False
+        peerMappingsLock.acquire()
+        for peerHostname in peerMappings:
+            mappings = peerMappings[peerHostname]
+            if (mappings["PublicIp"] == self.peerAddress[0]):
+                #IP address matches. Associate connection with this peer
+                foundMatchingHostname = True
+                self.peerName = peerHostname
+
+                openConnectionsLock.acquire()
+                openConnections[peerHostname] = self
+                openConnectionsLock.release()
+
+                break
+
+        if (not foundMatchingHostname):
+            #This is not a recognized peer. Associate with guest session
+            guestHostname = "GUEST_" + str(self.peerSocket)
+            self.peerName = guestHostname
+            openConnectionsLock.acquire()
+            openConnections[guestHostname] = self
+            openConnectionsLock.release()
+
+        
+        #Start handling thread
+        incomingHandlingThread = threading.Thread(target=self.incommingConnectionThread, args=())
+        incomingHandlingThread.start()
+
+
+    def incommingConnectionThread(self):
+        '''
+        Handles a single inbound connection
+        '''
+        #Start a heartbeat thread for this connection
+        if (not self.heartBeatRunning):
+            heartbeatThread = threading.Thread(target=self.startHeatbeatThread,args=(self.connectionSocket,))
+            heartbeatThread.start()
+
+        while True:
+            incommingMessage = ""
+            try:
+                incommingMessage = self.connectionSocket.recv(self.bufferSize)
+            except Exception as e:
+                print (e)
+                LOGPRINT(str(self.address) + " socket error: " + str(e))
+                LOGPRINT("Closing socket" + str(self.address))
+                del openConnections[self.peerName]
+                return
+
+            if (len(incommingMessage)):
+                LOGPRINT(self.peerName + " >> Msg received: " + str(incommingMessage))
+                response = self.handleIncommingMessage(str(incommingMessage))
+                self.connectionSocket.sendall(response.encode('utf-8'))
+
+
+    def startHeatbeatThread(self, connection):
+        '''
+        Starts a heartbeat thread with the connection to tell the other party we're still alive
+        '''
+        self.heartBeatRunning = True
+        while True:
+            connection.sendall(HEARBEAT_MESSAGE.encode('utf-8'))
+            sleep(HEARBEAT_INTERVAL)
+
+
+    def handleIncommingMessage(self, incommingMessage):
+        '''
+        Handle incomming messages
+        '''
+
+        if (incommingMessage==UPDATE_COMMAND):
+            updateCodebase()
+            return KILLING_THREAD
+
+        elif (incommingMessage==KILL_COMMAND):
+            return KILLING_THREAD
+
+        return "ACK"
+
+    def __str__(self):
+        return (str(self.peerAddress))
+        
+
+def createOutgoingConnections():
+    '''
+    Continuosuly trys to create outgoing connections to all known peers
+    '''
+    peersToConnectTo = {}
+
+    #Loop continuously
+    while True:
+        #Determine which peers we still need to connect to
+        peerMappingsLock.acquire()
+        openConnectionsLock.acquire()
+        for peerHostname in peerMappings:
+            if (peerHostname in openConnections):
+                #Already connected to this peer. No need to connect
+                pass 
+            else:
+                #Not yet connected to this peer. Add it to connection queue
+                peersToConnectTo[peerHostname] = peerMappings[peerHostname]
+                
+        openConnectionsLock.release()
+
+        for peerName in peersToConnectTo:
+            peerMap = peerMappings[peerName]
+            peerIP = peerMap["PublicIp"]
+            peerFriendlyName = peerMap["FriendlyName"]
+
+            #Establish outbound connection if not already connected
+            outbound = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+            while True:
+                try:
+                    outbound.bind((LOCAL_IP, 0))
+                    break
+                except Exception as e:
+                    sleep(2)
+
+            try:
+                outbound.connect((peerIP,PORT_LISTEN))
+                LOGPRINT("Successfully created connection with " + peerFriendlyName + ":" + peerName + " " + peerIP)
+                
+                #Instantiate Connection object, which will add itself to openConnections dictionary
+                Connection(outbound, BUFFER_SIZE, (peerIP, PORT_LISTEN))
+                del peersToConnectTo[peerName]  #Remove peer from connection queue
+            except Exception as e:
+                LOGPRINT("Could not connect to "+peerName+"("+peerFriendlyName+"):"+peerIP+" | "+str(e)+". Retrying in "+ str(OUTBOUND_RETRY_INTERVAL)+" seconds")
+
+        peerMappingsLock.release()
+        sleep(OUTBOUND_RETRY_INTERVAL)
+
+
+def connectToPeers():
+    '''
+    Tries to create an outgoing connection to all known peers
+    '''
+    outgoingConnectionThread = threading.Thread(target=createOutgoingConnections,args=())
+    outgoingConnectionThread.start()
+
+
+def listenForIncommingConnections():
+    '''
+    Listens for incomming connection requests
+    '''
+
+    incomingHost = ''
+    listen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    LOGPRINT("TCP socket created")
+
+    #Tries to bind the incoming port
+    try:
+        listen.bind((incomingHost, PORT_LISTEN))
+        LOGPRINT("Listening socket bound to port: " + str(PORT_LISTEN))
+    except Exception as e:
+        LOGPRINT("Error: " + str(e))
+        LOGPRINT("Ending client")
+        listen.close()
+        return
+
+    listen.listen(5)
+
+    #Listens for incoming connection requests
+    while True:
+        connection, addr = listen.accept()
+
+        LOGPRINT("Connection established with " + str(addr[0]) + ":" + str(addr[1]))
+
+        #Opens new thread for each client
+        Connection(connection, BUFFER_SIZE, addr)
+        LOGPRINT("Open connections: " + DictionaryToString(openConnections))
+
+
+if __name__ == '__main__':
+    LOGPRINT("\n\n")
+    LOGPRINT("----------------------------------------------")
+    LOGPRINT("Starting new client")
+    updateLocalMappings()
+    updatePeerMappings(peerMappings)
+    connectToPeers()
+    # listenForIncommingConnections()
+
+    print("tehee")
+
