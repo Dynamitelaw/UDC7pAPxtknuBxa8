@@ -21,6 +21,7 @@ HEARBEAT_INTERVAL = 10
 KILLING_THREAD = "KILLLING_THREAD"
 
 UPDATE_COMMAND = "UPDATE PROJECT"
+KILL_COMMAND = "KILL CLIENT"
 
 JOEY_DESKTOP_IP = "108.35.27.76"
 JOEY_DESKTOP_HOSTNAME = "DESKTOP-NKDVTB2"
@@ -49,7 +50,10 @@ def handleIncommingMessage(incommingMessage):
 
     if (incommingMessage==UPDATE_COMMAND):
         updateCodebase()
-        return "KILL_THREAD"
+        return KILLING_THREAD
+
+    elif (incommingMessage==KILL_COMMAND):
+        return KILLING_THREAD
 
     return "ACK"
 
@@ -183,5 +187,4 @@ def startClient():
 if __name__ == '__main__':
     connectToPeers()
     startClient()
-    print (LOCAL_IP)
 
