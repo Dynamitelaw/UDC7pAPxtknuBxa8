@@ -9,15 +9,27 @@ from time import sleep
 
 #Custom Imports
 from DistributionUtils import LOGPRINT
+import DistributedFunctions
 
+
+#Define global variables
+HEARBEAT_MESSAGE = "HEARTBEAT"
+KILLING_THREAD = "KILLLING_THREAD"
+
+UPDATE_COMMAND = "UPDATE PROJECT"
+
+JOEY_IP = "108.35.27.76"
+COLE_IP = ""
+RAMIN_IP = ""
+
+listenPort = 23
 
 def startHeatbeatThread(connection):
     '''
     Starts a heartbeat thread with the connection to tell the other party we're still alive
     '''
     while True:
-        heartbeat = "HEARTBEAT\n\r"
-        connection.sendall(heartbeat.encode('utf-8'))
+        connection.sendall(HEARBEAT_MESSAGE.encode('utf-8'))
         sleep(10)
 
 
@@ -26,7 +38,11 @@ def handleIncommingMessage(incommingMessage):
     Handle incomming messages
     '''
 
-    return "handled\n\r"
+    if (incommingMessage==UPDATE_COMMAND):
+        updateCodebase()
+        return "KILL_THREAD"
+
+    return "ACK"
 
 
 def incommingConnectionThread(connection, bufferSize, addr):
@@ -47,6 +63,10 @@ def incommingConnectionThread(connection, bufferSize, addr):
         response = handleIncommingMessage(str(incommingMessage))
         connection.sendall(response.encode('utf-8'))
 
+        if (response == KILLING_THREAD):
+            print("Ending client process...")
+            return
+
  
 def startClient():
     '''
@@ -54,7 +74,6 @@ def startClient():
     '''
 
     incomingHost = ''
-    listenPort = 25700
     listen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     LOGPRINT("TCP socket created")
 
@@ -86,4 +105,5 @@ def startClient():
 
 if __name__ == '__main__':
     startClient()
+    #print(HEARBEAT_MESSAGE)
 
