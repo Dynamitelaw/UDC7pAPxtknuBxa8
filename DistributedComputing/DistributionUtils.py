@@ -11,10 +11,9 @@ import socket
 import threading
 import json
 import os
-from urllib.request  import urlopen
 
 #Custim Imports
-from NetworkGlobalDefinitions import *
+from NetworkDefinitions import *
 
 
 logPrintLock = threading.Lock()
@@ -55,6 +54,13 @@ def DictionaryToString(dictionary):
     return outputString
 
 
+def DictionaryToJson(dictionary):
+    '''
+    Converts a dictionary to a JSON object
+    '''
+    return json.dumps(dictionary)
+
+
 from DistributedFunctions import pushCodebase  #This is here to prevent an import loop
 def updateLocalMappings():
     '''
@@ -73,8 +79,7 @@ def updateLocalMappings():
     #Create new mappings
     localMappings = {}
     localMappings["LocalHostname"] = socket.gethostname()
-    currentPublicIp = json.load(urlopen('https://api.ipify.org/?format=json'))['ip']
-    localMappings["PublicIp"] = currentPublicIp
+    localMappings["PublicIp"] = PUBLIC_IP
     if (parsedOldMappings):
         localMappings["FriendlyName"] = oldMappings["FriendlyName"]
     else:
@@ -94,7 +99,7 @@ def updateLocalMappings():
     #Check for changes in mappings
     if (parsedOldMappings):
         oldPublicIp = oldMappings["PublicIp"]
-        if (currentPublicIp != oldPublicIp):
+        if (PUBLIC_IP != oldPublicIp):
             #Update everyone elses IP mappings
             pushCodebase()
     else:
@@ -133,7 +138,10 @@ def parseIncomingMessage(message):
     Parses the incoming message. Return a dictionary object representing the message
     '''
     messageDict = json.loads(message)
-    messageDict["MessageType"] = PeerMessage(messageDict["MessageType"])
+    try:
+        messageDict["MessageType"] = PEER_MESSAGE(messageDict["MessageType"])
+    except:
+        pass
     return messageDict
 
 

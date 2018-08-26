@@ -28,6 +28,15 @@ def pushCodebase():
     #os.system("git push")
 
 
+#NOTE: NOT YET IMPLIMENTED
+def installPackages(packagesToInstall):
+    '''
+    Installs or upgrades all the packages listen in packagesToInstall
+    Retunrs tuple: (bool success, [results])
+    '''
+    return (True, [])
+
+
 def kill(restart = False):
     '''
     Kills python on this local machine.
@@ -37,3 +46,11 @@ def kill(restart = False):
         os.system("DistributedComputing\\KillAndRestart.bat")
     else:
         os.system("DistributedComputing\\Kill.bat")
+
+
+def clearLogFolder():
+    '''
+    Deletes all files inside the Logs folder
+    '''
+    LOGPRINT("Clearing Logs folder...")
+    os.system("del /f /Q DistributedComputing\Logs\*")

@@ -12,7 +12,7 @@ from time import sleep
 #Custom Imports
 from DistributionUtils import *
 from DistributedFunctions import *
-from NetworkGlobalDefinitions import *
+from NetworkDefinitions import *
 
 
 #Define global variables
@@ -38,6 +38,8 @@ class Connection():
         self.peerSocket = self.peerAddress[1] 
         self.heartBeatRunning = False
         self.peerName = "null"
+        self.relayedBroadcasts = []
+        self.createHeartbeatMessage()
 
         LOGPRINT("New Connection object created. Starting incoming handler thread...")
 
@@ -86,7 +88,6 @@ class Connection():
             try:
                 incommingMessage = self.connectionSocket.recv(self.bufferSize)
             except Exception as e:
-                print (e)
                 LOGPRINT(str(self.address) + " socket error: " + str(e))
                 LOGPRINT("Closing socket" + str(self.address))
                 del openConnections[self.peerName]
@@ -98,13 +99,28 @@ class Connection():
                 self.connectionSocket.sendall(response.encode('utf-8'))
 
 
+    def createHeartbeatMessage(self):
+        '''
+        Creates the heartbeat message for this connection
+        '''
+        messageDict = {}
+        messageDict["MessageType"] = int(PEER_MESSAGE.HEARBEAT_MESSAGE.value)
+        messageDict["Broadcast"] = False
+        messageDict["BroadcastID"] = 0
+        messageDict["TargetIP"] = self.peerIp
+
+        messageJsonString = DictionaryToJson(messageDict)
+
+        self.heartbeatMessage = messageJsonString
+
+
     def startHeatbeatThread(self, connection):
         '''
         Starts a heartbeat thread with the connection to tell the other party we're still alive
         '''
         self.heartBeatRunning = True
         while True:
-            connection.sendall(HEARBEAT_MESSAGE.encode('utf-8'))
+            connection.sendall(self.heartbeatMessage.encode('utf-8'))
             sleep(HEARBEAT_INTERVAL)
 
 
@@ -112,21 +128,114 @@ class Connection():
         '''
         Handle incomming messages
         '''
+        handlerReturnValue = False
+
+        #Parse incoming message
+        messageDict = {}
         try:
             messageDict = parseIncomingMessage(incommingMessage)
         except Exception as e:
             LOGPRINT("Error parsing incoming message: " + str(e))
             return("ERROR")
 
-        
-        if (incommingMessage==UPDATE_COMMAND):
-            updateCodebase()
-            return KILLING_THREAD
+        MessageType = messageDict["MessageType"]
+        Broadcast = messageDict["Broadcast"]
+        BroadcastID = messageDict["BroadcastID"]
+        TargetIP = messageDict["TargetIP"]
 
-        elif (incommingMessage==KILL_COMMAND):
-            return KILLING_THREAD
+        #Check target IP to see if this message is addressed to us
+        WeAreTarget = False
+        if ((TargetIP == PUBLIC_IP) or (TargetIP == "ALL")):
+            WeAreTarget = True
+        else:
+            WeAreTarget = False
 
-        return "ACK"
+        #Only handle if we haven't already
+        if (not Broadcast) or (Broadcast and (not (BroadcastID in self.relayedBroadcasts))):  #Only handle if this message is not a broadcast or it IS a broadcast but we haven't handled it yet
+            #Handle message if we're the target
+            if (WeAreTarget):
+                #HEARBEAT_MESSAGE
+                if (MessageType == PEER_MESSAGE.HEARBEAT_MESSAGE):
+                    pass
+                #GENERIC_MESSAGE
+                elif (MessageType == PEER_MESSAGE.GENERIC_MESSAGE):
+                    if ("GenericMessage" in messageDict):
+                        LOGPRINT(messageDict["GenericMessage"])
+                    else:
+                        LOGPRINT("Format error: Missing \"GenericMessage\"")
+                #RETURN_MESSAGE
+                elif (MessageType == PEER_MESSAGE.RETURN_MESSAGE):
+                    if ("ReturnValues" in messageDict):
+                        ReturnValues = messageDict["ReturnValues"]
+                        if ("SubscriptionID" in messageDict):
+                            #Someone has subscribed to this event. Pass message to subscription service to be handled by subscriber
+                            pass
+                    else:
+                        LOGPRINT("Format error: Missing \"ReturnValues\"")
+                #UPDATE_PROJECT_COMMAND
+                elif (MessageType == PEER_MESSAGE.UPDATE_PROJECT_COMMAND):
+                    updateCodebase()
+                #PUSH_PROJECT_COMMAND
+                elif (MessageType == PEER_MESSAGE.PUSH_PROJECT_COMMAND):
+                    pushCodebase()
+                #INSTALL_PACKAGES_COMMAND
+                elif (MessageType == PEER_MESSAGE.INSTALL_PACKAGES_COMMAND):
+                    if ("CommandArguments" in messageDict):
+                        packagesToInstall = messageDict["CommandArguments"]
+                        commandSuccess, results = installPackages(packagesToInstall)
+
+                        handlerReturnValue = self.createCommandResponseMessage(messageDict, commandSuccess, results)
+                    else:
+                        LOGPRINT("Format error: Missing \"CommandArguments\"")
+                        commandSuccess = False
+                        results = ["Format error: Missing \"CommandArguments\""]
+
+                        handlerReturnValue = self.createCommandResponseMessage(messageDict, commandSuccess, results)
+                #KILL_CLIENT_COMMAND
+                elif (MessageType == PEER_MESSAGE.KILL_CLIENT_COMMAND):
+                    if ("CommandArguments" in messageDict):
+                        restartAfterKill = messageDict["CommandArguments"][0]
+                        kill(restartAfterKill)
+                    else:
+                        LOGPRINT("Format error: Missing \"CommandArguments\"")
+                        commandSuccess = False
+                        results = ["Format error: Missing \"CommandArguments\""]
+
+                        handlerReturnValue = self.createCommandResponseMessage(messageDict, commandSuccess, results)
+                #CLEAR_LOGS_COMMAND
+                elif (MessageType == PEER_MESSAGE.CLEAR_LOGS_COMMAND):
+                    clearLogFolder()
+
+                #URECOGNIZED MESSAGE TYPE
+                else:
+                    genericMessage = "Unrecongnized message type: " + str(MessageType)
+                    LOGPRINT(genericMessage)
+                    handlerReturnValue = self.createGenericResponseMessage(messageDict, genericMessage)
+
+
+            #Broadcast message if required
+            if (Broadcast):
+                openConnectionsLock.acquire()
+                for connectionName in openConnections:
+                    openConnections[connectionName].sendMessage(incommingMessage)
+                openConnectionsLock.release()
+                #Add this broadcastID to relayedBroadcasts list
+                self.relayedBroadcasts.append(BroadcastID) 
+
+
+        #Return message to sender if needed
+        if (handlerReturnValue):
+            return handlerReturnValue
+        else:
+            return
+
+
+    def sendMessage(message):
+        '''
+        Send the passed message out the connection socket
+        '''
+        self.connectionSocket.sendall(str(message).encode('utf-8'))
+
 
     def __str__(self):
         '''
@@ -228,25 +337,14 @@ def listenForIncommingConnections():
 
 
 if __name__ == '__main__':
-    # LOGPRINT("\n\n")
-    # LOGPRINT("----------------------------------------------")
-    # LOGPRINT("Starting new client")
-    # updateLocalMappings()
-    # updatePeerMappings(peerMappings)
-    # connectToPeers()
-    # listenForIncommingConnections()
-
-    messageNum = 4
-    message = PeerMessage(messageNum)
-    if (message == PeerMessage.HEARBEAT_MESSAGE):
-        print("heartbeat")
-    if (message == PeerMessage.RETURN_MESSAGE):
-        print("return")
-    if (message == PeerMessage.UPDATE_PROJECT_COMMAND):
-        print("update")
-    if (message == PeerMessage.PUSH_PROJECT_COMMAND):
-        print("push")
-    if (message == PeerMessage.KILL_CLIENT_COMMAND):
-        print("kill")
+    LOGPRINT("\n\n")
+    LOGPRINT("----------------------------------------------")
+    LOGPRINT("Starting new client")
+    updateLocalMappings()
+    updatePeerMappings(peerMappings)
+    connectToPeers()
+    listenForIncommingConnections()
+    sleep(SEND_PENDINGS_DELAY)
+    #sendPendingMessages()
 
 
