@@ -58,8 +58,18 @@ def addDatapointsFromStock(ticker):
         elif (numberOfNegatives > numberOfPositives):
             negativeProfitSpeedDframe = negativeProfitSpeedDframe.iloc[0:numberOfPositives]
 
-        positiveDataList = list(positiveProfitSpeedDframe.values)
-        negativeDataList = list(negativeProfitSpeedDframe.values)
+        positiveDataPS_plus = positiveProfitSpeedDframe[:]
+        positiveDataPS_plus.drop(positiveDataPS_plus.index[0]) 
+        positiveDataPS_minus = positiveProfitSpeedDframe[:]
+        positiveDataPS_minus.drop(positiveDataPS_minus.index[-1]) 
+        negativeDataPS_plus = negativeProfitSpeedDframe[:]
+        negativeDataPS_plus.drop(negativeDataPS_plus.index[0]) 
+        negativeDataPS_minus = negativeProfitSpeedDframe[:]
+        negativeDataPS_minus.drop(negativeDataPS_minus.index[-1]) 
+
+
+        positiveDataList = list(pd.concat([positiveDataPS_plus,positiveDataPS_minus],axis=1).values)
+        negativeDataList = list(pd.concat([negativeDataPS_plus,negativeDataPS_minus],axis=1).values)
         
         DataPoints += positiveDataList
         DataPoints += negativeDataList
