@@ -1,7 +1,7 @@
 '''
 Dynamitelaw
 
-Utility functions for the Distributed Network module
+Utility functions for the DistributedComputing module
 '''
 
 #External Imports
@@ -12,6 +12,9 @@ import threading
 import json
 import os
 from urllib.request  import urlopen
+
+#Custim Imports
+from NetworkGlobalDefinitions import *
 
 
 logPrintLock = threading.Lock()
@@ -52,7 +55,7 @@ def DictionaryToString(dictionary):
     return outputString
 
 
-from DistributedFunctions import pushCodebase
+from DistributedFunctions import pushCodebase  #This is here to prevent an import loop
 def updateLocalMappings():
     '''
     Update local mapping file
@@ -112,8 +115,8 @@ def updatePeerMappings(peerDictionary):
         hostname = filename.rstrip(".json")
         if (filename == "LOCAL.json"):
             pass
-        # elif (hostname == socket.gethostname()):
-        #     pass
+        elif (hostname == socket.gethostname()):
+            pass
         else:
             peerHostnames.append(hostname)
 
@@ -123,5 +126,14 @@ def updatePeerMappings(peerDictionary):
             f.close()
         peerDictionary[hostname] = peerMappings
         LOGPRINT("Added peer mapping: " + str(peerMappings))
+        
+
+def parseIncomingMessage(message):
+    '''
+    Parses the incoming message. Return a dictionary object representing the message
+    '''
+    messageDict = json.loads(message)
+    messageDict["MessageType"] = PeerMessage(messageDict["MessageType"])
+    return messageDict
 
 

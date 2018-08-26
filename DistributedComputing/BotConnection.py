@@ -1,5 +1,7 @@
 '''
 Dynamitelaw
+
+Starts a peer client on this machine when run
 '''
 
 #External Imports
@@ -10,6 +12,7 @@ from time import sleep
 #Custom Imports
 from DistributionUtils import *
 from DistributedFunctions import *
+from NetworkGlobalDefinitions import *
 
 
 #Define global variables
@@ -18,18 +21,6 @@ peerMappingsLock = threading.Lock()
 
 openConnections = {}
 openConnectionsLock = threading.Lock()
-
-HEARBEAT_MESSAGE = "HEARTBEAT"
-HEARBEAT_INTERVAL = 10
-KILLING_THREAD = "KILLLING_THREAD"
-
-UPDATE_COMMAND = "UPDATE PROJECT"
-KILL_COMMAND = "KILL CLIENT"
-
-LOCAL_IP = socket.gethostbyname(socket.gethostname())
-PORT_LISTEN = 25700
-BUFFER_SIZE = 4096
-OUTBOUND_RETRY_INTERVAL = 60
 
 
 class Connection():
@@ -121,7 +112,13 @@ class Connection():
         '''
         Handle incomming messages
         '''
+        try:
+            messageDict = parseIncomingMessage(incommingMessage)
+        except Exception as e:
+            LOGPRINT("Error parsing incoming message: " + str(e))
+            return("ERROR")
 
+        
         if (incommingMessage==UPDATE_COMMAND):
             updateCodebase()
             return KILLING_THREAD
@@ -136,11 +133,13 @@ class Connection():
         String representation of connection object
         '''
         return (str(self.peerAddress))
+    
+    ### End Connection class
         
 
 def createOutgoingConnections():
     '''
-    Continuosuly trys to create outgoing connections to all known peers
+    Continuosuly tries to create outgoing connections to all known peers
     '''
     peersToConnectTo = {}
 
@@ -229,13 +228,25 @@ def listenForIncommingConnections():
 
 
 if __name__ == '__main__':
-    LOGPRINT("\n\n")
-    LOGPRINT("----------------------------------------------")
-    LOGPRINT("Starting new client")
-    updateLocalMappings()
-    updatePeerMappings(peerMappings)
-    connectToPeers()
+    # LOGPRINT("\n\n")
+    # LOGPRINT("----------------------------------------------")
+    # LOGPRINT("Starting new client")
+    # updateLocalMappings()
+    # updatePeerMappings(peerMappings)
+    # connectToPeers()
     # listenForIncommingConnections()
 
-    print("tehee")
+    messageNum = 4
+    message = PeerMessage(messageNum)
+    if (message == PeerMessage.HEARBEAT_MESSAGE):
+        print("heartbeat")
+    if (message == PeerMessage.RETURN_MESSAGE):
+        print("return")
+    if (message == PeerMessage.UPDATE_PROJECT_COMMAND):
+        print("update")
+    if (message == PeerMessage.PUSH_PROJECT_COMMAND):
+        print("push")
+    if (message == PeerMessage.KILL_CLIENT_COMMAND):
+        print("kill")
+
 

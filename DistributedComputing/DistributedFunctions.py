@@ -1,7 +1,7 @@
 '''
 Dynamitelaw
 
-Contains the functions that are called by incomming bot commands
+Contains the functions that are called by incomming commands
 '''
 
 #External imports
