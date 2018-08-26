@@ -73,7 +73,7 @@ def addDatapointsFromStock(ticker):
 
 if __name__ == '__main__':
     #Populate datapoints list
-    numberOfStocks = 1000
+    numberOfStocks = 100
     tickerList = database.getTickerList(randomize=True)[0:numberOfStocks]
 
     print("Number of stocks for training: " + str(numberOfStocks))
@@ -112,7 +112,7 @@ if __name__ == '__main__':
     print("\n===================================")
     print("Evaluating network...")
 
-    avgTrainingTimePerDatapoint = 0.052
+    avgTrainingTimePerDatapoint = 0.045
     eta = int((len(allDataPoints) * epochs * avgTrainingTimePerDatapoint)/1000) + 30
     etaString = time.strftime('%H:%M:%S', time.gmtime(eta))
     print("ETA: " + etaString + "\n")

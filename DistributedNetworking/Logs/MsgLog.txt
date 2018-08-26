@@ -1,0 +1,27 @@
+DESKTOP-NKDVTB2 2018-08-25 20:54:22: TCP socket created
+DESKTOP-NKDVTB2 2018-08-25 20:54:22: Socket bound to port: 25700
+DESKTOP-NKDVTB2 2018-08-25 20:54:29: Connection established with ('127.0.0.1', 63148)
+DESKTOP-NKDVTB2 2018-08-25 20:54:29: Msg received: b"\xff\xfb\x1f\xff\xfb \xff\xfb\x18\xff\xfb'\xff\xfd\x01\xff\xfb\x03\xff\xfd\x03"
+DESKTOP-NKDVTB2 2018-08-25 20:54:52: Msg received: b'hellogues'
+DESKTOP-NKDVTB2 2018-08-25 20:55:02: Msg received: b'\r\n'
+DESKTOP-NKDVTB2 2018-08-25 20:56:03: Msg received: b'responseresponse'
+DESKTOP-NKDVTB2 2018-08-25 20:56:13: Msg received: b'\r\n'
+DESKTOP-NKDVTB2 2018-08-25 21:01:05: TCP socket created
+DESKTOP-NKDVTB2 2018-08-25 21:01:05: Socket bound to port: 25700
+DESKTOP-NKDVTB2 2018-08-25 21:01:11: Connection established with ('127.0.0.1', 63178)
+DESKTOP-NKDVTB2 2018-08-25 21:03:20: TCP socket created
+DESKTOP-NKDVTB2 2018-08-25 21:03:20: Socket bound to port: 25700
+DESKTOP-NKDVTB2 2018-08-25 21:03:25: Connection established with ('127.0.0.1', 63192)
+DESKTOP-NKDVTB2 2018-08-25 21:03:25: Msg received: b"\xff\xfb\x1f\xff\xfb \xff\xfb\x18\xff\xfb'\xff\xfd\x01\xff\xfb\x03\xff\xfd\x03"
+DESKTOP-NKDVTB2 2018-08-25 21:04:08: TCP socket created
+DESKTOP-NKDVTB2 2018-08-25 21:04:08: Socket bound to port: 25700
+DESKTOP-NKDVTB2 2018-08-25 21:04:17: Connection established with ('127.0.0.1', 63196)
+DESKTOP-NKDVTB2 2018-08-25 21:04:17: Msg received: b"\xff\xfb\x1f\xff\xfb \xff\xfb\x18\xff\xfb'\xff\xfd\x01\xff\xfb\x03\xff\xfd\x03"
+DESKTOP-NKDVTB2 2018-08-25 21:04:43: Msg received: b'incomming meassage'
+DESKTOP-NKDVTB2 2018-08-25 21:04:43: Msg received: b'\r\n'
+DESKTOP-NKDVTB2 2018-08-25 21:04:59: Msg received: b'inco'
+DESKTOP-NKDVTB2 2018-08-25 21:04:59: Msg received: b'\r\n'
+DESKTOP-NKDVTB2 2018-08-25 21:05:00: Msg received: b'as'
+DESKTOP-NKDVTB2 2018-08-25 21:05:00: Msg received: b'\r\n'
+DESKTOP-NKDVTB2 2018-08-25 21:05:14: Msg received: b'asd'
+DESKTOP-NKDVTB2 2018-08-25 21:05:14: Msg received: b'\r\n'
