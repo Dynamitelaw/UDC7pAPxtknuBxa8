@@ -440,14 +440,22 @@ if __name__ == '__main__':
     LOGPRINT("\n\n")
     LOGPRINT("----------------------------------------------")
     LOGPRINT("Starting new client")
+
+    #Update Mappings
     updateLocalMappings()
     updatePeerMappings(peerMappings)
+
+    #Populate subscriptions and outbound messages
     SendPeerCommands.setSubscritptionsAndPendingOutbounds(LocalSubscriptions, PendingOutboundMessages)
     LOGPRINT("Local Subscripctions" + str(LocalSubscriptions))
     LOGPRINT("Pending Outbound Messages: " + str(PendingOutboundMessages))
+
+    #Initiate and listen for connections
     connectToPeers()
     listeningThread = threading.Thread(target=listenForIncommingConnections, args=())
     listeningThread.start()
+
+    #Send pending outbound messages
     sleep(SEND_PENDINGS_DELAY)
     sendPendingMessages()
 
