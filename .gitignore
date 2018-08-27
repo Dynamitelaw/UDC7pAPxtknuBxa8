@@ -19,7 +19,7 @@ Data/SimulationData/
 DistributedComputing/Mappings/LOCAL.json
 
 #Ignore installer files too large for github
-Setup/Installers/Anaconda3.exe
+Setup/Installers/
 
 # C extensions
 *.so

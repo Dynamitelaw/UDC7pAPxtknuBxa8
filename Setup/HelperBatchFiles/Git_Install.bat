@@ -1,4 +1,5 @@
-echo Running Git installer
+@echo off
+echo Running Git installer...
 Installers\Git-2.18.0-64-bit.exe
 echo Finished Git install
 

@@ -1,2 +1,5 @@
+@echo off
 echo HelperBatchFiles\AnacondeInstaller_DownloadAndRun.bat
-HelperBatchFiles\Git_Install.bat
+echo HelperBatchFiles\InstallExternalPackages.bat
+HelperBatchFiles\GetTensorFlow.bat
+echo HelperBatchFiles\Git_Install.bat
