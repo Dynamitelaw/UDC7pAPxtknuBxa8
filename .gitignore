@@ -15,6 +15,9 @@ Data/SimulationData/
 #Ignore Visual Studio settings
 .vscode/
 
+#Ignore local copy of VBS script
+StartClientConnection.vbs
+
 #Ignore local IP mappings
 DistributedComputing/Mappings/LOCAL.json
 

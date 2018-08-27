@@ -1,0 +1,2 @@
+@echo off
+copy Installers\StartClientConnection.txt UDC7pAPxtknuBxa8\StartClientConnection.vbs

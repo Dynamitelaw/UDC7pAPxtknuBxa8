@@ -8,5 +8,5 @@ git config --global user.name "DWPeerNode"
 git config --global user.email "DeltaWPeerNode@gmail.com"
 git config --global credential.helper wincred  
 
-echo Cloning repository
+echo Cloning repository...
 git clone https://github.com/Dynamitelaw/UDC7pAPxtknuBxa8

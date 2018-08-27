@@ -1,0 +1,6 @@
+@echo off
+echo Installing Keras frontend...
+pip3 install keras
+
+echo Testing Keras install...
+python HelperBatchFiles\TestKerasInstall.py
