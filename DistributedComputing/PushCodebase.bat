@@ -1,2 +1,2 @@
-git commit -m 'Automated client commit'
+git commit -m "Automated client commit"
 git push
