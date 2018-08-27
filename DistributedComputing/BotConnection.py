@@ -10,7 +10,6 @@ import socket
 import threading
 from time import sleep
 from random import randint
-import os
 
 #Custom Imports
 sys.path.append("./")
@@ -443,7 +442,6 @@ def sendPendingMessages():
 
 
 if __name__ == '__main__':
-    print(os.getcwd())
     LOGPRINT("\n\n")
     LOGPRINT("----------------------------------------------")
     LOGPRINT("Starting new client")

@@ -86,3 +86,24 @@ DESKTOP-NKDVTB2 2018-08-27 15:24:00 # Pushing changes to git
 DESKTOP-NKDVTB2 2018-08-27 15:24:02 # Local Subscripctions: {457768: <SendPeerCommands.SubscriptionHandler object at 0x00000254E5DF5128>}
 DESKTOP-NKDVTB2 2018-08-27 15:24:02 # Pending Outbound Messages: ['{"MessageType": 5, "Broadcast": true, "BroadcastID": 599481, "SubscriptionID": 457768, "ReturnIP": "108.35.27.76", "CommandArguments": ["iexfinance", "tensorflow"], "TargetIP": "IP_ALL"}', '{"MessageType": 7, "Broadcast": true, "BroadcastID": 792937, "TargetIP": "123.45.67.89"}', '{"MessageType": 7, "Broadcast": true, "BroadcastID": 792937, "TargetIP": "231.54.76.98"}']
 DESKTOP-NKDVTB2 2018-08-27 15:24:02 # Listening socket bound to port: 25700
+DESKTOP-NKDVTB2 2018-08-27 15:26:02 # 
+
+
+DESKTOP-NKDVTB2 2018-08-27 15:26:02 # ----------------------------------------------
+DESKTOP-NKDVTB2 2018-08-27 15:26:02 # Starting new client
+DESKTOP-NKDVTB2 2018-08-27 15:26:02 # ----------------------------------------------
+DESKTOP-NKDVTB2 2018-08-27 15:26:02 # Could not parse previous local mappings. Creating new local mappings
+DESKTOP-NKDVTB2 2018-08-27 15:26:02 # New local mappings = {"LocalHostname": "DESKTOP-NKDVTB2", "PublicIp": "108.35.27.76", "FriendlyName": "INTERT_FRIENDLY_NAME_HERE"}
+DESKTOP-NKDVTB2 2018-08-27 15:26:02 # Pushing changes to git
+DESKTOP-NKDVTB2 2018-08-27 15:26:04 # Local Subscripctions: {514185: <SendPeerCommands.SubscriptionHandler object at 0x000001BC5A005080>}
+DESKTOP-NKDVTB2 2018-08-27 15:26:04 # Pending Outbound Messages: ['{"MessageType": 5, "Broadcast": true, "BroadcastID": 365738, "SubscriptionID": 514185, "ReturnIP": "108.35.27.76", "CommandArguments": ["iexfinance", "tensorflow"], "TargetIP": "IP_ALL"}', '{"MessageType": 7, "Broadcast": true, "BroadcastID": 352459, "TargetIP": "123.45.67.89"}', '{"MessageType": 7, "Broadcast": true, "BroadcastID": 352459, "TargetIP": "231.54.76.98"}']
+DESKTOP-NKDVTB2 2018-08-27 15:26:04 # Listening socket bound to port: 25700
+DESKTOP-NKDVTB2 2018-08-27 15:28:54 # 
+
+
+DESKTOP-NKDVTB2 2018-08-27 15:28:54 # ----------------------------------------------
+DESKTOP-NKDVTB2 2018-08-27 15:28:54 # Starting new client
+DESKTOP-NKDVTB2 2018-08-27 15:28:54 # ----------------------------------------------
+DESKTOP-NKDVTB2 2018-08-27 15:28:54 # Could not parse previous local mappings. Creating new local mappings
+DESKTOP-NKDVTB2 2018-08-27 15:28:54 # New local mappings = {"LocalHostname": "DESKTOP-NKDVTB2", "PublicIp": "108.35.27.76", "FriendlyName": "INTERT_FRIENDLY_NAME_HERE"}
+DESKTOP-NKDVTB2 2018-08-27 15:28:54 # Pushing changes to git
