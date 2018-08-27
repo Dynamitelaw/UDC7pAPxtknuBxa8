@@ -1,0 +1,2 @@
+echo HelperBatchFiles\AnacondeInstaller_DownloadAndRun.bat
+HelperBatchFiles\Git_DownloadAndInstall.bat

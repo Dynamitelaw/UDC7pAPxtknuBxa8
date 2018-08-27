@@ -18,6 +18,9 @@ Data/SimulationData/
 #Ignore local IP mappings
 DistributedComputing/Mappings/LOCAL.json
 
+#Ignore installer files too large for github
+Setup/Installers/Anaconda3.exe
+
 # C extensions
 *.so
 
