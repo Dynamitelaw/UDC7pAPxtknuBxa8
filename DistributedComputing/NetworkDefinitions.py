@@ -59,39 +59,39 @@ All messages sent between peers are in the following JSON format
 #Enum for accepted PeerMessages
 @unique
 class PEER_MESSAGE(Enum):
-    #If you want to add a new message type to the bot connection, you must add the command type to this enum <COMENTFLAG=ADDING_NEW_BOT_FUNCTIONALITY>
+    #If you want to add a new message type to the mesh network, you must add the command type to this enum <COMENTFLAG=ADDING_NEW_BOT_FUNCTIONALITY>
     #NOTE: DO NOT CHANGE THESE NUMBERS AFTER THEY HAVE BEEN DEFINED AND PUSHED
     HEARBEAT_MESSAGE = 0
         #Heartbeat message sent to peer to let them know we're still alive
-        #args = NA
+        #args = NONE
         #results = NONE
     GENERIC_MESSAGE = 1
         #Generic message sent to peer to print to logs
-        #args = NA
+        #args = NONE
         #results = NONE
     RETURN_MESSAGE = 2
         #Message sent to indicate that the message contains a return value
-        #args = NA
+        #args = NONE
         #results = NONE
     UPDATE_PROJECT_COMMAND = 3
         #Peer will do a git pull to update their project files, then restart
-        #args = NA
+        #args = NONE
         #results = NONE
     PUSH_PROJECT_COMMAND = 4
-        #Peer will do a git push to update the repo with changes
-        #args = NA
+        #Peer will do a git push to update the repo with their changes
+        #args = NONE
         #results = NONE
     INSTALL_PACKAGES_COMMAND = 5
         #Peer will pip install specified packages, then restart
         #args = [string packageName1, string packageName2, ...]
-        #results = [resultPackage1, resultsPackage2, ...]
+        #results = [string resultPackage1, string resultsPackage2, ...]
     KILL_CLIENT_COMMAND = 6
         #Peer will kill itself, and end all python processes
         #args = [bool restartAfterKill]
         #results = NONE
     CLEAR_LOGS_COMMAND = 7
         #Peer will delete all Logs in their Logs folder
-        #args = NA
+        #args = NONE
         #results = NONE
 
 

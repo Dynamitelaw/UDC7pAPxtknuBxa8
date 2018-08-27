@@ -11,7 +11,7 @@ from random import randint
 import SystemPathImports
 from NetworkDefinitions import *
 from DistributionUtils import createCommandMessages, LOGPRINT
-from DistributedFunctions import kill
+from DistributedFunctions import openNewClietWindow
 
 
 class SubscriptionHandler():
@@ -80,8 +80,7 @@ def addNewPeerCommand(command=False, commandArguments=False, subscribeToResults=
     commandMessages = createCommandMessages(command, commandArguments=commandArguments, subscriptionID=subscriptionID, broadcastID=broadcastID, targets=commandTargets)
 
     #Add messages to PendingOutbound list
-    for message in commandMessages:
-        PendingOutbound.append(message)
+    PendingOutbound += commandMessages
 
     #Subscribe if specified
     if (subscribeToResults):
@@ -98,12 +97,12 @@ def setSubscritptionsAndPendingOutbounds(Subscriptions, PendingOutbound):
     #############
     # Example, don't delete me
 
-    # Tell peers to update packages (iexfinance and tensorfow)
+    # Tell peers to update or install packages (iexfinance and tensorfow)
     # We want to know which packages were successful or not, so we'll subscribe to get the results of our command
     # Since we didn't specify a target, this command will apply to ALL peers in the network
     addNewPeerCommand(command=PEER_MESSAGE.INSTALL_PACKAGES_COMMAND, commandArguments=["iexfinance", "tensorflow"], subscribeToResults=True, Subscriptions=Subscriptions, PendingOutbound=PendingOutbound)
 
-    # Tell two specific peers (IP = 123.45.67.89 and IP = 231.54.76.98) to clear out their log folder. This will happen AFTER they update their packages
+    # Tell two specific peers (IP = 123.45.67.89 and IP = 231.54.76.98) to clear out their log folders. This will happen AFTER they update their packages
     # This command does not generate any return values, so there's no need to subscribe to the results
     # This command also does not require input arguments, so we can ommit those
     addNewPeerCommand(command=PEER_MESSAGE.CLEAR_LOGS_COMMAND, commandTargets=["123.45.67.89", "231.54.76.98"], Subscriptions=Subscriptions, PendingOutbound=PendingOutbound)
@@ -115,4 +114,4 @@ if __name__ == '__main__':
 
     # To execute the peer commands, this file will kill the program and restart via BotConnection.py
     # BotConnection will call setSubscritptionsAndPendingOutbounds, then send out the peer commands
-    kill(restart=True)
+    openNewClietWindow()

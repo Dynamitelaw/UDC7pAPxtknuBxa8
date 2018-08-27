@@ -48,6 +48,15 @@ def kill(restart = False):
         os.system("DistributedComputing\\Kill.bat")
 
 
+def openNewClietWindow():
+    '''
+    Kills python on this local machine. 
+    Starts a new command window with a client terminal
+    '''
+    os.chdir("DistributedComputing")
+    os.system("OpenClientWindow_FromThisDirectory.bat")
+
+
 def clearLogFolder():
     '''
     Deletes all files inside the Logs folder
