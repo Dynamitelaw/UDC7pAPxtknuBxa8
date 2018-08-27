@@ -15,6 +15,7 @@ systemPathList.append("Selectors/")
 systemPathList.append("TestingScripts/")
 systemPathList.append("Tensorflow/")
 systemPathList.append("utils/")
+systemPathList.append("DistributedComputing/")
 
 #Insert all paths in systemPathList
 insertionIndex = 0

@@ -21,6 +21,7 @@ All messages sent between peers are in the following JSON format
     "Broadcast": bool,              //Required
     "BroadcastID": int,             //Required. If Broadcast is False, then the ID is 0
     "TargetIP": string,             //Required. Set to "ALL" to target all peers
+    "ReturnIP": string,             //Contextual: if sender wants to specify a node to return values to
     "GenericMessage": string,       //Contextual: if GENERIC_MESSAGE
     "SubscriptionID": int,          //Contextual: if sender wants all messages related to this action to be marked as a group to subscribe to. Similar to subject line of an email
     "CommandArguments":             //Needed if the command message requires arguments 
@@ -39,7 +40,8 @@ All messages sent between peers are in the following JSON format
 #Enum for accepted PeerMessages
 @unique
 class PEER_MESSAGE(Enum):
-    #NOTE: DO NOT CHANGE THESE NUMBERS AFTER THEY HAVE BEEN SET
+    #NOTE: If you want to add a new message type to the bot connection, you must add the command type to this enum <COMENTFLAG=ADDING_NEW_BOT_FUNCTIONALITY>
+    #NOTE: DO NOT CHANGE THESE NUMBERS AFTER THEY HAVE BEEN DEFINED AND PUSHED
     HEARBEAT_MESSAGE = 0
         #Heartbeat message sent to peer to let them know we're still alive
         #args = NA
@@ -71,8 +73,13 @@ LOCAL_IP = socket.gethostbyname(socket.gethostname())
 PUBLIC_IP = json.load(urlopen('https://api.ipify.org/?format=json'))['ip']
 PORT_LISTEN = 25700
 BUFFER_SIZE = 4096
+MAX_BROADCAST_ID = 999999
 
 #Timeout globals
 HEARBEAT_INTERVAL = 10
 OUTBOUND_RETRY_INTERVAL = 60
 SEND_PENDINGS_DELAY = 20
+
+#Misc globals
+NULL_STR = "NULL"
+IP_ALL_STR = "IP_ALL"

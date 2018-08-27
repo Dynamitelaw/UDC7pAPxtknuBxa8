@@ -25,7 +25,7 @@ def pushCodebase():
     Pushes any local changes to the codebase
     '''
     LOGPRINT("Pushing changes to git")
-    #os.system("git push")
+    os.system("git push")
 
 
 #NOTE: NOT YET IMPLIMENTED
@@ -34,7 +34,7 @@ def installPackages(packagesToInstall):
     Installs or upgrades all the packages listen in packagesToInstall
     Retunrs tuple: (bool success, [results])
     '''
-    return (True, [])
+    return (True, ["Monika: Can you hear me?"])
 
 
 def kill(restart = False):

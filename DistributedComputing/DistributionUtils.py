@@ -28,10 +28,10 @@ def LOGPRINT(messsage):
     logPath = "DistributedComputing/Logs/" + socket.gethostname() + "_Log.txt"
     logPrintLock.acquire()
     
-    with open(logPath, "a") as myfile:
+    with open(logPath, "a") as logfile:
         print(formattedMessage)
-        myfile.write(formattedMessage + "\n")
-        myfile.close()
+        logfile.write(formattedMessage + "\n")
+        logfile.close()
 
     logPrintLock.release()
 
@@ -59,6 +59,17 @@ def DictionaryToJson(dictionary):
     Converts a dictionary to a JSON object
     '''
     return json.dumps(dictionary)
+
+
+def isValidJson(JsonString):
+    '''
+    Checks if the passed string is a valid Json
+    '''
+    try:
+        json.loads(JsonString)
+        return True
+    except:
+        return False
 
 
 from DistributedFunctions import pushCodebase  #This is here to prevent an import loop

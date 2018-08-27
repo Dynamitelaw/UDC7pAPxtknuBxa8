@@ -34,3 +34,17 @@ DESKTOP-NKDVTB2 2018-08-26 18:51:33 # GUEST_51777 >> Msg received: b'zxc'
 DESKTOP-NKDVTB2 2018-08-26 18:51:33 # Error parsing incoming message: Expecting value: line 1 column 1 (char 0)
 DESKTOP-NKDVTB2 2018-08-26 18:51:33 # GUEST_51777 >> Msg received: b'\r\n'
 DESKTOP-NKDVTB2 2018-08-26 18:51:33 # Error parsing incoming message: Expecting value: line 1 column 1 (char 0)
+DESKTOP-NKDVTB2 2018-08-26 23:02:45 # 
+
+
+DESKTOP-NKDVTB2 2018-08-26 23:02:45 # ----------------------------------------------
+DESKTOP-NKDVTB2 2018-08-26 23:02:45 # Starting new client
+DESKTOP-NKDVTB2 2018-08-26 23:02:45 # TCP socket created
+DESKTOP-NKDVTB2 2018-08-26 23:02:45 # Listening socket bound to port: 25700
+DESKTOP-NKDVTB2 2018-08-26 23:02:59 # 
+
+
+DESKTOP-NKDVTB2 2018-08-26 23:02:59 # ----------------------------------------------
+DESKTOP-NKDVTB2 2018-08-26 23:02:59 # Starting new client
+DESKTOP-NKDVTB2 2018-08-26 23:02:59 # TCP socket created
+DESKTOP-NKDVTB2 2018-08-26 23:02:59 # Listening socket bound to port: 25700

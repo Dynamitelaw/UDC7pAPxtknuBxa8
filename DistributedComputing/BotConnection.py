@@ -8,6 +8,7 @@ Starts a peer client on this machine when run
 import socket
 import threading
 from time import sleep
+from random import randint
 
 #Custom Imports
 from DistributionUtils import *
@@ -21,6 +22,9 @@ peerMappingsLock = threading.Lock()
 
 openConnections = {}
 openConnectionsLock = threading.Lock()
+
+LocalSubscriptions = {}
+localSubscriptionsLock = threading.Lock()
 
 
 class Connection():
@@ -62,7 +66,7 @@ class Connection():
 
         if (not foundMatchingHostname):
             #This is not a recognized peer. Associate with guest session
-            guestHostname = "GUEST_" + str(self.peerSocket)
+            guestHostname = "GUEST_" + str(self.peerIp)
             self.peerName = guestHostname
             openConnectionsLock.acquire()
             openConnections[guestHostname] = self
@@ -84,19 +88,30 @@ class Connection():
             heartbeatThread.start()
 
         while True:
-            incommingMessage = ""
+            incommingMessage = NULL_STR
             try:
-                incommingMessage = self.connectionSocket.recv(self.bufferSize)
+                incommingMessage = str(self.connectionSocket.recv(self.bufferSize))
+
+                while True:
+                    if (isValidJson(incommingMessage)):
+                        #Entire message has been recieved
+                        break
+                    else:
+                        #Missing part of message
+                        sleep(0.5)
+                        incommingMessage += str(self.connectionSocket.recv(self.bufferSize))
+
             except Exception as e:
                 LOGPRINT(str(self.address) + " socket error: " + str(e))
                 LOGPRINT("Closing socket" + str(self.address))
                 del openConnections[self.peerName]
                 return
 
-            if (len(incommingMessage)):
-                LOGPRINT(self.peerName + " >> Msg received: " + str(incommingMessage))
-                response = self.handleIncommingMessage(str(incommingMessage))
-                self.connectionSocket.sendall(response.encode('utf-8'))
+            if (incommingMessage != NULL_STR):
+                LOGPRINT(self.peerName + " >> Msg received: " + incommingMessage)
+                response = self.handleIncommingMessage(incommingMessage)
+                if (response):
+                    self.connectionSocket.sendall(response.encode('utf-8'))
 
 
     def createHeartbeatMessage(self):
@@ -145,7 +160,7 @@ class Connection():
 
         #Check target IP to see if this message is addressed to us
         WeAreTarget = False
-        if ((TargetIP == PUBLIC_IP) or (TargetIP == "ALL")):
+        if ((TargetIP == PUBLIC_IP) or (TargetIP == IP_ALL_STR)):
             WeAreTarget = True
         else:
             WeAreTarget = False
@@ -154,6 +169,8 @@ class Connection():
         if (not Broadcast) or (Broadcast and (not (BroadcastID in self.relayedBroadcasts))):  #Only handle if this message is not a broadcast or it IS a broadcast but we haven't handled it yet
             #Handle message if we're the target
             if (WeAreTarget):
+                #NOTE: If you want to add a new function command to the bot connection, you must handle it here <COMENTFLAG=ADDING_NEW_BOT_FUNCTIONALITY>
+
                 #HEARBEAT_MESSAGE
                 if (MessageType == PEER_MESSAGE.HEARBEAT_MESSAGE):
                     pass
@@ -168,8 +185,19 @@ class Connection():
                     if ("ReturnValues" in messageDict):
                         ReturnValues = messageDict["ReturnValues"]
                         if ("SubscriptionID" in messageDict):
-                            #Someone has subscribed to this event. Pass message to subscription service to be handled by subscriber
-                            pass
+                            #Someone has subscribed to this event. Pass message dictionary to be handled by subscriber
+                            subscriptionID = messageDict["SubscriptionID"]
+                            localSubscriptionsLock.acquire()
+
+                            if (subscriptionID in LocalSubscriptions):
+                                subscriptionHandler = LocalSubscriptions[subscriptionID]
+                                try:
+                                    returnDict = messageDict.copy()
+                                    subscriptionHandler.handleReturnMessage(returnDict)
+                                except Exception as e:
+                                    LOGPRINT("Subscription handler error: " + str(e))
+
+                            localSubscriptionsLock.release()
                     else:
                         LOGPRINT("Format error: Missing \"ReturnValues\"")
                 #UPDATE_PROJECT_COMMAND
@@ -223,7 +251,7 @@ class Connection():
                 self.relayedBroadcasts.append(BroadcastID) 
 
 
-        #Return message to sender if needed
+        #Respond to sender if needed
         if (handlerReturnValue):
             return handlerReturnValue
         else:
@@ -236,6 +264,55 @@ class Connection():
         '''
         self.connectionSocket.sendall(str(message).encode('utf-8'))
 
+    
+    def createCommandResponseMessage(messageDict, commandSuccess, results):
+        '''
+        Creates a response message for the executed command
+        '''
+        responseDict = {}
+        responseDict["MessageType"] = PEER_MESSAGE.RETURN_MESSAGE.value
+        responseDict["Broadcast"] = True
+        responseDict["BroadcastID"] = randint(1, MAX_BROADCAST_ID)
+
+        if ("ReturnIP" in messageDict):
+            responseDict["TargetIP"] = messageDict["ReturnIP"]
+        else:
+            responseDict["TargetIP"] = IP_ALL_STR
+
+        if ("SubscriptionID" in messageDict):
+            responseDict["SubscriptionID"] = messageDict["SubscriptionID"]
+
+        responseDict["CommandSucess"] = bool(commandSuccess)
+        responseDict["ReturnValues"] = results
+
+        responseString = DictionaryToJson(responseDict)
+
+        return(responseString)
+
+
+    def createGenericResponseMessage(messageDict, genericMessage):
+        '''
+        Creates a response message for the executed command
+        '''
+        responseDict = {}
+        responseDict["MessageType"] = PEER_MESSAGE.GENERIC_MESSAGE.value
+        responseDict["Broadcast"] = True
+        responseDict["BroadcastID"] = randint(1, MAX_BROADCAST_ID)
+
+        if ("ReturnIP" in messageDict):
+            responseDict["TargetIP"] = messageDict["ReturnIP"]
+        else:
+            responseDict["TargetIP"] = IP_ALL_STR
+
+        if ("SubscriptionID" in messageDict):
+            responseDict["SubscriptionID"] = messageDict["SubscriptionID"]
+
+        responseDict["GenericMessage"] = genericMessage
+
+        responseString = DictionaryToJson(responseDict)
+
+        return(responseString)
+
 
     def __str__(self):
         '''
@@ -244,6 +321,7 @@ class Connection():
         return (str(self.peerAddress))
     
     ### End Connection class
+#=======================================================================
         
 
 def createOutgoingConnections():
