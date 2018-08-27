@@ -1,7 +1,6 @@
 @echo off
-echo HelperBatchFiles\AnacondeInstaller_DownloadAndRun.bat
-echo HelperBatchFiles\InstallExternalPackages.bat
-echo HelperBatchFiles\GetTensorFlow.bat
-echo HelperBatchFiles\InstallKeras.bat
-echo HelperBatchFiles\Git_Install.bat
-HelperBatchFiles\SetupPeerClient.bat
+HelperBatchFiles\AnacondeInstaller_DownloadAndRun.bat
+HelperBatchFiles\InstallExternalPackages.bat
+HelperBatchFiles\GetTensorFlow.bat
+HelperBatchFiles\InstallKeras.bat
+HelperBatchFiles\Git_Install.bat

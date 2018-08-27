@@ -1,2 +1,0 @@
-@echo off
-copy HelperBatchFiles\StartClientConnection.txt UDC7pAPxtknuBxa8\StartClientConnection.vbs
