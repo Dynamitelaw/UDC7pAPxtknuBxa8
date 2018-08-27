@@ -25,7 +25,7 @@ def pushCodebase():
     Pushes any local changes to the codebase
     '''
     LOGPRINT("Pushing changes to git")
-    os.system("git push")
+    os.system("DistributedComputing\\PushCodebase.bat")
 
 
 #NOTE: NOT YET IMPLIMENTED
