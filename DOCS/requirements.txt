@@ -1,7 +1,6 @@
 numpy
 tensorflow
 keras
-tflearn
 scipy
 iexfinance
 pandas
