@@ -107,3 +107,15 @@ DESKTOP-NKDVTB2 2018-08-27 15:28:54 # ------------------------------------------
 DESKTOP-NKDVTB2 2018-08-27 15:28:54 # Could not parse previous local mappings. Creating new local mappings
 DESKTOP-NKDVTB2 2018-08-27 15:28:54 # New local mappings = {"LocalHostname": "DESKTOP-NKDVTB2", "PublicIp": "108.35.27.76", "FriendlyName": "INTERT_FRIENDLY_NAME_HERE"}
 DESKTOP-NKDVTB2 2018-08-27 15:28:54 # Pushing changes to git
+DESKTOP-NKDVTB2 2018-08-27 15:28:58 # Local Subscripctions: {50968: <SendPeerCommands.SubscriptionHandler object at 0x000001F3BC555048>}
+DESKTOP-NKDVTB2 2018-08-27 15:28:58 # Pending Outbound Messages: ['{"MessageType": 5, "Broadcast": true, "BroadcastID": 700968, "SubscriptionID": 50968, "ReturnIP": "108.35.27.76", "CommandArguments": ["iexfinance", "tensorflow"], "TargetIP": "IP_ALL"}', '{"MessageType": 7, "Broadcast": true, "BroadcastID": 805284, "TargetIP": "123.45.67.89"}', '{"MessageType": 7, "Broadcast": true, "BroadcastID": 805284, "TargetIP": "231.54.76.98"}']
+DESKTOP-NKDVTB2 2018-08-27 15:28:58 # Listening socket bound to port: 25700
+DESKTOP-NKDVTB2 2018-08-27 15:31:14 # 
+
+
+DESKTOP-NKDVTB2 2018-08-27 15:31:14 # ----------------------------------------------
+DESKTOP-NKDVTB2 2018-08-27 15:31:14 # Starting new client
+DESKTOP-NKDVTB2 2018-08-27 15:31:14 # ----------------------------------------------
+DESKTOP-NKDVTB2 2018-08-27 15:31:14 # Local Subscripctions: {419949: <SendPeerCommands.SubscriptionHandler object at 0x000001BE0C470FD0>}
+DESKTOP-NKDVTB2 2018-08-27 15:31:14 # Pending Outbound Messages: ['{"MessageType": 5, "Broadcast": true, "BroadcastID": 687770, "SubscriptionID": 419949, "ReturnIP": "108.35.27.76", "CommandArguments": ["iexfinance", "tensorflow"], "TargetIP": "IP_ALL"}', '{"MessageType": 7, "Broadcast": true, "BroadcastID": 986463, "TargetIP": "123.45.67.89"}', '{"MessageType": 7, "Broadcast": true, "BroadcastID": 986463, "TargetIP": "231.54.76.98"}']
+DESKTOP-NKDVTB2 2018-08-27 15:31:14 # Listening socket bound to port: 25700
