@@ -7,8 +7,27 @@ Definitions for all objects required by the DistributedComputing module
 #External imports
 from enum import Enum, unique
 import socket
-from urllib.request  import urlopen
 import json
+from time import sleep
+from urllib.request  import urlopen
+
+
+#---------------------
+# Helper functions
+#---------------------
+def getPublicIp():
+    '''
+    Gets the public IP address for this client
+    '''
+    try:
+        address = json.load(urlopen('https://api.ipify.org/?format=json'))['ip']
+        return address
+    except Exception as e:
+        print(e)
+        print("ERROR: Unable to obtain public IP address. Check internet connection")
+        print("Closing client...")
+        sleep(5)
+        raise ValueError(e)
 
 
 #-------------------
@@ -78,7 +97,7 @@ class PEER_MESSAGE(Enum):
 
 #Networking globals
 LOCAL_IP = socket.gethostbyname(socket.gethostname())
-PUBLIC_IP = json.load(urlopen('https://api.ipify.org/?format=json'))['ip']
+PUBLIC_IP = getPublicIp()
 PORT_LISTEN = 25700
 BUFFER_SIZE = 4096
 MAX_BROADCAST_ID = 999999

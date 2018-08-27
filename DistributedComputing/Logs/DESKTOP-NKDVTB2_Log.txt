@@ -13,3 +13,37 @@ DESKTOP-NKDVTB2 2018-08-27 02:43:18 # Open connections: {"GUEST_127.0.0.1": "('1
 DESKTOP-NKDVTB2 2018-08-27 02:43:33 # Sending outbound message: {"MessageType": 5, "Broadcast": true, "BroadcastID": 47427, "SubscriptionID": 2510, "ReturnIP": "108.35.27.76", "CommandArguments": ["iexfinance", "tensorflow"], "TargetIP": "IP_ALL"}
 DESKTOP-NKDVTB2 2018-08-27 02:43:38 # Sending outbound message: {"MessageType": 7, "Broadcast": true, "BroadcastID": 347824, "TargetIP": "123.45.67.89"}
 DESKTOP-NKDVTB2 2018-08-27 02:43:43 # Sending outbound message: {"MessageType": 7, "Broadcast": true, "BroadcastID": 347824, "TargetIP": "231.54.76.98"}
+DESKTOP-NKDVTB2 2018-08-27 02:50:55 # 
+
+
+DESKTOP-NKDVTB2 2018-08-27 02:50:55 # ----------------------------------------------
+DESKTOP-NKDVTB2 2018-08-27 02:50:55 # Starting new client
+DESKTOP-NKDVTB2 2018-08-27 02:50:55 # ----------------------------------------------
+DESKTOP-NKDVTB2 2018-08-27 02:50:55 # Local Subscripctions{155924: <SendPeerCommands.SubscriptionHandler object at 0x000001817F607518>}
+DESKTOP-NKDVTB2 2018-08-27 02:50:55 # Pending Outbound Messages: ['{"MessageType": 5, "Broadcast": true, "BroadcastID": 977592, "SubscriptionID": 155924, "ReturnIP": "108.35.27.76", "CommandArguments": ["iexfinance", "tensorflow"], "TargetIP": "IP_ALL"}', '{"MessageType": 7, "Broadcast": true, "BroadcastID": 677427, "TargetIP": "123.45.67.89"}', '{"MessageType": 7, "Broadcast": true, "BroadcastID": 677427, "TargetIP": "231.54.76.98"}']
+DESKTOP-NKDVTB2 2018-08-27 02:50:55 # TCP socket created
+DESKTOP-NKDVTB2 2018-08-27 02:50:55 # Listening socket bound to port: 25700
+DESKTOP-NKDVTB2 2018-08-27 14:32:52 # 
+
+
+DESKTOP-NKDVTB2 2018-08-27 14:32:52 # ----------------------------------------------
+DESKTOP-NKDVTB2 2018-08-27 14:32:52 # Starting new client
+DESKTOP-NKDVTB2 2018-08-27 14:32:52 # ----------------------------------------------
+DESKTOP-NKDVTB2 2018-08-27 14:32:52 # Local Subscripctions: {459544: <SendPeerCommands.SubscriptionHandler object at 0x000002151CEE1F28>}
+DESKTOP-NKDVTB2 2018-08-27 14:32:52 # Pending Outbound Messages: ['{"MessageType": 5, "Broadcast": true, "BroadcastID": 44202, "SubscriptionID": 459544, "ReturnIP": "108.35.27.76", "CommandArguments": ["iexfinance", "tensorflow"], "TargetIP": "IP_ALL"}', '{"MessageType": 7, "Broadcast": true, "BroadcastID": 824789, "TargetIP": "123.45.67.89"}', '{"MessageType": 7, "Broadcast": true, "BroadcastID": 824789, "TargetIP": "231.54.76.98"}']
+DESKTOP-NKDVTB2 2018-08-27 14:32:52 # Listening socket bound to port: 25700
+DESKTOP-NKDVTB2 2018-08-27 14:33:01 # Connection established with 127.0.0.1:49730
+DESKTOP-NKDVTB2 2018-08-27 14:33:01 # New Connection object created. Starting incoming handler thread...
+DESKTOP-NKDVTB2 2018-08-27 14:33:01 # Open connections: {"GUEST_127.0.0.1": "('127.0.0.1', 49730)"}
+DESKTOP-NKDVTB2 2018-08-27 14:33:12 # Sending outbound message: {"MessageType": 5, "Broadcast": true, "BroadcastID": 44202, "SubscriptionID": 459544, "ReturnIP": "108.35.27.76", "CommandArguments": ["iexfinance", "tensorflow"], "TargetIP": "IP_ALL"}
+DESKTOP-NKDVTB2 2018-08-27 14:33:18 # Sending outbound message: {"MessageType": 7, "Broadcast": true, "BroadcastID": 824789, "TargetIP": "123.45.67.89"}
+DESKTOP-NKDVTB2 2018-08-27 14:33:23 # Sending outbound message: {"MessageType": 7, "Broadcast": true, "BroadcastID": 824789, "TargetIP": "231.54.76.98"}
+DESKTOP-NKDVTB2 2018-08-27 14:37:35 # 
+
+
+DESKTOP-NKDVTB2 2018-08-27 14:37:35 # ----------------------------------------------
+DESKTOP-NKDVTB2 2018-08-27 14:37:35 # Starting new client
+DESKTOP-NKDVTB2 2018-08-27 14:37:35 # ----------------------------------------------
+DESKTOP-NKDVTB2 2018-08-27 14:37:35 # Local Subscripctions: {408298: <SendPeerCommands.SubscriptionHandler object at 0x000001E2F32B1F98>}
+DESKTOP-NKDVTB2 2018-08-27 14:37:35 # Pending Outbound Messages: ['{"MessageType": 5, "Broadcast": true, "BroadcastID": 979180, "SubscriptionID": 408298, "ReturnIP": "108.35.27.76", "CommandArguments": ["iexfinance", "tensorflow"], "TargetIP": "IP_ALL"}', '{"MessageType": 7, "Broadcast": true, "BroadcastID": 601853, "TargetIP": "123.45.67.89"}', '{"MessageType": 7, "Broadcast": true, "BroadcastID": 601853, "TargetIP": "231.54.76.98"}']
+DESKTOP-NKDVTB2 2018-08-27 14:37:35 # Listening socket bound to port: 25700

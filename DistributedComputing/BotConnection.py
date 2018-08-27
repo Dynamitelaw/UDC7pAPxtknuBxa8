@@ -121,6 +121,7 @@ class Connection():
                 LOGPRINT(self.peerName + " >> Msg received: " + incommingMessage)
                 response = self.handleIncommingMessage(incommingMessage)
                 if (response):
+                    LOGPRINT("Responding to message")
                     self.connectionSocket.sendall(response.encode('utf-8'))
 
 
@@ -250,9 +251,14 @@ class Connection():
                     LOGPRINT(genericMessage)
                     handlerReturnValue = self.createGenericResponseMessage(messageDict, genericMessage)
 
+            else:
+                #We are not the target. Ignoring message
+                LOGPRINT("Local client not the message target. Dropping message")
+
 
             #Broadcast message if required
             if (Broadcast):
+                LOGPRINT("Broadcasting message to connected peers")
                 openConnectionsLock.acquire()
                 for connectionName in openConnections:
                     openConnections[connectionName].sendMessage(incommingMessage)
@@ -399,7 +405,6 @@ def listenForIncommingConnections():
 
     incomingHost = ''
     listen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    LOGPRINT("TCP socket created")
 
     #Tries to bind the incoming port
     try:
@@ -448,7 +453,7 @@ if __name__ == '__main__':
 
     #Populate subscriptions and outbound messages
     SendPeerCommands.setSubscritptionsAndPendingOutbounds(LocalSubscriptions, PendingOutboundMessages)
-    LOGPRINT("Local Subscripctions" + str(LocalSubscriptions))
+    LOGPRINT("Local Subscripctions: " + str(LocalSubscriptions))
     LOGPRINT("Pending Outbound Messages: " + str(PendingOutboundMessages))
 
     #Initiate and listen for connections
