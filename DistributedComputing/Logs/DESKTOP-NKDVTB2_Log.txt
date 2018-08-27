@@ -1,50 +1,15 @@
-DESKTOP-NKDVTB2 2018-08-26 18:44:12 # 
+DESKTOP-NKDVTB2 2018-08-27 02:43:13 # 
 
 
-DESKTOP-NKDVTB2 2018-08-26 18:44:12 # ----------------------------------------------
-DESKTOP-NKDVTB2 2018-08-26 18:44:12 # Starting new client
-DESKTOP-NKDVTB2 2018-08-26 18:44:12 # TCP socket created
-DESKTOP-NKDVTB2 2018-08-26 18:44:12 # Listening socket bound to port: 25700
-DESKTOP-NKDVTB2 2018-08-26 18:44:37 # Connection established with 127.0.0.1:51718
-DESKTOP-NKDVTB2 2018-08-26 18:44:37 # New Connection object created. Starting incoming handler thread...
-DESKTOP-NKDVTB2 2018-08-26 18:44:37 # Open connections: {"GUEST_51718": "('127.0.0.1', 51718)"}
-DESKTOP-NKDVTB2 2018-08-26 18:49:30 # 
-
-
-DESKTOP-NKDVTB2 2018-08-26 18:49:30 # ----------------------------------------------
-DESKTOP-NKDVTB2 2018-08-26 18:49:30 # Starting new client
-DESKTOP-NKDVTB2 2018-08-26 18:49:30 # TCP socket created
-DESKTOP-NKDVTB2 2018-08-26 18:49:30 # Listening socket bound to port: 25700
-DESKTOP-NKDVTB2 2018-08-26 18:49:35 # Connection established with 127.0.0.1:51759
-DESKTOP-NKDVTB2 2018-08-26 18:50:39 # 
-
-
-DESKTOP-NKDVTB2 2018-08-26 18:50:39 # ----------------------------------------------
-DESKTOP-NKDVTB2 2018-08-26 18:50:39 # Starting new client
-DESKTOP-NKDVTB2 2018-08-26 18:50:39 # TCP socket created
-DESKTOP-NKDVTB2 2018-08-26 18:50:39 # Listening socket bound to port: 25700
-DESKTOP-NKDVTB2 2018-08-26 18:50:44 # Connection established with 127.0.0.1:51777
-DESKTOP-NKDVTB2 2018-08-26 18:50:44 # New Connection object created. Starting incoming handler thread...
-DESKTOP-NKDVTB2 2018-08-26 18:50:44 # Open connections: {"GUEST_51777": "('127.0.0.1', 51777)"}
-DESKTOP-NKDVTB2 2018-08-26 18:51:21 # GUEST_51777 >> Msg received: b'asdads'
-DESKTOP-NKDVTB2 2018-08-26 18:51:21 # Error parsing incoming message: Expecting value: line 1 column 1 (char 0)
-DESKTOP-NKDVTB2 2018-08-26 18:51:21 # GUEST_51777 >> Msg received: b'\r\n'
-DESKTOP-NKDVTB2 2018-08-26 18:51:21 # Error parsing incoming message: Expecting value: line 1 column 1 (char 0)
-DESKTOP-NKDVTB2 2018-08-26 18:51:33 # GUEST_51777 >> Msg received: b'zxc'
-DESKTOP-NKDVTB2 2018-08-26 18:51:33 # Error parsing incoming message: Expecting value: line 1 column 1 (char 0)
-DESKTOP-NKDVTB2 2018-08-26 18:51:33 # GUEST_51777 >> Msg received: b'\r\n'
-DESKTOP-NKDVTB2 2018-08-26 18:51:33 # Error parsing incoming message: Expecting value: line 1 column 1 (char 0)
-DESKTOP-NKDVTB2 2018-08-26 23:02:45 # 
-
-
-DESKTOP-NKDVTB2 2018-08-26 23:02:45 # ----------------------------------------------
-DESKTOP-NKDVTB2 2018-08-26 23:02:45 # Starting new client
-DESKTOP-NKDVTB2 2018-08-26 23:02:45 # TCP socket created
-DESKTOP-NKDVTB2 2018-08-26 23:02:45 # Listening socket bound to port: 25700
-DESKTOP-NKDVTB2 2018-08-26 23:02:59 # 
-
-
-DESKTOP-NKDVTB2 2018-08-26 23:02:59 # ----------------------------------------------
-DESKTOP-NKDVTB2 2018-08-26 23:02:59 # Starting new client
-DESKTOP-NKDVTB2 2018-08-26 23:02:59 # TCP socket created
-DESKTOP-NKDVTB2 2018-08-26 23:02:59 # Listening socket bound to port: 25700
+DESKTOP-NKDVTB2 2018-08-27 02:43:13 # ----------------------------------------------
+DESKTOP-NKDVTB2 2018-08-27 02:43:13 # Starting new client
+DESKTOP-NKDVTB2 2018-08-27 02:43:13 # Local Subscripctions{2510: <SendPeerCommands.SubscriptionHandler object at 0x00000281D8963F98>}
+DESKTOP-NKDVTB2 2018-08-27 02:43:13 # Pending Outbound Messages: ['{"MessageType": 5, "Broadcast": true, "BroadcastID": 47427, "SubscriptionID": 2510, "ReturnIP": "108.35.27.76", "CommandArguments": ["iexfinance", "tensorflow"], "TargetIP": "IP_ALL"}', '{"MessageType": 7, "Broadcast": true, "BroadcastID": 347824, "TargetIP": "123.45.67.89"}', '{"MessageType": 7, "Broadcast": true, "BroadcastID": 347824, "TargetIP": "231.54.76.98"}']
+DESKTOP-NKDVTB2 2018-08-27 02:43:13 # TCP socket created
+DESKTOP-NKDVTB2 2018-08-27 02:43:13 # Listening socket bound to port: 25700
+DESKTOP-NKDVTB2 2018-08-27 02:43:18 # Connection established with 127.0.0.1:54720
+DESKTOP-NKDVTB2 2018-08-27 02:43:18 # New Connection object created. Starting incoming handler thread...
+DESKTOP-NKDVTB2 2018-08-27 02:43:18 # Open connections: {"GUEST_127.0.0.1": "('127.0.0.1', 54720)"}
+DESKTOP-NKDVTB2 2018-08-27 02:43:33 # Sending outbound message: {"MessageType": 5, "Broadcast": true, "BroadcastID": 47427, "SubscriptionID": 2510, "ReturnIP": "108.35.27.76", "CommandArguments": ["iexfinance", "tensorflow"], "TargetIP": "IP_ALL"}
+DESKTOP-NKDVTB2 2018-08-27 02:43:38 # Sending outbound message: {"MessageType": 7, "Broadcast": true, "BroadcastID": 347824, "TargetIP": "123.45.67.89"}
+DESKTOP-NKDVTB2 2018-08-27 02:43:43 # Sending outbound message: {"MessageType": 7, "Broadcast": true, "BroadcastID": 347824, "TargetIP": "231.54.76.98"}

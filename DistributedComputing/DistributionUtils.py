@@ -61,6 +61,31 @@ def DictionaryToJson(dictionary):
     return json.dumps(dictionary)
 
 
+def createCommandMessages(command, commandArguments=False, subscriptionID=False, broadcastID=False, targets=[IP_ALL_STR]):
+    '''
+    Returns a list of json message strings corresponding to the command parameters
+    '''
+    commandMessageDict = {}
+    commandMessageDict["MessageType"] = command.value
+    commandMessageDict["Broadcast"] = bool(broadcastID)
+    if (broadcastID):
+        commandMessageDict["BroadcastID"] = broadcastID
+    if (subscriptionID):
+        commandMessageDict["SubscriptionID"] = subscriptionID
+        commandMessageDict["ReturnIP"] = PUBLIC_IP
+    if (commandArguments):
+        commandMessageDict["CommandArguments"] = commandArguments
+
+
+    createdMessagesList = []
+    for target in targets:
+        commandMessageDict["TargetIP"] = target
+        commandJsonMessage = DictionaryToJson(commandMessageDict)
+        createdMessagesList.append(commandJsonMessage)
+
+    return createdMessagesList
+
+
 def isValidJson(JsonString):
     '''
     Checks if the passed string is a valid Json

@@ -5,15 +5,19 @@ Starts a peer client on this machine when run
 '''
 
 #External Imports
+import sys
 import socket
 import threading
 from time import sleep
 from random import randint
 
 #Custom Imports
+sys.path.append("./")
+import SystemPathImports
 from DistributionUtils import *
 from DistributedFunctions import *
 from NetworkDefinitions import *
+import SendPeerCommands
 
 
 #Define global variables
@@ -25,6 +29,8 @@ openConnectionsLock = threading.Lock()
 
 LocalSubscriptions = {}
 localSubscriptionsLock = threading.Lock()
+
+PendingOutboundMessages = []
 
 
 class Connection():
@@ -91,10 +97,14 @@ class Connection():
             incommingMessage = NULL_STR
             try:
                 incommingMessage = str(self.connectionSocket.recv(self.bufferSize))
+                firstCharacter = incommingMessage[0]
 
                 while True:
                     if (isValidJson(incommingMessage)):
                         #Entire message has been recieved
+                        break
+                    elif (firstCharacter != "{"):
+                        #This is not an incoming json. Don't wait for more data
                         break
                     else:
                         #Missing part of message
@@ -169,7 +179,7 @@ class Connection():
         if (not Broadcast) or (Broadcast and (not (BroadcastID in self.relayedBroadcasts))):  #Only handle if this message is not a broadcast or it IS a broadcast but we haven't handled it yet
             #Handle message if we're the target
             if (WeAreTarget):
-                #NOTE: If you want to add a new function command to the bot connection, you must handle it here <COMENTFLAG=ADDING_NEW_BOT_FUNCTIONALITY>
+                #If you want to add a new function command to the bot connection, you must handle it here <COMENTFLAG=ADDING_NEW_BOT_FUNCTIONALITY>
 
                 #HEARBEAT_MESSAGE
                 if (MessageType == PEER_MESSAGE.HEARBEAT_MESSAGE):
@@ -258,7 +268,7 @@ class Connection():
             return
 
 
-    def sendMessage(message):
+    def sendMessage(self, message):
         '''
         Send the passed message out the connection socket
         '''
@@ -320,7 +330,7 @@ class Connection():
         '''
         return (str(self.peerAddress))
     
-    ### End Connection class
+    # End Connection class
 #=======================================================================
         
 
@@ -414,15 +424,31 @@ def listenForIncommingConnections():
         LOGPRINT("Open connections: " + DictionaryToString(openConnections))
 
 
+def sendPendingMessages():
+    '''
+    Broadcast all messages currently in PendingOutboundMessages list
+    '''
+    for message in PendingOutboundMessages:
+        for connectionName in openConnections:
+            connectionObject = openConnections[connectionName]
+            LOGPRINT("Sending outbound message: " + message)
+            connectionObject.sendMessage(message)
+        sleep(POST_COMMAND_SLEEP)
+
+
 if __name__ == '__main__':
     LOGPRINT("\n\n")
     LOGPRINT("----------------------------------------------")
     LOGPRINT("Starting new client")
     updateLocalMappings()
     updatePeerMappings(peerMappings)
+    SendPeerCommands.setSubscritptionsAndPendingOutbounds(LocalSubscriptions, PendingOutboundMessages)
+    LOGPRINT("Local Subscripctions" + str(LocalSubscriptions))
+    LOGPRINT("Pending Outbound Messages: " + str(PendingOutboundMessages))
     connectToPeers()
-    listenForIncommingConnections()
+    listeningThread = threading.Thread(target=listenForIncommingConnections, args=())
+    listeningThread.start()
     sleep(SEND_PENDINGS_DELAY)
-    #sendPendingMessages()
+    sendPendingMessages()
 
 

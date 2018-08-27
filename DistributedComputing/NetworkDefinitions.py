@@ -40,32 +40,40 @@ All messages sent between peers are in the following JSON format
 #Enum for accepted PeerMessages
 @unique
 class PEER_MESSAGE(Enum):
-    #NOTE: If you want to add a new message type to the bot connection, you must add the command type to this enum <COMENTFLAG=ADDING_NEW_BOT_FUNCTIONALITY>
+    #If you want to add a new message type to the bot connection, you must add the command type to this enum <COMENTFLAG=ADDING_NEW_BOT_FUNCTIONALITY>
     #NOTE: DO NOT CHANGE THESE NUMBERS AFTER THEY HAVE BEEN DEFINED AND PUSHED
     HEARBEAT_MESSAGE = 0
         #Heartbeat message sent to peer to let them know we're still alive
         #args = NA
+        #results = NONE
     GENERIC_MESSAGE = 1
         #Generic message sent to peer to print to logs
         #args = NA
+        #results = NONE
     RETURN_MESSAGE = 2
         #Message sent to indicate that the message contains a return value
         #args = NA
+        #results = NONE
     UPDATE_PROJECT_COMMAND = 3
         #Peer will do a git pull to update their project files, then restart
         #args = NA
+        #results = NONE
     PUSH_PROJECT_COMMAND = 4
         #Peer will do a git push to update the repo with changes
         #args = NA
+        #results = NONE
     INSTALL_PACKAGES_COMMAND = 5
         #Peer will pip install specified packages, then restart
         #args = [string packageName1, string packageName2, ...]
+        #results = [resultPackage1, resultsPackage2, ...]
     KILL_CLIENT_COMMAND = 6
         #Peer will kill itself, and end all python processes
         #args = [bool restartAfterKill]
+        #results = NONE
     CLEAR_LOGS_COMMAND = 7
         #Peer will delete all Logs in their Logs folder
         #args = NA
+        #results = NONE
 
 
 #Networking globals
@@ -74,11 +82,13 @@ PUBLIC_IP = json.load(urlopen('https://api.ipify.org/?format=json'))['ip']
 PORT_LISTEN = 25700
 BUFFER_SIZE = 4096
 MAX_BROADCAST_ID = 999999
+MAX_SUBSCRIPTION_ID = 999999
 
 #Timeout globals
 HEARBEAT_INTERVAL = 10
 OUTBOUND_RETRY_INTERVAL = 60
 SEND_PENDINGS_DELAY = 20
+POST_COMMAND_SLEEP = 5
 
 #Misc globals
 NULL_STR = "NULL"
