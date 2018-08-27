@@ -440,6 +440,7 @@ if __name__ == '__main__':
     LOGPRINT("\n\n")
     LOGPRINT("----------------------------------------------")
     LOGPRINT("Starting new client")
+    LOGPRINT("----------------------------------------------")
 
     #Update Mappings
     updateLocalMappings()
