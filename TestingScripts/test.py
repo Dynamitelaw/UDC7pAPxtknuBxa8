@@ -24,7 +24,8 @@ import utils
 import PandaDatabase as database
 
 #Global Variables
-daysToPass = 2
+daysToPass = 15
+NNModel = False
 
 # baseline model
 def create_baseline():
@@ -37,6 +38,8 @@ def create_baseline():
     model.add(Dense(1, kernel_initializer='normal', activation='sigmoid'))
     # Compile model
     model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+    global NNModel
+    NNModel = model
     return model
 
 
@@ -75,13 +78,13 @@ def addDatapointsFromStock(ticker):
         return DataPoints
 
     except Exception as e:
-        print(e)
+        #print(e)
         return False
 
 
 if __name__ == '__main__':
     #Populate datapoints list
-    numberOfStocks = 100
+    numberOfStocks = 600
     tickerList = database.getTickerList(randomize=True)[0:numberOfStocks]
 
     print("Number of stocks for training: " + str(numberOfStocks))
@@ -115,12 +118,12 @@ if __name__ == '__main__':
     # Evaluate model using standardized dataset. 
     # https://www.kaggle.com/parthsuresh/binary-classifier-using-keras-97-98-accuracy
 
-    epochs = 25
+    epochs = 100
 
     print("\n===================================")
     print("Evaluating network...")
 
-    avgTrainingTimePerDatapoint = 0.045
+    avgTrainingTimePerDatapoint = 0.0012*daysToPass + 0.034
     eta = int((len(allDataPoints) * epochs * avgTrainingTimePerDatapoint)/1000) + 30
     etaString = time.strftime('%H:%M:%S', time.gmtime(eta))
     print("ETA: " + etaString + "\n")
@@ -134,9 +137,11 @@ if __name__ == '__main__':
     results = cross_val_score(pipeline, X, Y, cv=kfold)
     endTime = time.time()
 
+    NNModel.save("Selectors\\Models\\TestModel.h5")
+
     print("\nResults: %.2f%% (%.2f%%)" % (results.mean()*100, results.std()*100))
 
-    trainingTimePerDatapoint = (1000*(endTime - startTime)) / (len(allDataPoints)*epochs)
+    trainingTimePerDatapoint = (1000*(endTime - startTime - 30)) / (len(allDataPoints)*epochs)
     print ("Total training time: " + time.strftime('%H:%M:%S', time.gmtime(endTime - startTime)))
     print("Training time per datapoint (per epoch): " + str(trainingTimePerDatapoint) + " ms")
     

@@ -45,8 +45,9 @@ class Connection():
         self.bufferSize = bufferSize
         self.peerAddress = addr
         self.peerIp = self.peerAddress[0] 
-        self.peerSocket = self.peerAddress[1] 
+        self.peerPort = self.peerAddress[1] 
         self.heartBeatRunning = False
+        self.hearBeatEnabled = True
         self.peerName = "null"
         self.relayedBroadcasts = []
         self.createHeartbeatMessage()
@@ -62,17 +63,18 @@ class Connection():
             if (mappings["PublicIp"] == self.peerAddress[0]):
                 #IP address matches. Associate connection with this peer
                 foundMatchingHostname = True
-                self.peerName = peerHostname
+                self.peerName = peerHostname + str(self.peerPort)
 
                 openConnectionsLock.acquire()
                 openConnections[peerHostname] = self
                 openConnectionsLock.release()
 
                 break
+        peerMappingsLock.release()
 
         if (not foundMatchingHostname):
             #This is not a recognized peer. Associate with guest session
-            guestHostname = "GUEST_" + str(self.peerIp)
+            guestHostname = "GUEST_" + str(self.peerIp) + ":" + str(self.peerPort)
             self.peerName = guestHostname
             openConnectionsLock.acquire()
             openConnections[guestHostname] = self
@@ -89,7 +91,7 @@ class Connection():
         Handles incomming messages
         '''
         #Start a heartbeat thread for this connection
-        if (not self.heartBeatRunning):
+        if ((not self.heartBeatRunning) and self.hearBeatEnabled):
             heartbeatThread = threading.Thread(target=self.startHeatbeatThread,args=(self.connectionSocket,))
             heartbeatThread.start()
 
@@ -112,17 +114,19 @@ class Connection():
                         incommingMessage += str(self.connectionSocket.recv(self.bufferSize))
 
             except Exception as e:
-                LOGPRINT(str(self.address) + " socket error: " + str(e))
-                LOGPRINT("Closing socket" + str(self.address))
+                LOGPRINT(str("("+self.peerName+")") + " SOCKET ERROR: " + str(e))
+                LOGPRINT("("+self.peerName+")" + " Closing socket " + str(self.peerAddress))
                 del openConnections[self.peerName]
+                LOGPRINT("Open connections: " + DictionaryToString(openConnections))
                 return
 
             if (incommingMessage != NULL_STR):
-                LOGPRINT(self.peerName + " >> Msg received: " + incommingMessage)
-                response = self.handleIncommingMessage(incommingMessage)
-                if (response):
-                    LOGPRINT("Responding to message")
-                    self.connectionSocket.sendall(response.encode('utf-8'))
+                if (incommingMessage != "b''"):  #This message seems to be sent repeatedly whenever the peer closes the connection
+                    LOGPRINT("("+self.peerName+")" + " >> Msg received: " + incommingMessage)
+                    response = self.handleIncommingMessage(incommingMessage)
+                    if (response):
+                        LOGPRINT("("+self.peerName+")" + " Responding to message")
+                        self.connectionSocket.sendall(response.encode('utf-8'))
 
 
     def createHeartbeatMessage(self):
@@ -145,9 +149,12 @@ class Connection():
         Starts a heartbeat thread with the connection to tell the other party we're still alive
         '''
         self.heartBeatRunning = True
-        while True:
-            connection.sendall(self.heartbeatMessage.encode('utf-8'))
-            sleep(HEARBEAT_INTERVAL)
+        try:
+            while True:
+                connection.sendall(self.heartbeatMessage.encode('utf-8'))
+                sleep(HEARBEAT_INTERVAL)
+        except:
+            pass
 
 
     def handleIncommingMessage(self, incommingMessage):
@@ -161,8 +168,8 @@ class Connection():
         try:
             messageDict = parseIncomingMessage(incommingMessage)
         except Exception as e:
-            LOGPRINT("Error parsing incoming message: " + str(e))
-            return("ERROR")
+            LOGPRINT("("+self.peerName+")" + " ERROR parsing incoming message: " + str(e))
+            return False
 
         MessageType = messageDict["MessageType"]
         Broadcast = messageDict["Broadcast"]
@@ -188,9 +195,9 @@ class Connection():
                 #GENERIC_MESSAGE
                 elif (MessageType == PEER_MESSAGE.GENERIC_MESSAGE):
                     if ("GenericMessage" in messageDict):
-                        LOGPRINT(messageDict["GenericMessage"])
+                        LOGPRINT("("+self.peerName+")" + " " + str(messageDict["GenericMessage"]))
                     else:
-                        LOGPRINT("Format error: Missing \"GenericMessage\"")
+                        LOGPRINT("("+self.peerName+")" + " FORMAT ERROR: Missing \"GenericMessage\"")
                 #RETURN_MESSAGE
                 elif (MessageType == PEER_MESSAGE.RETURN_MESSAGE):
                     if ("ReturnValues" in messageDict):
@@ -206,11 +213,11 @@ class Connection():
                                     returnDict = messageDict.copy()
                                     subscriptionHandler.handleReturnMessage(returnDict)
                                 except Exception as e:
-                                    LOGPRINT("Subscription handler error: " + str(e))
+                                    LOGPRINT("("+self.peerName+")" + " Subscription handler error: " + str(e))
 
                             localSubscriptionsLock.release()
                     else:
-                        LOGPRINT("Format error: Missing \"ReturnValues\"")
+                        LOGPRINT("("+self.peerName+")" + " FORMAT ERROR: Missing \"ReturnValues\"")
                 #UPDATE_PROJECT_COMMAND
                 elif (MessageType == PEER_MESSAGE.UPDATE_PROJECT_COMMAND):
                     updateCodebase()
@@ -225,9 +232,9 @@ class Connection():
 
                         handlerReturnValue = self.createCommandResponseMessage(messageDict, commandSuccess, results)
                     else:
-                        LOGPRINT("Format error: Missing \"CommandArguments\"")
+                        LOGPRINT("("+self.peerName+")" + " FORMAT ERROR: Missing \"CommandArguments\"")
                         commandSuccess = False
-                        results = ["Format error: Missing \"CommandArguments\""]
+                        results = ["FORMAT ERROR: Missing \"CommandArguments\""]
 
                         handlerReturnValue = self.createCommandResponseMessage(messageDict, commandSuccess, results)
                 #KILL_CLIENT_COMMAND
@@ -236,9 +243,9 @@ class Connection():
                         restartAfterKill = messageDict["CommandArguments"][0]
                         kill(restartAfterKill)
                     else:
-                        LOGPRINT("Format error: Missing \"CommandArguments\"")
+                        LOGPRINT("("+self.peerName+")" + " FORMAT ERROR: Missing \"CommandArguments\"")
                         commandSuccess = False
-                        results = ["Format error: Missing \"CommandArguments\""]
+                        results = ["FORMAT ERROR: Missing \"CommandArguments\""]
 
                         handlerReturnValue = self.createCommandResponseMessage(messageDict, commandSuccess, results)
                 #CLEAR_LOGS_COMMAND
@@ -248,12 +255,12 @@ class Connection():
                 #URECOGNIZED MESSAGE TYPE
                 else:
                     genericMessage = "Unrecongnized message type: " + str(MessageType)
-                    LOGPRINT(genericMessage)
+                    LOGPRINT("("+self.peerName+") " + genericMessage)
                     handlerReturnValue = self.createGenericResponseMessage(messageDict, genericMessage)
 
             else:
                 #We are not the target. Ignoring message
-                LOGPRINT("Local client not the message target. Dropping message")
+                LOGPRINT("("+self.peerName+")" + " Local client not the message target. Dropping message")
 
 
             #Broadcast message if required
@@ -271,7 +278,7 @@ class Connection():
         if (handlerReturnValue):
             return handlerReturnValue
         else:
-            return
+            return False
 
 
     def sendMessage(self, message):
@@ -463,6 +470,6 @@ if __name__ == '__main__':
 
     #Send pending outbound messages
     sleep(SEND_PENDINGS_DELAY)
-    sendPendingMessages()
+    #sendPendingMessages()
 
 

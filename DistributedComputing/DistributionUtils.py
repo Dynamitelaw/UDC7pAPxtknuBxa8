@@ -48,7 +48,9 @@ def DictionaryToString(dictionary):
         outputString += '"' + str(dictionary[key]) + '"'
         outputString += ","
 
-    outputString = outputString[0:-1]
+    if (len(outputString) > 2):
+        outputString = outputString[0:-1]
+        
     outputString += "}"
 
     return outputString
