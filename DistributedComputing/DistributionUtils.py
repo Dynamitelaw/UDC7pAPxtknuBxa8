@@ -12,7 +12,7 @@ import threading
 import json
 import os
 
-#Custim Imports
+#Custom Imports
 from NetworkDefinitions import *
 
 
@@ -50,7 +50,7 @@ def DictionaryToString(dictionary):
 
     if (len(outputString) > 2):
         outputString = outputString[0:-1]
-        
+
     outputString += "}"
 
     return outputString

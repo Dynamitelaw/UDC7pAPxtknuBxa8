@@ -470,6 +470,6 @@ if __name__ == '__main__':
 
     #Send pending outbound messages
     sleep(SEND_PENDINGS_DELAY)
-    #sendPendingMessages()
+    sendPendingMessages()
 
 

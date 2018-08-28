@@ -24,7 +24,7 @@ import utils
 import PandaDatabase as database
 
 #Global Variables
-daysToPass = 15
+daysToPass = 10
 NNModel = False
 
 # baseline model
@@ -84,7 +84,7 @@ def addDatapointsFromStock(ticker):
 
 if __name__ == '__main__':
     #Populate datapoints list
-    numberOfStocks = 600
+    numberOfStocks = 2000
     tickerList = database.getTickerList(randomize=True)[0:numberOfStocks]
 
     print("Number of stocks for training: " + str(numberOfStocks))
@@ -131,7 +131,7 @@ if __name__ == '__main__':
     startTime = time.time()
     estimators = []
     estimators.append(('standardize', StandardScaler()))
-    estimators.append(('mlp', KerasClassifier(build_fn=create_baseline, epochs=epochs, batch_size=2000, verbose=0)))
+    estimators.append(('mlp', KerasClassifier(build_fn=create_baseline, epochs=epochs, batch_size=2000/daysToPass, verbose=0)))
     pipeline = Pipeline(estimators)
     kfold = StratifiedKFold(n_splits=10, shuffle=True)
     results = cross_val_score(pipeline, X, Y, cv=kfold)
@@ -144,6 +144,7 @@ if __name__ == '__main__':
     trainingTimePerDatapoint = (1000*(endTime - startTime - 30)) / (len(allDataPoints)*epochs)
     print ("Total training time: " + time.strftime('%H:%M:%S', time.gmtime(endTime - startTime)))
     print("Training time per datapoint (per epoch): " + str(trainingTimePerDatapoint) + " ms")
+    utils.emitAsciiBell()
     
     
     
