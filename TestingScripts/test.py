@@ -131,13 +131,13 @@ if __name__ == '__main__':
     startTime = time.time()
     estimators = []
     estimators.append(('standardize', StandardScaler()))
-    estimators.append(('mlp', KerasClassifier(build_fn=create_baseline, epochs=epochs, batch_size=2000/daysToPass, verbose=0)))
+    estimators.append(('mlp', KerasClassifier(build_fn=create_baseline, epochs=epochs, batch_size=int(2000/daysToPass), verbose=0)))
     pipeline = Pipeline(estimators)
     kfold = StratifiedKFold(n_splits=10, shuffle=True)
     results = cross_val_score(pipeline, X, Y, cv=kfold)
     endTime = time.time()
 
-    NNModel.save("Selectors\\Models\\TestModel.h5")
+    NNModel.save("Selectors\\Models\\TestModel_10D.h5")
 
     print("\nResults: %.2f%% (%.2f%%)" % (results.mean()*100, results.std()*100))
 
