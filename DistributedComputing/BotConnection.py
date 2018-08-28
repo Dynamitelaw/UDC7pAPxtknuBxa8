@@ -64,6 +64,7 @@ class Connection():
                 #IP address matches. Associate connection with this peer
                 foundMatchingHostname = True
                 self.peerName = peerHostname + str(self.peerPort)
+                self.isKnownPeer = True
 
                 openConnectionsLock.acquire()
                 openConnections[peerHostname] = self
@@ -76,6 +77,7 @@ class Connection():
             #This is not a recognized peer. Associate with guest session
             guestHostname = "GUEST_" + str(self.peerIp) + ":" + str(self.peerPort)
             self.peerName = guestHostname
+            self.isKnownPeer = False
             openConnectionsLock.acquire()
             openConnections[guestHostname] = self
             openConnectionsLock.release()
@@ -192,12 +194,14 @@ class Connection():
                 #HEARBEAT_MESSAGE
                 if (MessageType == PEER_MESSAGE.HEARBEAT_MESSAGE):
                     pass
+                
                 #GENERIC_MESSAGE
                 elif (MessageType == PEER_MESSAGE.GENERIC_MESSAGE):
                     if ("GenericMessage" in messageDict):
                         LOGPRINT("("+self.peerName+")" + " " + str(messageDict["GenericMessage"]))
                     else:
                         LOGPRINT("("+self.peerName+")" + " FORMAT ERROR: Missing \"GenericMessage\"")
+
                 #RETURN_MESSAGE
                 elif (MessageType == PEER_MESSAGE.RETURN_MESSAGE):
                     if ("ReturnValues" in messageDict):
@@ -218,39 +222,65 @@ class Connection():
                             localSubscriptionsLock.release()
                     else:
                         LOGPRINT("("+self.peerName+")" + " FORMAT ERROR: Missing \"ReturnValues\"")
+
                 #UPDATE_PROJECT_COMMAND
                 elif (MessageType == PEER_MESSAGE.UPDATE_PROJECT_COMMAND):
                     updateCodebase()
+
                 #PUSH_PROJECT_COMMAND
                 elif (MessageType == PEER_MESSAGE.PUSH_PROJECT_COMMAND):
                     pushCodebase()
+
                 #INSTALL_PACKAGES_COMMAND
                 elif (MessageType == PEER_MESSAGE.INSTALL_PACKAGES_COMMAND):
-                    if ("CommandArguments" in messageDict):
-                        packagesToInstall = messageDict["CommandArguments"]
-                        commandSuccess, results = installPackages(packagesToInstall)
+                    #Only accept this command from verified peers
+                    if (self.isKnownPeer):
+                        if ("CommandArguments" in messageDict):
+                            packagesToInstall = messageDict["CommandArguments"]
+                            commandSuccess, results = installPackages(packagesToInstall)
 
-                        handlerReturnValue = self.createCommandResponseMessage(messageDict, commandSuccess, results)
+                            handlerReturnValue = self.createCommandResponseMessage(messageDict, commandSuccess, results)
+                        else:
+                            LOGPRINT("("+self.peerName+")" + " FORMAT ERROR: Missing \"CommandArguments\"")
+                            commandSuccess = False
+                            results = ["FORMAT ERROR: Missing \"CommandArguments\""]
+
+                            handlerReturnValue = self.createCommandResponseMessage(messageDict, commandSuccess, results)
                     else:
-                        LOGPRINT("("+self.peerName+")" + " FORMAT ERROR: Missing \"CommandArguments\"")
-                        commandSuccess = False
-                        results = ["FORMAT ERROR: Missing \"CommandArguments\""]
+                        ErrorString = "ERROR Command unavailible for unverified peers"
+                        LOGPRINT("("+self.peerName+") " + ErrorString)
+                        Broadcast = False
+                        handlerReturnValue = self.createGenericResponseMessage(messageDict, ErrorString)
 
-                        handlerReturnValue = self.createCommandResponseMessage(messageDict, commandSuccess, results)
                 #KILL_CLIENT_COMMAND
                 elif (MessageType == PEER_MESSAGE.KILL_CLIENT_COMMAND):
-                    if ("CommandArguments" in messageDict):
-                        restartAfterKill = messageDict["CommandArguments"][0]
-                        kill(restartAfterKill)
-                    else:
-                        LOGPRINT("("+self.peerName+")" + " FORMAT ERROR: Missing \"CommandArguments\"")
-                        commandSuccess = False
-                        results = ["FORMAT ERROR: Missing \"CommandArguments\""]
+                    #Only accept this command from verified peers
+                    if (self.isKnownPeer):
+                        if ("CommandArguments" in messageDict):
+                            restartAfterKill = messageDict["CommandArguments"][0]
+                            kill(restartAfterKill)
+                        else:
+                            LOGPRINT("("+self.peerName+")" + " FORMAT ERROR: Missing \"CommandArguments\"")
+                            commandSuccess = False
+                            results = ["FORMAT ERROR: Missing \"CommandArguments\""]
 
-                        handlerReturnValue = self.createCommandResponseMessage(messageDict, commandSuccess, results)
+                            handlerReturnValue = self.createCommandResponseMessage(messageDict, commandSuccess, results)
+                    else:
+                        ErrorString = "ERROR Command unavailible for unverified peers"
+                        LOGPRINT("("+self.peerName+") " + ErrorString)
+                        Broadcast = False
+                        handlerReturnValue = self.createGenericResponseMessage(messageDict, ErrorString)
+
                 #CLEAR_LOGS_COMMAND
                 elif (MessageType == PEER_MESSAGE.CLEAR_LOGS_COMMAND):
-                    clearLogFolder()
+                    #Only accept this command from verified peers
+                    if (self.isKnownPeer):
+                        clearLogFolder()
+                    else:
+                        ErrorString = "ERROR Command unavailible for unverified peers"
+                        LOGPRINT("("+self.peerName+") " + ErrorString)
+                        Broadcast = False
+                        handlerReturnValue = self.createGenericResponseMessage(messageDict, ErrorString)
 
                 #URECOGNIZED MESSAGE TYPE
                 else:
