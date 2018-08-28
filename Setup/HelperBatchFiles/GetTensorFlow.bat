@@ -33,6 +33,22 @@ copy Installers\cuda\bin\cudnn64_7.dll to C:\Program Files\NVIDIA GPU Computing 
 copy Installers\cuda\ include\cudnn.h to C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\include.
 copy Installers\cuda\lib\x64\cudnn.lib to C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\lib\x64.
 
+echo *******************
+echo You need to add CUDA to your path variables
+echo .
+control panel
+echo Go to System and Security, System, Advanced System Settings
+echo Click Environment Variables at the bottom of the window.
+echo Ensure the following values are set:
+echo            Variable Name: CUDA_PATH 
+echo            Variable Value: C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0
+echo .
+echo            *NOTE: If Tensorflow cannot find the location of a dll file, also add the following entry to your Path table
+echo            C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\bin
+echo .
+echo *******************
+set /p done="Press ENTER when you're finished"
+
 echo Installing GPU version of Tensorflow...
 pip3 install --upgrade tensorflow-gpu
 
