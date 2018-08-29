@@ -8,6 +8,7 @@ and to analyze the results of each simulation.
 #External Modules
 import sys
 import os
+import time
 from shutil import copyfile
 from multiprocessing import Pool
 import datetime
@@ -16,11 +17,13 @@ import pandas as pd
 #Custom Modules
 import SystemPathImports
 import utils
+from utils import Silence
 from TradingAccount import tradingAccount
 import PandaDatabase as database
 from TestSelector import TestSelector
 import ResultsPlotter as rplotter
 from SVMSelector import SVMSelector
+from MehSelector import MehSelector
 
 
 #=============================================================================
@@ -394,6 +397,8 @@ def simulationWrapper(dateRange, startingDeposit, selectorName, sampleSize, cust
         selector = TestSelector()
     elif (selectorName == "SVMSelector"):
         selector = SVMSelector()
+    elif (selectorName == "MehSelector"):
+        selector = MehSelector()
     
     else:
         raise ValueError ("{} is not a valid selector name".format(selectorName))
@@ -416,26 +421,29 @@ def simulationWrapper(dateRange, startingDeposit, selectorName, sampleSize, cust
 #=============================================================================
 if __name__ == '__main__':
     
-    numberOfSimulations = 2
-    selectorName = "TestSelector"
+    # numberOfSimulations = 2
+    # selectorName = "MehSelector"
     dateRange = ["2017-01-03","2017-02-02"]
-    startingBalance = 10000
+    startingBalance = 1000000
 
-    results = runMultiSim(numberOfSimulations, selectorName, dateRange, startingBalance, sampleSize=1000, preloadToMemory=True,  comission=0)
-    utils.emitAsciiBell()
-    rplotter.plotMultipleResults(results)
-    
-    
-    # selector = SVMSelector()  #NOTE Just put your selector here Cole
-    # account = tradingAccount()
-
-    # runSimulation(account, dateRange, startingBalance, selector, sampleSize=400, preloadToMemory=True, PrintToTerminal=True,comission=0)
-    # results = analyzeData(account.getHistory(), account.getLogs())
-    # saveResults(results, selector.getName(), account.timeSaved)
-
+    # results = runMultiSim(numberOfSimulations, selectorName, dateRange, startingBalance, sampleSize=1000, preloadToMemory=True,  comission=0)
     # utils.emitAsciiBell()
+    # rplotter.plotMultipleResults(results)
+    
+    
+    selector = MehSelector()  #NOTE Just put your selector here Cole
+    account = tradingAccount()
 
-    # rplotter.plotResults(results)
+    startTime = time.time()
+    runSimulation(account, dateRange, startingBalance, selector, sampleSize=4000, preloadToMemory=True, PrintToTerminal=True,comission=0)
+    results = analyzeData(account.getHistory(), account.getLogs())
+    saveResults(results, selector.getName(), account.timeSaved)
+    endTime = time.time()
+    print ("Total simulation time: " + time.strftime('%H:%M:%S', time.gmtime(endTime - startTime)))
+
+    utils.emitAsciiBell()
+
+    rplotter.plotResults(results)
   
 
     

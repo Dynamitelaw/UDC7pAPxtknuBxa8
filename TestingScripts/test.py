@@ -83,6 +83,15 @@ def addDatapointsFromStock(ticker):
 
 
 if __name__ == '__main__':
+    stockData = database.getDataframe("TSLA")
+    print(stockData)
+    print(stockData["2018-06-14"])
+    i = stockData.index.get_loc("2018-06-14")[0]
+    print(i)
+    data = stockData.iloc[i:i+90]["Profit Speed"]
+    print(data)
+    print(len(data))
+    '''
     #Populate datapoints list
     numberOfStocks = 2000
     tickerList = database.getTickerList(randomize=True)[0:numberOfStocks]
@@ -137,7 +146,7 @@ if __name__ == '__main__':
     results = cross_val_score(pipeline, X, Y, cv=kfold)
     endTime = time.time()
 
-    NNModel.save("Selectors\\Models\\TestModel_10D.h5")
+    NNModel.save("Selectors\\Models\\TestModel_10Db.h5")
 
     print("\nResults: %.2f%% (%.2f%%)" % (results.mean()*100, results.std()*100))
 
@@ -145,6 +154,7 @@ if __name__ == '__main__':
     print ("Total training time: " + time.strftime('%H:%M:%S', time.gmtime(endTime - startTime)))
     print("Training time per datapoint (per epoch): " + str(trainingTimePerDatapoint) + " ms")
     utils.emitAsciiBell()
+    '''
     
     
     
