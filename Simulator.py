@@ -423,8 +423,8 @@ if __name__ == '__main__':
     
     # numberOfSimulations = 2
     # selectorName = "MehSelector"
-    dateRange = ["2017-01-03","2017-02-02"]
-    startingBalance = 1000000
+    dateRange = ["2017-01-03","2017-02-07"]
+    startingBalance = 100000
 
     # results = runMultiSim(numberOfSimulations, selectorName, dateRange, startingBalance, sampleSize=1000, preloadToMemory=True,  comission=0)
     # utils.emitAsciiBell()

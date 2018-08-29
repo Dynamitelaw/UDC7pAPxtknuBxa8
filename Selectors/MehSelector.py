@@ -133,14 +133,27 @@ class MehSelector(stockSelector):
             allDataPoints = []
             for dataPoints in results:
                 if (dataPoints != False):
-                    if (dataPoints[1].shape[0] == 70):
-                        allDataPoints.append(dataPoints)
+                    allDataPoints.append(dataPoints)
 
-            InputData = [[i[1] for i in allDataPoints]]
+            if (len(allDataPoints) == 1):
+                InputData = allDataPoints[0][1]
+            elif (len(allDataPoints) == 0):
+                return []
+            else:
+                InputData = [[i[1] for i in allDataPoints]]
+            
             InputTickers = [i[0] for i in allDataPoints]
             
-            #Predict profit speed
-            positiveProbabilities = self.ProfitSpeedFilterModel.predict(InputData)
+            try:
+                #Predict profit speed
+                positiveProbabilities = self.ProfitSpeedFilterModel.predict(InputData)
+            except Exception as e:
+                print("#################################")
+                print(e)
+                print(InputData)
+                print("#################################")
+                return []
+
 
             stocksToConsider = []
 
@@ -245,6 +258,14 @@ def joeysPaintFilter(args):
         pass
     else:
         #Doesn't pass the slope piecewise filter
+        return False
+
+    twoDayDiscreteMomentum = float(stockData["2D Discrete Moementum"])
+    fiveDayDiscreteMomentum = float(stockData["5D Discrete Moementum"])
+    
+    if ((fiveDayDiscreteMomentum < 3) and (twoDayDiscreteMomentum > 0)):
+        pass
+    else:
         return False
 
     return ticker
