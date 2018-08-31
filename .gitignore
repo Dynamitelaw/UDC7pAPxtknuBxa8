@@ -105,3 +105,8 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+
+# Developer Log files
+IlPesce-PC_Log.txt
+DESKTOP-NKDVTB2_Log.txt
