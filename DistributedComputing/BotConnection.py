@@ -101,6 +101,7 @@ class Connection():
             incommingMessage = NULL_STR
             try:
                 incommingMessage = str(self.connectionSocket.recv(self.bufferSize))
+                incommingMessage = incommingMessage[1:]
                 firstCharacter = incommingMessage[0]
 
                 while True:
@@ -396,9 +397,11 @@ def createOutgoingConnections():
                 #Not yet connected to this peer. Add it to connection queue
                 peersToConnectTo[peerHostname] = peerMappings[peerHostname]
                 
+        peerMappingsLock.release()
         openConnectionsLock.release()
 
         for peerName in peersToConnectTo:
+            peerMappingsLock.acquire()
             peerMap = peerMappings[peerName]
             peerIP = peerMap["PublicIp"]
             peerFriendlyName = peerMap["FriendlyName"]
@@ -418,8 +421,10 @@ def createOutgoingConnections():
                 LOGPRINT("Successfully created connection with " + peerFriendlyName + ":" + peerName + " " + peerIP)
                 
                 #Instantiate Connection object, which will add itself to openConnections dictionary
+                peerMappingsLock.release()
                 Connection(outbound, BUFFER_SIZE, (peerIP, PORT_LISTEN))
                 del peersToConnectTo[peerName]  #Remove peer from connection queue
+                LOGPRINT("Open connections: " + DictionaryToString(openConnections))
             except Exception as e:
                 LOGPRINT("Could not connect to "+peerName+"("+peerFriendlyName+"):"+peerIP+" | "+str(e)+". Retrying in "+ str(OUTBOUND_RETRY_INTERVAL)+" seconds")
 
@@ -470,12 +475,14 @@ def sendPendingMessages():
     '''
     Broadcast all messages currently in PendingOutboundMessages list
     '''
+    print("############################")
     for message in PendingOutboundMessages:
         for connectionName in openConnections:
             connectionObject = openConnections[connectionName]
             LOGPRINT("Sending outbound message: " + message)
             connectionObject.sendMessage(message)
         sleep(POST_COMMAND_SLEEP)
+    print("=============================")
 
 
 if __name__ == '__main__':
@@ -500,6 +507,7 @@ if __name__ == '__main__':
 
     #Send pending outbound messages
     sleep(SEND_PENDINGS_DELAY)
+    LOGPRINT("###############  " + DictionaryToString(openConnections))
     sendPendingMessages()
 
 
