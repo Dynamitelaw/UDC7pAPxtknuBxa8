@@ -319,7 +319,7 @@ class Connection():
         self.connectionSocket.sendall(str(message).encode('utf-8'))
 
     
-    def createCommandResponseMessage(messageDict, commandSuccess, results):
+    def createCommandResponseMessage(self, messageDict, commandSuccess, results):
         '''
         Creates a response message for the executed command
         '''
@@ -344,7 +344,7 @@ class Connection():
         return(responseString)
 
 
-    def createGenericResponseMessage(messageDict, genericMessage):
+    def createGenericResponseMessage(self, messageDict, genericMessage):
         '''
         Creates a response message for the executed command
         '''
@@ -475,14 +475,12 @@ def sendPendingMessages():
     '''
     Broadcast all messages currently in PendingOutboundMessages list
     '''
-    print("############################")
     for message in PendingOutboundMessages:
         for connectionName in openConnections:
             connectionObject = openConnections[connectionName]
             LOGPRINT("Sending outbound message: " + message)
             connectionObject.sendMessage(message)
         sleep(POST_COMMAND_SLEEP)
-    print("=============================")
 
 
 if __name__ == '__main__':
@@ -507,7 +505,6 @@ if __name__ == '__main__':
 
     #Send pending outbound messages
     sleep(SEND_PENDINGS_DELAY)
-    LOGPRINT("###############  " + DictionaryToString(openConnections))
     sendPendingMessages()
 
 
