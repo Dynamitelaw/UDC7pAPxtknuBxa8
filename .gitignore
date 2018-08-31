@@ -13,7 +13,7 @@ Data/AccountData/
 Data/SimulationData/
 
 #Ignore Visual Studio settings
-vscode/
+.vscode/
 
 #Ignore local IP mappings
 DistributedComputing/Mappings/LOCAL.json
