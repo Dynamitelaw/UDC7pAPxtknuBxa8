@@ -1,0 +1,9 @@
+IlPesce-PC 2018-08-30 22:56:13 # 
+
+
+IlPesce-PC 2018-08-30 22:56:13 # ----------------------------------------------
+IlPesce-PC 2018-08-30 22:56:13 # Starting new client
+IlPesce-PC 2018-08-30 22:56:13 # ----------------------------------------------
+IlPesce-PC 2018-08-30 22:56:13 # Could not parse previous local mappings. Creating new local mappings
+IlPesce-PC 2018-08-30 22:56:13 # New local mappings = {"LocalHostname": "IlPesce-PC", "PublicIp": "35.137.213.152", "FriendlyName": "INTERT_FRIENDLY_NAME_HERE"}
+IlPesce-PC 2018-08-30 22:56:13 # Pushing changes to git
