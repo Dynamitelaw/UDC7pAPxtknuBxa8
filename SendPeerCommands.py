@@ -100,12 +100,12 @@ def setSubscritptionsAndPendingOutbounds(Subscriptions, PendingOutbound):
     # Tell peers to update or install packages (iexfinance and tensorfow)
     # We want to know which packages were successful or not, so we'll subscribe to get the results of our command
     # Since we didn't specify a target, this command will apply to ALL peers in the network
-    addNewPeerCommand(command=PEER_MESSAGE.INSTALL_PACKAGES_COMMAND, commandArguments=["iexfinance", "tensorflow"], subscribeToResults=True, Subscriptions=Subscriptions, PendingOutbound=PendingOutbound)
+    #addNewPeerCommand(command=PEER_MESSAGE.INSTALL_PACKAGES_COMMAND, commandArguments=["iexfinance", "tensorflow"], subscribeToResults=True, Subscriptions=Subscriptions, PendingOutbound=PendingOutbound)
 
     # Tell two specific peers (IP = 123.45.67.89 and IP = 231.54.76.98) to clear out their log folders. This will happen AFTER they update their packages
     # This command does not generate any return values, so there's no need to subscribe to the results
     # This command also does not require input arguments, so we can ommit those
-    addNewPeerCommand(command=PEER_MESSAGE.CLEAR_LOGS_COMMAND, commandTargets=["123.45.67.89", "231.54.76.98"], Subscriptions=Subscriptions, PendingOutbound=PendingOutbound)
+    #addNewPeerCommand(command=PEER_MESSAGE.CLEAR_LOGS_COMMAND, commandTargets=["123.45.67.89", "231.54.76.98"], Subscriptions=Subscriptions, PendingOutbound=PendingOutbound)
     #############
 
 
