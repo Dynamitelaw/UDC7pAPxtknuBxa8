@@ -125,7 +125,6 @@ class Connection():
 
             if (incommingMessage != NULL_STR):
                 if (incommingMessage != "b''"):  #This message seems to be sent repeatedly whenever the peer closes the connection
-                    LOGPRINT("("+self.peerName+")" + " >> Msg received: " + incommingMessage[:-1])
                     response = self.handleIncommingMessage(incommingMessage[:-1])
                     if (response):
                         LOGPRINT("("+self.peerName+")" + " Responding to message")
@@ -198,6 +197,7 @@ class Connection():
                 
                 #GENERIC_MESSAGE
                 elif (MessageType == PEER_MESSAGE.GENERIC_MESSAGE):
+                    LOGPRINT("("+self.peerName+")" + " >> Msg received: " + incommingMessage)
                     if ("GenericMessage" in messageDict):
                         LOGPRINT("("+self.peerName+")" + " " + str(messageDict["GenericMessage"]))
                     else:
@@ -205,6 +205,7 @@ class Connection():
 
                 #RETURN_MESSAGE
                 elif (MessageType == PEER_MESSAGE.RETURN_MESSAGE):
+                    LOGPRINT("("+self.peerName+")" + " >> Msg received: " + incommingMessage)
                     if ("ReturnValues" in messageDict):
                         ReturnValues = messageDict["ReturnValues"]
                         if ("SubscriptionID" in messageDict):
@@ -226,14 +227,17 @@ class Connection():
 
                 #UPDATE_PROJECT_COMMAND
                 elif (MessageType == PEER_MESSAGE.UPDATE_PROJECT_COMMAND):
+                    LOGPRINT("("+self.peerName+")" + " >> Msg received: " + incommingMessage)
                     updateCodebase()
 
                 #PUSH_PROJECT_COMMAND
                 elif (MessageType == PEER_MESSAGE.PUSH_PROJECT_COMMAND):
+                    LOGPRINT("("+self.peerName+")" + " >> Msg received: " + incommingMessage)
                     pushCodebase()
 
                 #INSTALL_PACKAGES_COMMAND
                 elif (MessageType == PEER_MESSAGE.INSTALL_PACKAGES_COMMAND):
+                    LOGPRINT("("+self.peerName+")" + " >> Msg received: " + incommingMessage)
                     #Only accept this command from verified peers
                     if (self.isKnownPeer):
                         if ("CommandArguments" in messageDict):
@@ -255,6 +259,7 @@ class Connection():
 
                 #KILL_CLIENT_COMMAND
                 elif (MessageType == PEER_MESSAGE.KILL_CLIENT_COMMAND):
+                    LOGPRINT("("+self.peerName+")" + " >> Msg received: " + incommingMessage)
                     #Only accept this command from verified peers
                     if (self.isKnownPeer):
                         if ("CommandArguments" in messageDict):
@@ -274,6 +279,7 @@ class Connection():
 
                 #CLEAR_LOGS_COMMAND
                 elif (MessageType == PEER_MESSAGE.CLEAR_LOGS_COMMAND):
+                    LOGPRINT("("+self.peerName+")" + " >> Msg received: " + incommingMessage)
                     #Only accept this command from verified peers
                     if (self.isKnownPeer):
                         clearLogFolder()
@@ -285,6 +291,7 @@ class Connection():
 
                 #URECOGNIZED MESSAGE TYPE
                 else:
+                    LOGPRINT("("+self.peerName+")" + " >> Msg received: " + incommingMessage)
                     genericMessage = "Unrecongnized message type: " + str(MessageType)
                     LOGPRINT("("+self.peerName+") " + genericMessage)
                     handlerReturnValue = self.createGenericResponseMessage(messageDict, genericMessage)
@@ -383,26 +390,26 @@ def createOutgoingConnections():
     Continuosuly tries to create outgoing connections to all known peers
     '''
     peersToConnectTo = {}
+    peerMappingsLock.acquire()
+    peerMappingsCopy = peerMappings.copy()
+    peerMappingsLock.release()    
 
     #Loop continuously
     while True:
         #Determine which peers we still need to connect to
-        peerMappingsLock.acquire()
         openConnectionsLock.acquire()
-        for peerHostname in peerMappings:
+        for peerHostname in peerMappingsCopy:
             if (peerHostname in openConnections):
                 #Already connected to this peer. No need to connect
                 pass 
             else:
                 #Not yet connected to this peer. Add it to connection queue
-                peersToConnectTo[peerHostname] = peerMappings[peerHostname]
+                peersToConnectTo[peerHostname] = peerMappingsCopy[peerHostname]
                 
-        peerMappingsLock.release()
         openConnectionsLock.release()
 
         for peerName in peersToConnectTo:
-            peerMappingsLock.acquire()
-            peerMap = peerMappings[peerName]
+            peerMap = peerMappingsCopy[peerName]
             peerIP = peerMap["PublicIp"]
             peerFriendlyName = peerMap["FriendlyName"]
 
@@ -421,14 +428,12 @@ def createOutgoingConnections():
                 LOGPRINT("Successfully created connection with " + peerFriendlyName + ":" + peerName + " " + peerIP)
                 
                 #Instantiate Connection object, which will add itself to openConnections dictionary
-                peerMappingsLock.release()
                 Connection(outbound, BUFFER_SIZE, (peerIP, PORT_LISTEN))
                 del peersToConnectTo[peerName]  #Remove peer from connection queue
                 LOGPRINT("Open connections: " + DictionaryToString(openConnections))
             except Exception as e:
                 LOGPRINT("Could not connect to "+peerName+"("+peerFriendlyName+"):"+peerIP+" | "+str(e)+". Retrying in "+ str(OUTBOUND_RETRY_INTERVAL)+" seconds")
 
-        peerMappingsLock.release()
         sleep(OUTBOUND_RETRY_INTERVAL)
 
 
