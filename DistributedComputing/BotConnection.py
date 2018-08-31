@@ -101,11 +101,11 @@ class Connection():
             incommingMessage = NULL_STR
             try:
                 incommingMessage = str(self.connectionSocket.recv(self.bufferSize))
-                incommingMessage = incommingMessage[1:]
+                incommingMessage = incommingMessage[2:]
                 firstCharacter = incommingMessage[0]
 
                 while True:
-                    if (isValidJson(incommingMessage)):
+                    if (isValidJson(incommingMessage[:-1])):
                         #Entire message has been recieved
                         break
                     elif (firstCharacter != "{"):
@@ -125,8 +125,8 @@ class Connection():
 
             if (incommingMessage != NULL_STR):
                 if (incommingMessage != "b''"):  #This message seems to be sent repeatedly whenever the peer closes the connection
-                    LOGPRINT("("+self.peerName+")" + " >> Msg received: " + incommingMessage)
-                    response = self.handleIncommingMessage(incommingMessage)
+                    LOGPRINT("("+self.peerName+")" + " >> Msg received: " + incommingMessage[:-1])
+                    response = self.handleIncommingMessage(incommingMessage[:-1])
                     if (response):
                         LOGPRINT("("+self.peerName+")" + " Responding to message")
                         self.connectionSocket.sendall(response.encode('utf-8'))

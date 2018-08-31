@@ -162,3 +162,34 @@ DESKTOP-NKDVTB2 2018-08-30 23:24:18 # (IlPesce-PC25700) >> Msg received: b'{"Mes
 DESKTOP-NKDVTB2 2018-08-30 23:24:18 # (IlPesce-PC25700) ERROR parsing incoming message: Expecting value: line 1 column 1 (char 0)
 DESKTOP-NKDVTB2 2018-08-30 23:24:28 # (IlPesce-PC25700) >> Msg received: b'{"MessageType": 0, "Broadcast": false, "BroadcastID": 0, "TargetIP": "108.35.23.102"}'
 DESKTOP-NKDVTB2 2018-08-30 23:24:28 # (IlPesce-PC25700) ERROR parsing incoming message: Expecting value: line 1 column 1 (char 0)
+DESKTOP-NKDVTB2 2018-08-30 23:30:26 # 
+
+
+DESKTOP-NKDVTB2 2018-08-30 23:30:26 # ----------------------------------------------
+DESKTOP-NKDVTB2 2018-08-30 23:30:26 # Starting new client
+DESKTOP-NKDVTB2 2018-08-30 23:30:26 # ----------------------------------------------
+DESKTOP-NKDVTB2 2018-08-30 23:30:26 # Added peer mapping: {'LocalHostname': 'IlPesce-PC', 'PublicIp': '35.137.213.152', 'FriendlyName': 'INTERT_FRIENDLY_NAME_HERE'}
+DESKTOP-NKDVTB2 2018-08-30 23:30:26 # Local Subscripctions: {506134: <SendPeerCommands.SubscriptionHandler object at 0x000001A9C2437E48>}
+DESKTOP-NKDVTB2 2018-08-30 23:30:26 # Pending Outbound Messages: ['{"MessageType": 5, "Broadcast": true, "BroadcastID": 821874, "SubscriptionID": 506134, "ReturnIP": "108.35.23.102", "CommandArguments": ["iexfinance", "tensorflow"], "TargetIP": "IP_ALL"}', '{"MessageType": 7, "Broadcast": true, "BroadcastID": 259386, "TargetIP": "123.45.67.89"}', '{"MessageType": 7, "Broadcast": true, "BroadcastID": 259386, "TargetIP": "231.54.76.98"}']
+DESKTOP-NKDVTB2 2018-08-30 23:30:26 # Listening socket bound to port: 25700
+DESKTOP-NKDVTB2 2018-08-30 23:30:26 # Successfully created connection with INTERT_FRIENDLY_NAME_HERE:IlPesce-PC 35.137.213.152
+DESKTOP-NKDVTB2 2018-08-30 23:30:26 # New Connection object created. Starting incoming handler thread...
+DESKTOP-NKDVTB2 2018-08-30 23:30:26 # Open connections: {"IlPesce-PC": "('35.137.213.152', 25700)"}
+DESKTOP-NKDVTB2 2018-08-30 23:30:43 # (IlPesce-PC25700) >> Msg received: '{"MessageType": 0, "Broadcast": false, "BroadcastID": 0, "TargetIP": "108.35.23.102"}'
+DESKTOP-NKDVTB2 2018-08-30 23:30:43 # (IlPesce-PC25700) ERROR parsing incoming message: Expecting value: line 1 column 1 (char 0)
+DESKTOP-NKDVTB2 2018-08-30 23:30:46 # ###############  {"IlPesce-PC": "('35.137.213.152', 25700)"}
+DESKTOP-NKDVTB2 2018-08-30 23:30:46 # Sending outbound message: {"MessageType": 5, "Broadcast": true, "BroadcastID": 821874, "SubscriptionID": 506134, "ReturnIP": "108.35.23.102", "CommandArguments": ["iexfinance", "tensorflow"], "TargetIP": "IP_ALL"}
+DESKTOP-NKDVTB2 2018-08-30 23:30:47 # (IlPesce-PC25700) >> Msg received: '{"MessageType": 7, "Broadcast": true, "BroadcastID": 722326, "TargetIP": "123.45.67.89"}'
+DESKTOP-NKDVTB2 2018-08-30 23:30:47 # (IlPesce-PC25700) ERROR parsing incoming message: Expecting value: line 1 column 1 (char 0)
+DESKTOP-NKDVTB2 2018-08-30 23:30:51 # Sending outbound message: {"MessageType": 7, "Broadcast": true, "BroadcastID": 259386, "TargetIP": "123.45.67.89"}
+DESKTOP-NKDVTB2 2018-08-30 23:30:52 # (IlPesce-PC25700) >> Msg received: '{"MessageType": 7, "Broadcast": true, "BroadcastID": 722326, "TargetIP": "231.54.76.98"}'
+DESKTOP-NKDVTB2 2018-08-30 23:30:52 # (IlPesce-PC25700) ERROR parsing incoming message: Expecting value: line 1 column 1 (char 0)
+DESKTOP-NKDVTB2 2018-08-30 23:30:53 # (IlPesce-PC25700) >> Msg received: '{"MessageType": 0, "Broadcast": false, "BroadcastID": 0, "TargetIP": "108.35.23.102"}'
+DESKTOP-NKDVTB2 2018-08-30 23:30:53 # (IlPesce-PC25700) ERROR parsing incoming message: Expecting value: line 1 column 1 (char 0)
+DESKTOP-NKDVTB2 2018-08-30 23:30:56 # Sending outbound message: {"MessageType": 7, "Broadcast": true, "BroadcastID": 259386, "TargetIP": "231.54.76.98"}
+DESKTOP-NKDVTB2 2018-08-30 23:31:03 # (IlPesce-PC25700) >> Msg received: '{"MessageType": 0, "Broadcast": false, "BroadcastID": 0, "TargetIP": "108.35.23.102"}'
+DESKTOP-NKDVTB2 2018-08-30 23:31:03 # (IlPesce-PC25700) ERROR parsing incoming message: Expecting value: line 1 column 1 (char 0)
+DESKTOP-NKDVTB2 2018-08-30 23:31:13 # (IlPesce-PC25700) >> Msg received: '{"MessageType": 0, "Broadcast": false, "BroadcastID": 0, "TargetIP": "108.35.23.102"}'
+DESKTOP-NKDVTB2 2018-08-30 23:31:13 # (IlPesce-PC25700) ERROR parsing incoming message: Expecting value: line 1 column 1 (char 0)
+DESKTOP-NKDVTB2 2018-08-30 23:31:23 # (IlPesce-PC25700) >> Msg received: '{"MessageType": 0, "Broadcast": false, "BroadcastID": 0, "TargetIP": "108.35.23.102"}'
+DESKTOP-NKDVTB2 2018-08-30 23:31:23 # (IlPesce-PC25700) ERROR parsing incoming message: Expecting value: line 1 column 1 (char 0)
