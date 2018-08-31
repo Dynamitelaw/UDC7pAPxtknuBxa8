@@ -7,3 +7,162 @@ IlPesce-PC 2018-08-30 22:56:13 # ----------------------------------------------
 IlPesce-PC 2018-08-30 22:56:13 # Could not parse previous local mappings. Creating new local mappings
 IlPesce-PC 2018-08-30 22:56:13 # New local mappings = {"LocalHostname": "IlPesce-PC", "PublicIp": "35.137.213.152", "FriendlyName": "INTERT_FRIENDLY_NAME_HERE"}
 IlPesce-PC 2018-08-30 22:56:13 # Pushing changes to git
+IlPesce-PC 2018-08-30 22:56:20 # Added peer mapping: {'LocalHostname': 'DESKTOP-NKDVTB2', 'PublicIp': '108.35.27.76', 'FriendlyName': 'JOEY_DESKTOP'}
+IlPesce-PC 2018-08-30 22:56:20 # Local Subscripctions: {660686: <SendPeerCommands.SubscriptionHandler object at 0x028DBD30>}
+IlPesce-PC 2018-08-30 22:56:20 # Pending Outbound Messages: ['{"MessageType": 5, "Broadcast": true, "BroadcastID": 919715, "SubscriptionID": 660686, "ReturnIP": "35.137.213.152", "CommandArguments": ["iexfinance", "tensorflow"], "TargetIP": "IP_ALL"}', '{"MessageType": 7, "Broadcast": true, "BroadcastID": 761674, "TargetIP": "123.45.67.89"}', '{"MessageType": 7, "Broadcast": true, "BroadcastID": 761674, "TargetIP": "231.54.76.98"}']
+IlPesce-PC 2018-08-30 22:56:20 # Listening socket bound to port: 25700
+IlPesce-PC 2018-08-30 22:56:42 # Could not connect to DESKTOP-NKDVTB2(JOEY_DESKTOP):108.35.27.76 | [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. Retrying in 60 seconds
+IlPesce-PC 2018-08-30 22:57:53 # Connection established with 108.35.23.102:50481
+IlPesce-PC 2018-08-30 22:57:53 # New Connection object created. Starting incoming handler thread...
+IlPesce-PC 2018-08-30 22:58:03 # Could not connect to DESKTOP-NKDVTB2(JOEY_DESKTOP):108.35.27.76 | [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. Retrying in 60 seconds
+IlPesce-PC 2018-08-30 22:58:03 # Open connections: {"GUEST_108.35.23.102:50481": "('108.35.23.102', 50481)"}
+IlPesce-PC 2018-08-30 22:58:41 # (GUEST_108.35.23.102:50481) SOCKET ERROR: [WinError 10054] An existing connection was forcibly closed by the remote host
+IlPesce-PC 2018-08-30 22:58:41 # (GUEST_108.35.23.102:50481) Closing socket ('108.35.23.102', 50481)
+IlPesce-PC 2018-08-30 22:58:41 # Open connections: {}
+IlPesce-PC 2018-08-30 22:58:47 # 
+
+
+IlPesce-PC 2018-08-30 22:58:47 # ----------------------------------------------
+IlPesce-PC 2018-08-30 22:58:47 # Starting new client
+IlPesce-PC 2018-08-30 22:58:47 # ----------------------------------------------
+IlPesce-PC 2018-08-30 22:58:47 # Added peer mapping: {'LocalHostname': 'DESKTOP-NKDVTB2', 'PublicIp': '108.35.27.76', 'FriendlyName': 'JOEY_DESKTOP'}
+IlPesce-PC 2018-08-30 22:58:47 # Local Subscripctions: {310817: <SendPeerCommands.SubscriptionHandler object at 0x004631D0>}
+IlPesce-PC 2018-08-30 22:58:47 # Pending Outbound Messages: ['{"MessageType": 5, "Broadcast": true, "BroadcastID": 32445, "SubscriptionID": 310817, "ReturnIP": "35.137.213.152", "CommandArguments": ["iexfinance", "tensorflow"], "TargetIP": "IP_ALL"}', '{"MessageType": 7, "Broadcast": true, "BroadcastID": 912408, "TargetIP": "123.45.67.89"}', '{"MessageType": 7, "Broadcast": true, "BroadcastID": 912408, "TargetIP": "231.54.76.98"}']
+IlPesce-PC 2018-08-30 22:58:47 # Listening socket bound to port: 25700
+IlPesce-PC 2018-08-30 22:59:09 # 
+
+
+IlPesce-PC 2018-08-30 22:59:09 # ----------------------------------------------
+IlPesce-PC 2018-08-30 22:59:09 # Starting new client
+IlPesce-PC 2018-08-30 22:59:09 # ----------------------------------------------
+IlPesce-PC 2018-08-30 22:59:09 # Added peer mapping: {'LocalHostname': 'DESKTOP-NKDVTB2', 'PublicIp': '108.35.23.102', 'FriendlyName': 'JOEY_DESKTOP'}
+IlPesce-PC 2018-08-30 22:59:09 # Local Subscripctions: {105675: <SendPeerCommands.SubscriptionHandler object at 0x02A131D0>}
+IlPesce-PC 2018-08-30 22:59:09 # Pending Outbound Messages: ['{"MessageType": 5, "Broadcast": true, "BroadcastID": 877904, "SubscriptionID": 105675, "ReturnIP": "35.137.213.152", "CommandArguments": ["iexfinance", "tensorflow"], "TargetIP": "IP_ALL"}', '{"MessageType": 7, "Broadcast": true, "BroadcastID": 180566, "TargetIP": "123.45.67.89"}', '{"MessageType": 7, "Broadcast": true, "BroadcastID": 180566, "TargetIP": "231.54.76.98"}']
+IlPesce-PC 2018-08-30 22:59:09 # Listening socket bound to port: 25700
+IlPesce-PC 2018-08-30 22:59:19 # Connection established with 108.35.23.102:50501
+IlPesce-PC 2018-08-30 22:59:19 # New Connection object created. Starting incoming handler thread...
+IlPesce-PC 2018-08-30 22:59:30 # Could not connect to DESKTOP-NKDVTB2(JOEY_DESKTOP):108.35.23.102 | [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. Retrying in 60 seconds
+IlPesce-PC 2018-08-30 22:59:30 # Open connections: {"DESKTOP-NKDVTB2": "('108.35.23.102', 50501)"}
+IlPesce-PC 2018-08-30 22:59:34 # Sending outbound message: {"MessageType": 7, "Broadcast": true, "BroadcastID": 180566, "TargetIP": "123.45.67.89"}
+IlPesce-PC 2018-08-30 22:59:39 # Sending outbound message: {"MessageType": 7, "Broadcast": true, "BroadcastID": 180566, "TargetIP": "231.54.76.98"}
+IlPesce-PC 2018-08-30 23:00:51 # Could not connect to DESKTOP-NKDVTB2(JOEY_DESKTOP):108.35.23.102 | [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. Retrying in 60 seconds
+IlPesce-PC 2018-08-30 23:01:32 # (DESKTOP-NKDVTB250501) SOCKET ERROR: [WinError 10054] An existing connection was forcibly closed by the remote host
+IlPesce-PC 2018-08-30 23:01:32 # (DESKTOP-NKDVTB250501) Closing socket ('108.35.23.102', 50501)
+IlPesce-PC 2018-08-30 23:02:12 # Could not connect to DESKTOP-NKDVTB2(JOEY_DESKTOP):108.35.23.102 | [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. Retrying in 60 seconds
+IlPesce-PC 2018-08-30 23:02:38 # Connection established with 108.35.23.102:50548
+IlPesce-PC 2018-08-30 23:02:38 # New Connection object created. Starting incoming handler thread...
+IlPesce-PC 2018-08-30 23:02:38 # Open connections: {"DESKTOP-NKDVTB2": "('108.35.23.102', 50548)"}
+IlPesce-PC 2018-08-30 23:03:18 # (DESKTOP-NKDVTB250548) SOCKET ERROR: [WinError 10053] An established connection was aborted by the software in your host machine
+IlPesce-PC 2018-08-30 23:03:18 # (DESKTOP-NKDVTB250548) Closing socket ('108.35.23.102', 50548)
+IlPesce-PC 2018-08-30 23:03:22 # Connection established with 108.35.23.102:50558
+IlPesce-PC 2018-08-30 23:03:22 # New Connection object created. Starting incoming handler thread...
+IlPesce-PC 2018-08-30 23:03:33 # Could not connect to DESKTOP-NKDVTB2(JOEY_DESKTOP):108.35.23.102 | [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. Retrying in 60 seconds
+IlPesce-PC 2018-08-30 23:03:33 # Open connections: {"DESKTOP-NKDVTB2": "('108.35.23.102', 50558)"}
+IlPesce-PC 2018-08-30 23:04:54 # Could not connect to DESKTOP-NKDVTB2(JOEY_DESKTOP):108.35.23.102 | [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. Retrying in 60 seconds
+IlPesce-PC 2018-08-30 23:05:29 # (DESKTOP-NKDVTB250558) SOCKET ERROR: [WinError 10054] An existing connection was forcibly closed by the remote host
+IlPesce-PC 2018-08-30 23:05:29 # (DESKTOP-NKDVTB250558) Closing socket ('108.35.23.102', 50558)
+IlPesce-PC 2018-08-30 23:12:01 # 
+
+
+IlPesce-PC 2018-08-30 23:12:01 # ----------------------------------------------
+IlPesce-PC 2018-08-30 23:12:01 # Starting new client
+IlPesce-PC 2018-08-30 23:12:01 # ----------------------------------------------
+IlPesce-PC 2018-08-30 23:12:01 # Added peer mapping: {'LocalHostname': 'DESKTOP-NKDVTB2', 'PublicIp': '108.35.23.102', 'FriendlyName': 'JOEY_DESKTOP'}
+IlPesce-PC 2018-08-30 23:12:01 # Local Subscripctions: {373800: <SendPeerCommands.SubscriptionHandler object at 0x004631D0>}
+IlPesce-PC 2018-08-30 23:12:01 # Pending Outbound Messages: ['{"MessageType": 5, "Broadcast": true, "BroadcastID": 967550, "SubscriptionID": 373800, "ReturnIP": "35.137.213.152", "CommandArguments": ["iexfinance", "tensorflow"], "TargetIP": "IP_ALL"}', '{"MessageType": 7, "Broadcast": true, "BroadcastID": 516097, "TargetIP": "123.45.67.89"}', '{"MessageType": 7, "Broadcast": true, "BroadcastID": 516097, "TargetIP": "231.54.76.98"}']
+IlPesce-PC 2018-08-30 23:12:01 # Listening socket bound to port: 25700
+IlPesce-PC 2018-08-30 23:12:05 # Connection established with 108.35.23.102:50629
+IlPesce-PC 2018-08-30 23:12:05 # New Connection object created. Starting incoming handler thread...
+IlPesce-PC 2018-08-30 23:12:22 # Could not connect to DESKTOP-NKDVTB2(JOEY_DESKTOP):108.35.23.102 | [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. Retrying in 60 seconds
+IlPesce-PC 2018-08-30 23:12:22 # Open connections: {"DESKTOP-NKDVTB2": "('108.35.23.102', 50629)"}
+IlPesce-PC 2018-08-30 23:12:26 # Sending outbound message: {"MessageType": 7, "Broadcast": true, "BroadcastID": 516097, "TargetIP": "123.45.67.89"}
+IlPesce-PC 2018-08-30 23:12:31 # Sending outbound message: {"MessageType": 7, "Broadcast": true, "BroadcastID": 516097, "TargetIP": "231.54.76.98"}
+IlPesce-PC 2018-08-30 23:12:52 # (DESKTOP-NKDVTB250629) SOCKET ERROR: [WinError 10054] An existing connection was forcibly closed by the remote host
+IlPesce-PC 2018-08-30 23:12:52 # (DESKTOP-NKDVTB250629) Closing socket ('108.35.23.102', 50629)
+IlPesce-PC 2018-08-30 23:14:10 # 
+
+
+IlPesce-PC 2018-08-30 23:14:10 # ----------------------------------------------
+IlPesce-PC 2018-08-30 23:14:10 # Starting new client
+IlPesce-PC 2018-08-30 23:14:10 # ----------------------------------------------
+IlPesce-PC 2018-08-30 23:14:11 # Added peer mapping: {'LocalHostname': 'DESKTOP-NKDVTB2', 'PublicIp': '108.35.23.102', 'FriendlyName': 'JOEY_DESKTOP'}
+IlPesce-PC 2018-08-30 23:14:11 # Local Subscripctions: {739386: <SendPeerCommands.SubscriptionHandler object at 0x008131D0>}
+IlPesce-PC 2018-08-30 23:14:11 # Pending Outbound Messages: ['{"MessageType": 5, "Broadcast": true, "BroadcastID": 813757, "SubscriptionID": 739386, "ReturnIP": "35.137.213.152", "CommandArguments": ["iexfinance", "tensorflow"], "TargetIP": "IP_ALL"}', '{"MessageType": 7, "Broadcast": true, "BroadcastID": 803906, "TargetIP": "123.45.67.89"}', '{"MessageType": 7, "Broadcast": true, "BroadcastID": 803906, "TargetIP": "231.54.76.98"}']
+IlPesce-PC 2018-08-30 23:14:11 # Listening socket bound to port: 25700
+IlPesce-PC 2018-08-30 23:14:17 # Connection established with 108.35.23.102:50638
+IlPesce-PC 2018-08-30 23:14:17 # New Connection object created. Starting incoming handler thread...
+IlPesce-PC 2018-08-30 23:14:32 # Could not connect to DESKTOP-NKDVTB2(JOEY_DESKTOP):108.35.23.102 | [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. Retrying in 60 seconds
+IlPesce-PC 2018-08-30 23:14:32 # Open connections: {"DESKTOP-NKDVTB2": "('108.35.23.102', 50638)"}
+IlPesce-PC 2018-08-30 23:14:36 # Sending outbound message: {"MessageType": 7, "Broadcast": true, "BroadcastID": 803906, "TargetIP": "123.45.67.89"}
+IlPesce-PC 2018-08-30 23:14:41 # Sending outbound message: {"MessageType": 7, "Broadcast": true, "BroadcastID": 803906, "TargetIP": "231.54.76.98"}
+IlPesce-PC 2018-08-30 23:14:44 # (DESKTOP-NKDVTB250638) SOCKET ERROR: [WinError 10054] An existing connection was forcibly closed by the remote host
+IlPesce-PC 2018-08-30 23:14:44 # (DESKTOP-NKDVTB250638) Closing socket ('108.35.23.102', 50638)
+IlPesce-PC 2018-08-30 23:15:53 # Could not connect to DESKTOP-NKDVTB2(JOEY_DESKTOP):108.35.23.102 | [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. Retrying in 60 seconds
+IlPesce-PC 2018-08-30 23:17:14 # Could not connect to DESKTOP-NKDVTB2(JOEY_DESKTOP):108.35.23.102 | [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. Retrying in 60 seconds
+IlPesce-PC 2018-08-30 23:17:21 # 
+
+
+IlPesce-PC 2018-08-30 23:17:21 # ----------------------------------------------
+IlPesce-PC 2018-08-30 23:17:21 # Starting new client
+IlPesce-PC 2018-08-30 23:17:21 # ----------------------------------------------
+IlPesce-PC 2018-08-30 23:17:21 # Added peer mapping: {'LocalHostname': 'DESKTOP-NKDVTB2', 'PublicIp': '108.35.23.102', 'FriendlyName': 'JOEY_DESKTOP'}
+IlPesce-PC 2018-08-30 23:17:21 # Local Subscripctions: {999686: <SendPeerCommands.SubscriptionHandler object at 0x012A31D0>}
+IlPesce-PC 2018-08-30 23:17:21 # Pending Outbound Messages: ['{"MessageType": 5, "Broadcast": true, "BroadcastID": 982863, "SubscriptionID": 999686, "ReturnIP": "35.137.213.152", "CommandArguments": ["iexfinance", "tensorflow"], "TargetIP": "IP_ALL"}', '{"MessageType": 7, "Broadcast": true, "BroadcastID": 603689, "TargetIP": "123.45.67.89"}', '{"MessageType": 7, "Broadcast": true, "BroadcastID": 603689, "TargetIP": "231.54.76.98"}']
+IlPesce-PC 2018-08-30 23:17:21 # Listening socket bound to port: 25700
+IlPesce-PC 2018-08-30 23:17:24 # Connection established with 108.35.23.102:50650
+IlPesce-PC 2018-08-30 23:17:24 # New Connection object created. Starting incoming handler thread...
+IlPesce-PC 2018-08-30 23:17:42 # Could not connect to DESKTOP-NKDVTB2(JOEY_DESKTOP):108.35.23.102 | [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. Retrying in 60 seconds
+IlPesce-PC 2018-08-30 23:17:42 # Open connections: {"DESKTOP-NKDVTB2": "('108.35.23.102', 50650)"}
+IlPesce-PC 2018-08-30 23:17:46 # Sending outbound message: {"MessageType": 7, "Broadcast": true, "BroadcastID": 603689, "TargetIP": "123.45.67.89"}
+IlPesce-PC 2018-08-30 23:17:51 # Sending outbound message: {"MessageType": 7, "Broadcast": true, "BroadcastID": 603689, "TargetIP": "231.54.76.98"}
+IlPesce-PC 2018-08-30 23:18:11 # (DESKTOP-NKDVTB250650) SOCKET ERROR: [WinError 10054] An existing connection was forcibly closed by the remote host
+IlPesce-PC 2018-08-30 23:18:11 # (DESKTOP-NKDVTB250650) Closing socket ('108.35.23.102', 50650)
+IlPesce-PC 2018-08-30 23:19:03 # Could not connect to DESKTOP-NKDVTB2(JOEY_DESKTOP):108.35.23.102 | [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. Retrying in 60 seconds
+IlPesce-PC 2018-08-30 23:19:05 # Connection established with 108.35.23.102:50666
+IlPesce-PC 2018-08-30 23:19:05 # New Connection object created. Starting incoming handler thread...
+IlPesce-PC 2018-08-30 23:19:05 # Open connections: {"DESKTOP-NKDVTB2": "('108.35.23.102', 50666)"}
+IlPesce-PC 2018-08-30 23:19:40 # (DESKTOP-NKDVTB250666) SOCKET ERROR: [WinError 10054] An existing connection was forcibly closed by the remote host
+IlPesce-PC 2018-08-30 23:19:40 # (DESKTOP-NKDVTB250666) Closing socket ('108.35.23.102', 50666)
+IlPesce-PC 2018-08-30 23:20:10 # Connection established with 108.35.23.102:50672
+IlPesce-PC 2018-08-30 23:20:10 # New Connection object created. Starting incoming handler thread...
+IlPesce-PC 2018-08-30 23:20:24 # Could not connect to DESKTOP-NKDVTB2(JOEY_DESKTOP):108.35.23.102 | [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. Retrying in 60 seconds
+IlPesce-PC 2018-08-30 23:20:24 # Open connections: {"DESKTOP-NKDVTB2": "('108.35.23.102', 50672)"}
+IlPesce-PC 2018-08-30 23:20:24 # (DESKTOP-NKDVTB250672) SOCKET ERROR: [WinError 10054] An existing connection was forcibly closed by the remote host
+IlPesce-PC 2018-08-30 23:20:24 # (DESKTOP-NKDVTB250672) Closing socket ('108.35.23.102', 50672)
+IlPesce-PC 2018-08-30 23:21:45 # Could not connect to DESKTOP-NKDVTB2(JOEY_DESKTOP):108.35.23.102 | [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. Retrying in 60 seconds
+IlPesce-PC 2018-08-30 23:22:30 # Connection established with 108.35.23.102:50685
+IlPesce-PC 2018-08-30 23:22:30 # New Connection object created. Starting incoming handler thread...
+IlPesce-PC 2018-08-30 23:22:30 # Open connections: {"DESKTOP-NKDVTB2": "('108.35.23.102', 50685)"}
+IlPesce-PC 2018-08-30 23:22:44 # (DESKTOP-NKDVTB250685) SOCKET ERROR: [WinError 10054] An existing connection was forcibly closed by the remote host
+IlPesce-PC 2018-08-30 23:22:44 # (DESKTOP-NKDVTB250685) Closing socket ('108.35.23.102', 50685)
+IlPesce-PC 2018-08-30 23:23:06 # Could not connect to DESKTOP-NKDVTB2(JOEY_DESKTOP):108.35.23.102 | [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. Retrying in 60 seconds
+IlPesce-PC 2018-08-30 23:23:21 # Connection established with 108.35.23.102:50692
+IlPesce-PC 2018-08-30 23:23:21 # New Connection object created. Starting incoming handler thread...
+IlPesce-PC 2018-08-30 23:23:21 # Open connections: {"DESKTOP-NKDVTB2": "('108.35.23.102', 50692)"}
+IlPesce-PC 2018-08-30 23:23:21 # (DESKTOP-NKDVTB250692) >> Msg received: b'{"MessageType": 0, "Broadcast": false, "BroadcastID": 0, "TargetIP": "35.137.213.152"}'
+IlPesce-PC 2018-08-30 23:23:21 # (DESKTOP-NKDVTB250692) ERROR parsing incoming message: Expecting value: line 1 column 1 (char 0)
+IlPesce-PC 2018-08-30 23:23:31 # (DESKTOP-NKDVTB250692) >> Msg received: b'{"MessageType": 0, "Broadcast": false, "BroadcastID": 0, "TargetIP": "35.137.213.152"}'
+IlPesce-PC 2018-08-30 23:23:31 # (DESKTOP-NKDVTB250692) ERROR parsing incoming message: Expecting value: line 1 column 1 (char 0)
+IlPesce-PC 2018-08-30 23:23:41 # (DESKTOP-NKDVTB250692) >> Msg received: b'{"MessageType": 5, "Broadcast": true, "BroadcastID": 170742, "SubscriptionID": 971776, "ReturnIP": "108.35.23.102", "CommandArguments": ["iexfinance", "tensorflow"], "TargetIP": "IP_ALL"}'
+IlPesce-PC 2018-08-30 23:23:41 # (DESKTOP-NKDVTB250692) ERROR parsing incoming message: Expecting value: line 1 column 1 (char 0)
+IlPesce-PC 2018-08-30 23:23:41 # (DESKTOP-NKDVTB250692) >> Msg received: b'{"MessageType": 0, "Broadcast": false, "BroadcastID": 0, "TargetIP": "35.137.213.152"}'
+IlPesce-PC 2018-08-30 23:23:41 # (DESKTOP-NKDVTB250692) ERROR parsing incoming message: Expecting value: line 1 column 1 (char 0)
+IlPesce-PC 2018-08-30 23:23:46 # (DESKTOP-NKDVTB250692) >> Msg received: b'{"MessageType": 7, "Broadcast": true, "BroadcastID": 329237, "TargetIP": "123.45.67.89"}'
+IlPesce-PC 2018-08-30 23:23:46 # (DESKTOP-NKDVTB250692) ERROR parsing incoming message: Expecting value: line 1 column 1 (char 0)
+IlPesce-PC 2018-08-30 23:23:51 # (DESKTOP-NKDVTB250692) >> Msg received: b'{"MessageType": 7, "Broadcast": true, "BroadcastID": 329237, "TargetIP": "231.54.76.98"}'
+IlPesce-PC 2018-08-30 23:23:51 # (DESKTOP-NKDVTB250692) ERROR parsing incoming message: Expecting value: line 1 column 1 (char 0)
+IlPesce-PC 2018-08-30 23:23:51 # (DESKTOP-NKDVTB250692) >> Msg received: b'{"MessageType": 0, "Broadcast": false, "BroadcastID": 0, "TargetIP": "35.137.213.152"}'
+IlPesce-PC 2018-08-30 23:23:51 # (DESKTOP-NKDVTB250692) ERROR parsing incoming message: Expecting value: line 1 column 1 (char 0)
+IlPesce-PC 2018-08-30 23:24:01 # (DESKTOP-NKDVTB250692) >> Msg received: b'{"MessageType": 0, "Broadcast": false, "BroadcastID": 0, "TargetIP": "35.137.213.152"}'
+IlPesce-PC 2018-08-30 23:24:01 # (DESKTOP-NKDVTB250692) ERROR parsing incoming message: Expecting value: line 1 column 1 (char 0)
+IlPesce-PC 2018-08-30 23:24:11 # (DESKTOP-NKDVTB250692) >> Msg received: b'{"MessageType": 0, "Broadcast": false, "BroadcastID": 0, "TargetIP": "35.137.213.152"}'
+IlPesce-PC 2018-08-30 23:24:11 # (DESKTOP-NKDVTB250692) ERROR parsing incoming message: Expecting value: line 1 column 1 (char 0)
+IlPesce-PC 2018-08-30 23:24:21 # (DESKTOP-NKDVTB250692) >> Msg received: b'{"MessageType": 0, "Broadcast": false, "BroadcastID": 0, "TargetIP": "35.137.213.152"}'
+IlPesce-PC 2018-08-30 23:24:21 # (DESKTOP-NKDVTB250692) ERROR parsing incoming message: Expecting value: line 1 column 1 (char 0)
+IlPesce-PC 2018-08-30 23:24:27 # Could not connect to DESKTOP-NKDVTB2(JOEY_DESKTOP):108.35.23.102 | [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. Retrying in 60 seconds
+IlPesce-PC 2018-08-30 23:24:31 # (DESKTOP-NKDVTB250692) >> Msg received: b'{"MessageType": 0, "Broadcast": false, "BroadcastID": 0, "TargetIP": "35.137.213.152"}'
+IlPesce-PC 2018-08-30 23:24:31 # (DESKTOP-NKDVTB250692) ERROR parsing incoming message: Expecting value: line 1 column 1 (char 0)
+IlPesce-PC 2018-08-30 23:24:31 # (DESKTOP-NKDVTB250692) SOCKET ERROR: [WinError 10054] An existing connection was forcibly closed by the remote host
+IlPesce-PC 2018-08-30 23:24:31 # (DESKTOP-NKDVTB250692) Closing socket ('108.35.23.102', 50692)
+IlPesce-PC 2018-08-30 23:25:48 # Could not connect to DESKTOP-NKDVTB2(JOEY_DESKTOP):108.35.23.102 | [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. Retrying in 60 seconds
+IlPesce-PC 2018-08-30 23:27:09 # Could not connect to DESKTOP-NKDVTB2(JOEY_DESKTOP):108.35.23.102 | [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. Retrying in 60 seconds
