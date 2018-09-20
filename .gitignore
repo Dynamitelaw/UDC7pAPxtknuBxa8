@@ -18,6 +18,9 @@ Data/SimulationData/
 #Ignore local IP mappings
 DistributedComputing/Mappings/LOCAL.json
 
+#Ignore installer files too large for github
+Setup/Installers/
+
 # C extensions
 *.so
 
@@ -102,3 +105,8 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+
+# Developer Log files
+DistributedComputing/Logs/IlPesce-PC_Log.txt
+DistributedComputing/Logs/DESKTOP-NKDVTB2_Log.txt

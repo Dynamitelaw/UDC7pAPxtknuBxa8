@@ -45,8 +45,9 @@ class Connection():
         self.bufferSize = bufferSize
         self.peerAddress = addr
         self.peerIp = self.peerAddress[0] 
-        self.peerSocket = self.peerAddress[1] 
+        self.peerPort = self.peerAddress[1] 
         self.heartBeatRunning = False
+        self.hearBeatEnabled = True
         self.peerName = "null"
         self.relayedBroadcasts = []
         self.createHeartbeatMessage()
@@ -62,18 +63,21 @@ class Connection():
             if (mappings["PublicIp"] == self.peerAddress[0]):
                 #IP address matches. Associate connection with this peer
                 foundMatchingHostname = True
-                self.peerName = peerHostname
+                self.peerName = peerHostname + str(self.peerPort)
+                self.isKnownPeer = True
 
                 openConnectionsLock.acquire()
                 openConnections[peerHostname] = self
                 openConnectionsLock.release()
 
                 break
+        peerMappingsLock.release()
 
         if (not foundMatchingHostname):
             #This is not a recognized peer. Associate with guest session
-            guestHostname = "GUEST_" + str(self.peerIp)
+            guestHostname = "GUEST_" + str(self.peerIp) + ":" + str(self.peerPort)
             self.peerName = guestHostname
+            self.isKnownPeer = False
             openConnectionsLock.acquire()
             openConnections[guestHostname] = self
             openConnectionsLock.release()
@@ -89,7 +93,7 @@ class Connection():
         Handles incomming messages
         '''
         #Start a heartbeat thread for this connection
-        if (not self.heartBeatRunning):
+        if ((not self.heartBeatRunning) and self.hearBeatEnabled):
             heartbeatThread = threading.Thread(target=self.startHeatbeatThread,args=(self.connectionSocket,))
             heartbeatThread.start()
 
@@ -97,10 +101,11 @@ class Connection():
             incommingMessage = NULL_STR
             try:
                 incommingMessage = str(self.connectionSocket.recv(self.bufferSize))
+                incommingMessage = incommingMessage[2:]
                 firstCharacter = incommingMessage[0]
 
                 while True:
-                    if (isValidJson(incommingMessage)):
+                    if (isValidJson(incommingMessage[:-1])):
                         #Entire message has been recieved
                         break
                     elif (firstCharacter != "{"):
@@ -112,16 +117,18 @@ class Connection():
                         incommingMessage += str(self.connectionSocket.recv(self.bufferSize))
 
             except Exception as e:
-                LOGPRINT(str(self.address) + " socket error: " + str(e))
-                LOGPRINT("Closing socket" + str(self.address))
+                LOGPRINT(str("("+self.peerName+")") + " SOCKET ERROR: " + str(e))
+                LOGPRINT("("+self.peerName+")" + " Closing socket " + str(self.peerAddress))
                 del openConnections[self.peerName]
+                LOGPRINT("Open connections: " + DictionaryToString(openConnections))
                 return
 
             if (incommingMessage != NULL_STR):
-                LOGPRINT(self.peerName + " >> Msg received: " + incommingMessage)
-                response = self.handleIncommingMessage(incommingMessage)
-                if (response):
-                    self.connectionSocket.sendall(response.encode('utf-8'))
+                if (incommingMessage != "b''"):  #This message seems to be sent repeatedly whenever the peer closes the connection
+                    response = self.handleIncommingMessage(incommingMessage[:-1])
+                    if (response):
+                        LOGPRINT("("+self.peerName+")" + " Responding to message")
+                        self.connectionSocket.sendall(response.encode('utf-8'))
 
 
     def createHeartbeatMessage(self):
@@ -144,9 +151,12 @@ class Connection():
         Starts a heartbeat thread with the connection to tell the other party we're still alive
         '''
         self.heartBeatRunning = True
-        while True:
-            connection.sendall(self.heartbeatMessage.encode('utf-8'))
-            sleep(HEARBEAT_INTERVAL)
+        try:
+            while True:
+                connection.sendall(self.heartbeatMessage.encode('utf-8'))
+                sleep(HEARBEAT_INTERVAL)
+        except:
+            pass
 
 
     def handleIncommingMessage(self, incommingMessage):
@@ -160,8 +170,8 @@ class Connection():
         try:
             messageDict = parseIncomingMessage(incommingMessage)
         except Exception as e:
-            LOGPRINT("Error parsing incoming message: " + str(e))
-            return("ERROR")
+            LOGPRINT("("+self.peerName+")" + " ERROR parsing incoming message: " + str(e))
+            return False
 
         MessageType = messageDict["MessageType"]
         Broadcast = messageDict["Broadcast"]
@@ -184,14 +194,18 @@ class Connection():
                 #HEARBEAT_MESSAGE
                 if (MessageType == PEER_MESSAGE.HEARBEAT_MESSAGE):
                     pass
+                
                 #GENERIC_MESSAGE
                 elif (MessageType == PEER_MESSAGE.GENERIC_MESSAGE):
+                    LOGPRINT("("+self.peerName+")" + " >> Msg received: " + incommingMessage)
                     if ("GenericMessage" in messageDict):
-                        LOGPRINT(messageDict["GenericMessage"])
+                        LOGPRINT("("+self.peerName+")" + " " + str(messageDict["GenericMessage"]))
                     else:
-                        LOGPRINT("Format error: Missing \"GenericMessage\"")
+                        LOGPRINT("("+self.peerName+")" + " FORMAT ERROR: Missing \"GenericMessage\"")
+
                 #RETURN_MESSAGE
                 elif (MessageType == PEER_MESSAGE.RETURN_MESSAGE):
+                    LOGPRINT("("+self.peerName+")" + " >> Msg received: " + incommingMessage)
                     if ("ReturnValues" in messageDict):
                         ReturnValues = messageDict["ReturnValues"]
                         if ("SubscriptionID" in messageDict):
@@ -205,54 +219,91 @@ class Connection():
                                     returnDict = messageDict.copy()
                                     subscriptionHandler.handleReturnMessage(returnDict)
                                 except Exception as e:
-                                    LOGPRINT("Subscription handler error: " + str(e))
+                                    LOGPRINT("("+self.peerName+")" + " Subscription handler error: " + str(e))
 
                             localSubscriptionsLock.release()
                     else:
-                        LOGPRINT("Format error: Missing \"ReturnValues\"")
+                        LOGPRINT("("+self.peerName+")" + " FORMAT ERROR: Missing \"ReturnValues\"")
+
                 #UPDATE_PROJECT_COMMAND
                 elif (MessageType == PEER_MESSAGE.UPDATE_PROJECT_COMMAND):
+                    LOGPRINT("("+self.peerName+")" + " >> Msg received: " + incommingMessage)
                     updateCodebase()
+
                 #PUSH_PROJECT_COMMAND
                 elif (MessageType == PEER_MESSAGE.PUSH_PROJECT_COMMAND):
+                    LOGPRINT("("+self.peerName+")" + " >> Msg received: " + incommingMessage)
                     pushCodebase()
+
                 #INSTALL_PACKAGES_COMMAND
                 elif (MessageType == PEER_MESSAGE.INSTALL_PACKAGES_COMMAND):
-                    if ("CommandArguments" in messageDict):
-                        packagesToInstall = messageDict["CommandArguments"]
-                        commandSuccess, results = installPackages(packagesToInstall)
+                    LOGPRINT("("+self.peerName+")" + " >> Msg received: " + incommingMessage)
+                    #Only accept this command from verified peers
+                    if (self.isKnownPeer):
+                        if ("CommandArguments" in messageDict):
+                            packagesToInstall = messageDict["CommandArguments"]
+                            commandSuccess, results = installPackages(packagesToInstall)
 
-                        handlerReturnValue = self.createCommandResponseMessage(messageDict, commandSuccess, results)
+                            handlerReturnValue = self.createCommandResponseMessage(messageDict, commandSuccess, results)
+                        else:
+                            LOGPRINT("("+self.peerName+")" + " FORMAT ERROR: Missing \"CommandArguments\"")
+                            commandSuccess = False
+                            results = ["FORMAT ERROR: Missing \"CommandArguments\""]
+
+                            handlerReturnValue = self.createCommandResponseMessage(messageDict, commandSuccess, results)
                     else:
-                        LOGPRINT("Format error: Missing \"CommandArguments\"")
-                        commandSuccess = False
-                        results = ["Format error: Missing \"CommandArguments\""]
+                        ErrorString = "ERROR Command unavailible for unverified peers"
+                        LOGPRINT("("+self.peerName+") " + ErrorString)
+                        Broadcast = False
+                        handlerReturnValue = self.createGenericResponseMessage(messageDict, ErrorString)
 
-                        handlerReturnValue = self.createCommandResponseMessage(messageDict, commandSuccess, results)
                 #KILL_CLIENT_COMMAND
                 elif (MessageType == PEER_MESSAGE.KILL_CLIENT_COMMAND):
-                    if ("CommandArguments" in messageDict):
-                        restartAfterKill = messageDict["CommandArguments"][0]
-                        kill(restartAfterKill)
-                    else:
-                        LOGPRINT("Format error: Missing \"CommandArguments\"")
-                        commandSuccess = False
-                        results = ["Format error: Missing \"CommandArguments\""]
+                    LOGPRINT("("+self.peerName+")" + " >> Msg received: " + incommingMessage)
+                    #Only accept this command from verified peers
+                    if (self.isKnownPeer):
+                        if ("CommandArguments" in messageDict):
+                            restartAfterKill = messageDict["CommandArguments"][0]
+                            kill(restartAfterKill)
+                        else:
+                            LOGPRINT("("+self.peerName+")" + " FORMAT ERROR: Missing \"CommandArguments\"")
+                            commandSuccess = False
+                            results = ["FORMAT ERROR: Missing \"CommandArguments\""]
 
-                        handlerReturnValue = self.createCommandResponseMessage(messageDict, commandSuccess, results)
+                            handlerReturnValue = self.createCommandResponseMessage(messageDict, commandSuccess, results)
+                    else:
+                        ErrorString = "ERROR Command unavailible for unverified peers"
+                        LOGPRINT("("+self.peerName+") " + ErrorString)
+                        Broadcast = False
+                        handlerReturnValue = self.createGenericResponseMessage(messageDict, ErrorString)
+
                 #CLEAR_LOGS_COMMAND
                 elif (MessageType == PEER_MESSAGE.CLEAR_LOGS_COMMAND):
-                    clearLogFolder()
+                    LOGPRINT("("+self.peerName+")" + " >> Msg received: " + incommingMessage)
+                    #Only accept this command from verified peers
+                    if (self.isKnownPeer):
+                        clearLogFolder()
+                    else:
+                        ErrorString = "ERROR Command unavailible for unverified peers"
+                        LOGPRINT("("+self.peerName+") " + ErrorString)
+                        Broadcast = False
+                        handlerReturnValue = self.createGenericResponseMessage(messageDict, ErrorString)
 
                 #URECOGNIZED MESSAGE TYPE
                 else:
+                    LOGPRINT("("+self.peerName+")" + " >> Msg received: " + incommingMessage)
                     genericMessage = "Unrecongnized message type: " + str(MessageType)
-                    LOGPRINT(genericMessage)
+                    LOGPRINT("("+self.peerName+") " + genericMessage)
                     handlerReturnValue = self.createGenericResponseMessage(messageDict, genericMessage)
+
+            else:
+                #We are not the target. Ignoring message
+                LOGPRINT("("+self.peerName+")" + " Local client not the message target. Dropping message")
 
 
             #Broadcast message if required
             if (Broadcast):
+                LOGPRINT("Broadcasting message to connected peers")
                 openConnectionsLock.acquire()
                 for connectionName in openConnections:
                     openConnections[connectionName].sendMessage(incommingMessage)
@@ -265,7 +316,7 @@ class Connection():
         if (handlerReturnValue):
             return handlerReturnValue
         else:
-            return
+            return False
 
 
     def sendMessage(self, message):
@@ -275,7 +326,7 @@ class Connection():
         self.connectionSocket.sendall(str(message).encode('utf-8'))
 
     
-    def createCommandResponseMessage(messageDict, commandSuccess, results):
+    def createCommandResponseMessage(self, messageDict, commandSuccess, results):
         '''
         Creates a response message for the executed command
         '''
@@ -300,7 +351,7 @@ class Connection():
         return(responseString)
 
 
-    def createGenericResponseMessage(messageDict, genericMessage):
+    def createGenericResponseMessage(self, messageDict, genericMessage):
         '''
         Creates a response message for the executed command
         '''
@@ -339,24 +390,26 @@ def createOutgoingConnections():
     Continuosuly tries to create outgoing connections to all known peers
     '''
     peersToConnectTo = {}
+    peerMappingsLock.acquire()
+    peerMappingsCopy = peerMappings.copy()
+    peerMappingsLock.release()    
 
     #Loop continuously
     while True:
         #Determine which peers we still need to connect to
-        peerMappingsLock.acquire()
         openConnectionsLock.acquire()
-        for peerHostname in peerMappings:
+        for peerHostname in peerMappingsCopy:
             if (peerHostname in openConnections):
                 #Already connected to this peer. No need to connect
                 pass 
             else:
                 #Not yet connected to this peer. Add it to connection queue
-                peersToConnectTo[peerHostname] = peerMappings[peerHostname]
+                peersToConnectTo[peerHostname] = peerMappingsCopy[peerHostname]
                 
         openConnectionsLock.release()
 
         for peerName in peersToConnectTo:
-            peerMap = peerMappings[peerName]
+            peerMap = peerMappingsCopy[peerName]
             peerIP = peerMap["PublicIp"]
             peerFriendlyName = peerMap["FriendlyName"]
 
@@ -377,10 +430,10 @@ def createOutgoingConnections():
                 #Instantiate Connection object, which will add itself to openConnections dictionary
                 Connection(outbound, BUFFER_SIZE, (peerIP, PORT_LISTEN))
                 del peersToConnectTo[peerName]  #Remove peer from connection queue
+                LOGPRINT("Open connections: " + DictionaryToString(openConnections))
             except Exception as e:
                 LOGPRINT("Could not connect to "+peerName+"("+peerFriendlyName+"):"+peerIP+" | "+str(e)+". Retrying in "+ str(OUTBOUND_RETRY_INTERVAL)+" seconds")
 
-        peerMappingsLock.release()
         sleep(OUTBOUND_RETRY_INTERVAL)
 
 
@@ -399,7 +452,6 @@ def listenForIncommingConnections():
 
     incomingHost = ''
     listen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    LOGPRINT("TCP socket created")
 
     #Tries to bind the incoming port
     try:
@@ -448,7 +500,7 @@ if __name__ == '__main__':
 
     #Populate subscriptions and outbound messages
     SendPeerCommands.setSubscritptionsAndPendingOutbounds(LocalSubscriptions, PendingOutboundMessages)
-    LOGPRINT("Local Subscripctions" + str(LocalSubscriptions))
+    LOGPRINT("Local Subscripctions: " + str(LocalSubscriptions))
     LOGPRINT("Pending Outbound Messages: " + str(PendingOutboundMessages))
 
     #Initiate and listen for connections

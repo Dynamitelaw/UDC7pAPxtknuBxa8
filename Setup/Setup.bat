@@ -1,0 +1,6 @@
+@echo off
+HelperBatchFiles\AnacondeInstaller_DownloadAndRun.bat
+HelperBatchFiles\InstallExternalPackages.bat
+HelperBatchFiles\GetTensorFlow.bat
+HelperBatchFiles\InstallKeras.bat
+HelperBatchFiles\Git_Install.bat

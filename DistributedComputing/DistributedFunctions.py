@@ -25,7 +25,7 @@ def pushCodebase():
     Pushes any local changes to the codebase
     '''
     LOGPRINT("Pushing changes to git")
-    os.system("git push")
+    os.system("DistributedComputing\\PushCodebase.bat")
 
 
 #NOTE: NOT YET IMPLIMENTED
@@ -46,6 +46,15 @@ def kill(restart = False):
         os.system("DistributedComputing\\KillAndRestart.bat")
     else:
         os.system("DistributedComputing\\Kill.bat")
+
+
+def openNewClietWindow():
+    '''
+    Kills python on this local machine. 
+    Starts a new command window with a client terminal
+    '''
+    os.chdir("DistributedComputing")
+    os.system("OpenClientWindow_FromThisDirectory.bat")
 
 
 def clearLogFolder():
